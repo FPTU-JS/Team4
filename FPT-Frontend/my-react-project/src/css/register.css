@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.register-page * {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+.register-page {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #fafafa;
+    overflow: hidden;
+}
+
+/* Left Section */
+.register-left {
+    flex: 1;
+    position: relative;
+    background-image: url('../assets/background-login.jpg');
+    /* Adjust as needed */
+    background-size: cover;
+    background-position: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 3rem;
+}
+
+.register-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+    z-index: 1;
+}
+
+.register-left-content {
+    position: relative;
+    z-index: 2;
+}
+
+.logo-co-che-green {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.logo-icon-green {
+    color: #10b981;
+    /* Green color for the flower icon */
+    font-size: 28px;
+}
+
+.register-quote {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    max-width: 90%;
+}
+
+.register-subtext {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 80%;
+    line-height: 1.5;
+}
+
+/* Right Section */
+.register-right {
+    flex: 1;
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 4rem;
+    overflow-y: auto;
+    position: relative;
+}
+
+.register-form-container {
+    max-width: 520px;
+    width: 100%;
+    margin: auto;
+}
+
+.register-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.register-header p {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 16px;
+    padding-left: 40px;
+    /* Space for icon on the left */
+    font-size: 14px;
+    color: #111827;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.input-wrapper input:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.input-wrapper input::placeholder {
+    color: #9ca3af;
+}
+
+.input-icon-left {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+.row-inputs {
+    display: flex;
+    gap: 16px;
+}
+
+.row-inputs .input-group {
+    flex: 1;
+}
+
+/* Dietary Preferences */
+.dietary-section {
+    margin: 24px 0;
+}
+
+.dietary-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.dietary-header .icon {
+    color: #10b981;
+}
+
+.dietary-desc {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.checkbox-item:hover {
+    border-color: #10b981;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #10b981;
+    cursor: pointer;
+}
+
+.checkbox-item span {
+    font-size: 14px;
+    color: #374151;
+    user-select: none;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #10b981;
+    /* Bright green */
+    background-image: linear-gradient(to right, #10b981, #0ea5e9);
+    /* The mockup shows solid green: */
+    background: #00e676;
+    /* fallback */
+    background: #00df6d;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.register-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.login-link {
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 24px;
+}
+
+.login-link a {
+    color: #10b981;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .register-page {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .register-left {
+        min-height: 400px;
+        padding: 2rem;
+    }
+
+    .register-right {
+        padding: 2rem;
+    }
+}
