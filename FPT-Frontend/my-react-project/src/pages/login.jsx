@@ -1,23 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/login.css';
-import { auth, googleProvider, facebookProvider } from '../firebase';
-import { signInWithPopup } from 'firebase/auth';
-import loginImage from '../assets/login-img.jpg'; // We can use this for the chef avatar if needed
+import '../css/login.css';
 
 function Login() {
   const navigate = useNavigate();
 
-  const handleSocialLogin = async (provider, providerName) => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log(`Đăng nhập ${providerName} thành công:`, user);
-      navigate('/onboarding');
-    } catch (error) {
-      console.error(`Lỗi đăng nhập ${providerName}:`, error);
-      alert(`Lỗi đăng nhập: ${error.message}`);
-    }
+  const handleSocialLogin = (provider) => {
+    // Chuyển hướng người dùng đến URL oauth2 của Backend
+    window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
   };
 
   const handleLogin = (e) => {
@@ -94,7 +85,7 @@ function Login() {
           <div className="social-login">
             <button
               className="social-btn"
-              onClick={() => handleSocialLogin(googleProvider, 'Google')}
+              onClick={() => handleSocialLogin('google')}
               type="button"
             >
               <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" />
@@ -102,7 +93,7 @@ function Login() {
             </button>
             <button
               className="social-btn"
-              onClick={() => handleSocialLogin(facebookProvider, 'Facebook')}
+              onClick={() => handleSocialLogin('facebook')}
               type="button"
             >
               <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" />

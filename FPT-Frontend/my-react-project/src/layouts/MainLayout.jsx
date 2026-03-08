@@ -33,7 +33,7 @@ const MainLayout = () => {
                     <button className="icon-btn" title="Notifications">
                         <Bell size={20} />
                     </button>
-                    <Link to="/login" className="icon-btn profile-btn" title="Profile/Login">
+                    <Link to="/profile" className="icon-btn profile-btn" title="Profile/Login">
                         <User size={20} />
                     </Link>
                 </div>

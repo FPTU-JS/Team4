@@ -5,6 +5,10 @@ import '../css/register.css';
 const Register = () => {
     const navigate = useNavigate();
 
+    const handleSocialLogin = (provider) => {
+        window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
+    };
+
     const handleRegister = (e) => {
         e.preventDefault();
         // Simulate registration success
@@ -103,7 +107,30 @@ const Register = () => {
                         </button>
                     </form>
 
-                    <p className="login-link">
+                    <div className="divider" style={{ textAlign: 'center', margin: '20px 0' }}>
+                        <span style={{ color: '#666', fontSize: '14px', position: 'relative', display: 'inline-block', padding: '0 10px' }}>Or continue with</span>
+                    </div>
+
+                    <div className="social-login" style={{ display: 'flex', gap: '15px', marginTop: '15px' }}>
+                        <button
+                            type="button"
+                            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                            onClick={() => handleSocialLogin('google')}
+                        >
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style={{ width: '20px', height: '20px' }} />
+                            Google
+                        </button>
+                        <button
+                            type="button"
+                            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                            onClick={() => handleSocialLogin('facebook')}
+                        >
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style={{ width: '20px', height: '20px' }} />
+                            Facebook
+                        </button>
+                    </div>
+
+                    <p className="login-link" style={{ marginTop: '20px', textAlign: 'center' }}>
                         Already have an account? <Link to="/login">Login</Link>
                     </p>
                 </div>

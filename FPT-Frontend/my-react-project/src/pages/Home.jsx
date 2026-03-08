@@ -1,10 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Search, Camera, ArrowRight, TrendingUp, Heart, MapPin, Bookmark } from 'lucide-react';
+import { Sparkles, Search, Camera, ArrowRight, TrendingUp, Heart, MapPin, Bookmark, Clock, Flame, Star } from 'lucide-react';
+import productService from '../services/productService';
 import '../css/home.css';
 
 const Home = () => {
     const navigate = useNavigate();
+    const [recipes, setRecipes] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchRecipes = async () => {
+            try {
+                setIsLoading(true);
+                const data = await productService.searchProducts('');
+                setRecipes(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Failed to load recipes", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRecipes();
+    }, []);
+
+    // Get a few recipes for different sections
+    const trendingRecipes = recipes.slice(0, 2);
+    const personalizedRecipes = recipes.slice(2, 4);
 
     return (
         <div className="home-page animate-fade-in">
@@ -60,39 +83,30 @@ const Home = () => {
                     </div>
 
                     <div className="trending-grid">
-                        <div className="recipe-card" onClick={() => navigate('/recipe/1')}>
-                            <div className="recipe-image-container">
-                                <img src="https://images.unsplash.com/photo-1621510456681-2330135e5871?w=800&q=80" alt="Pasta" className="recipe-image" />
-                                <div className="recipe-rating">
-                                    <span className="star-icon">★</span> 4.9
+                        {isLoading ? (
+                            <div>Loading trending recipes...</div>
+                        ) : trendingRecipes.length === 0 ? (
+                            <div>No recipes available yet.</div>
+                        ) : (
+                            trendingRecipes.map(recipe => (
+                                <div key={`trend-${recipe.productId}`} className="recipe-card" onClick={() => navigate(`/recipe/${recipe.productId}`)}>
+                                    <div className="recipe-image-container">
+                                        <img src={recipe.imageUrl || 'https://via.placeholder.com/800x600?text=No+Image'} alt={recipe.name} className="recipe-image" />
+                                        <div className="recipe-rating">
+                                            <Star size={12} className="star-icon" fill="currentColor" /> {recipe.rating || 'N/A'}
+                                        </div>
+                                        <div className="recipe-meta">
+                                            <span><Clock size={12} /> {recipe.cookingTime ? `${recipe.cookingTime} min` : '??'}</span>
+                                            <span><Flame size={12} /> {recipe.calories ? `${recipe.calories} kcal` : '??'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="recipe-info">
+                                        <h3 className="recipe-title">{recipe.name}</h3>
+                                        <p className="recipe-category">{(recipe.tags || []).join(' • ')}</p>
+                                    </div>
                                 </div>
-                                <div className="recipe-meta">
-                                    <span>⏱ 20 min</span>
-                                    <span>🔥 450 kcal</span>
-                                </div>
-                            </div>
-                            <div className="recipe-info">
-                                <h3 className="recipe-title">Creamy Truffle Basil Pasta</h3>
-                                <p className="recipe-category">Italian • Vegetarian</p>
-                            </div>
-                        </div>
-
-                        <div className="recipe-card" onClick={() => navigate('/recipe/2')}>
-                            <div className="recipe-image-container">
-                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80" alt="Poke Bowl" className="recipe-image" />
-                                <div className="recipe-rating">
-                                    <span className="star-icon">★</span> 4.7
-                                </div>
-                                <div className="recipe-meta">
-                                    <span>⏱ 15 min</span>
-                                    <span>🔥 320 kcal</span>
-                                </div>
-                            </div>
-                            <div className="recipe-info">
-                                <h3 className="recipe-title">Salmon & Avocado Poke Bowl</h3>
-                                <p className="recipe-category">Hawaiian • High Protein</p>
-                            </div>
-                        </div>
+                            ))
+                        )}
                     </div>
 
                     {/* Personalized For You */}
@@ -108,30 +122,28 @@ const Home = () => {
                                 <Sparkles size={20} />
                             </div>
                             <div>
-                                <h4 className="plan-title">Based on your "Low Carb" plan</h4>
-                                <p className="plan-desc">We found 3 new recipes matching your preferences</p>
+                                <h4 className="plan-title">Based on your preferences</h4>
+                                <p className="plan-desc">We found {personalizedRecipes.length} recipes matching your profile</p>
                             </div>
                         </div>
 
-                        <div className="list-recipe-item">
-                            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=80" alt="Salad" className="list-recipe-image" />
-                            <div className="list-recipe-details">
-                                <h4 className="list-recipe-title">Quinoa & Roasted Veggie Salad</h4>
-                                <p className="list-recipe-desc">A refreshing mix of quinoa, roasted bell peppers, zucchini, and feta cheese.</p>
-                                <div className="list-recipe-stats">340 kcal • 12g Carbs</div>
-                            </div>
-                            <Bookmark className="bookmark-icon" size={20} />
-                        </div>
-
-                        <div className="list-recipe-item">
-                            <img src="https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=200&q=80" alt="Chicken" className="list-recipe-image" />
-                            <div className="list-recipe-details">
-                                <h4 className="list-recipe-title">Lemon Herb Grilled Chicken</h4>
-                                <p className="list-recipe-desc">Juicy chicken breast marinated in fresh lemon and herbs served with steamed broccoli.</p>
-                                <div className="list-recipe-stats">420 kcal • 5g Carbs</div>
-                            </div>
-                            <Bookmark className="bookmark-icon" size={20} />
-                        </div>
+                        {isLoading ? (
+                            <div>Loading personalized recipes...</div>
+                        ) : personalizedRecipes.length === 0 ? (
+                            <div>No personalized recommendations yet.</div>
+                        ) : (
+                            personalizedRecipes.map(recipe => (
+                                <div key={`pers-${recipe.productId}`} className="list-recipe-item">
+                                    <img src={recipe.imageUrl || 'https://via.placeholder.com/200?text=No+Image'} alt={recipe.name} className="list-recipe-image" />
+                                    <div className="list-recipe-details">
+                                        <h4 className="list-recipe-title">{recipe.name}</h4>
+                                        <p className="list-recipe-desc">{recipe.description}</p>
+                                        <div className="list-recipe-stats">{recipe.calories ? `${recipe.calories} kcal` : '??'} • {(recipe.tags || [])[0]}</div>
+                                    </div>
+                                    <Bookmark className="bookmark-icon" size={20} />
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
 

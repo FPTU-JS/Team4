@@ -1,0 +1,351 @@
+/* General Layout */
+.map-page-container {
+    display: flex;
+    height: calc(100vh - 72px); /* Adjust based on navbar height */
+    width: 100%;
+}
+
+/* Map View Area (Left side) */
+.map-view-container {
+    flex: 1;
+    position: relative;
+    background-color: #a3ccdf;
+    /* Static map tile background mockup */
+    background-image: url('https://user-images.githubusercontent.com/71245576/114301548-dbbd4800-9ad0-11eb-84db-64df7504e76a.png');
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+/* Floating Filters on Map */
+.map-top-filters {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+}
+
+.map-filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.map-filter-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.vegan-leaf-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50% 0 50% 50%;
+    background-color: #10b981;
+    transform: rotate(45deg);
+}
+
+/* Map Custom Pins */
+.map-pin-custom {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 5;
+    cursor: pointer;
+    border: 3px solid white;
+    transition: transform 0.2s;
+}
+
+.map-pin-custom:hover {
+    transform: scale(1.1);
+}
+
+.pin-vegan { background-color: #10b981; }
+.pin-seafood { background-color: #3b82f6; }
+.pin-dining { background-color: #f97316; }
+
+.vegan-icon::after {
+    content: '';
+    display: block;
+    width: 14px; height: 14px;
+    background-color: white;
+    border-radius: 50% 0 50% 50%;
+    transform: rotate(45deg);
+}
+
+.seafood-icon::after {
+    content: '';
+    display: block;
+    width: 16px; height: 8px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.dining-icon::after {
+    content: '';
+    display: block;
+    width: 16px; height: 16px;
+    background-color: transparent;
+    border-bottom: 8px solid white;
+    border-radius: 50%;
+}
+
+
+/* Control Buttons Map */
+.map-controls {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 10;
+}
+
+.zoom-controls {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.control-btn {
+    width: 44px;
+    height: 44px;
+    background-color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.map-controls > .control-btn {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.zoom-controls .control-btn:first-child { border-bottom: 1px solid #f3f4f6; }
+.control-btn:hover { background-color: #f9fafb; }
+
+/* Sidebar (Right side) */
+.map-sidebar {
+    width: 450px;
+    background-color: #f8fafc;
+    border-left: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.sidebar-header {
+    padding: 32px 24px 16px 24px;
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    z-index: 20;
+}
+
+.header-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-title h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.view-all {
+    font-size: 15px;
+    font-weight: 600;
+    color: #10b981;
+    text-decoration: none;
+}
+
+.sidebar-filters {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.sidebar-filters::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #e2e8f0;
+    color: #475569;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.filter-chip.active {
+    background-color: #10b981;
+    color: #ffffff;
+}
+.filter-chip:hover:not(.active) {
+    background-color: #cbd5e1;
+}
+
+/* Recommendations List */
+.recommendations-list {
+    padding: 8px 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.restaurant-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: #ffffff;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.restaurant-card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.card-image-wrapper {
+    position: relative;
+    height: 220px;
+    width: 100%;
+    padding: 12px;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: #ffffff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4b5563;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.favorite-btn:hover { transform: scale(1.1); color: #ef4444; }
+
+.card-tags {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    display: flex;
+    gap: 8px;
+}
+
+.card-tag {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.tag-vegan { background-color: #10b981; }
+.tag-seafood { background-color: #3b82f6; }
+.tag-fine-dining { background-color: #f97316; }
+
+.card-content {
+    padding: 8px 16px 20px 16px;
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.card-header-row h3 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #111827;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .map-page-container {
+        flex-direction: column;
+    }
+    .map-sidebar {
+        width: 100%;
+        height: 50vh;
+        order: 2;
+    }
+    .map-view-container {
+        height: 50vh;
+        order: 1;
+    }
+}

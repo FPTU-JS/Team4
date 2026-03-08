@@ -1,5 +1,11 @@
 /* recipes.css */
 
+.recipes-hub-page {
+    background-color: #f8fafc;
+    min-height: calc(100vh - 72px);
+    width: 100%;
+}
+
 .recipes-hub {
     padding: 2rem 0 4rem 0;
     max-width: 1400px;
@@ -10,6 +16,14 @@
 .hub-header {
     margin-bottom: 3rem;
     padding: 0 1rem;
+}
+
+.hub-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
 }
 
 .hub-header .subtitle {
@@ -220,17 +234,20 @@
 }
 
 .recipe-card-hub {
-    background: white;
+    background: #ffffff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #f3f4f6;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
 }
 
 .recipe-card-hub:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .card-media {
@@ -343,19 +360,21 @@
     overflow: hidden;
 }
 
-.card-tags {
+.hub-card-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    position: relative;
+    /* ensure not absolute from other imports */
 }
 
-.card-tags .tag {
-    background: #f3f4f6;
-    color: #4b5563;
-    padding: 0.25rem 0.6rem;
+.hub-card-tags .hub-tag {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.3rem 0.7rem;
     border-radius: 6px;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 /* Pagination */
