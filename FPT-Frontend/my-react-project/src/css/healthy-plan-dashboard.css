@@ -4,6 +4,8 @@
     padding: 2rem 0 4rem 0;
     max-width: 1400px;
     margin: 0 auto;
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    color: #111827;
 }
 
 .hp-dashboard-layout {
@@ -18,99 +20,302 @@
     min-width: 0;
 }
 
+/* Header Area */
 .hp-header-area {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: 2rem;
 }
 
-.hp-current-goal {
+.heading-h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+}
+
+.hp-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.text-green-bold {
+    color: #00e676;
+    font-weight: 700;
+}
+
+.btn-smart-shopping {
+    background-color: #00e676;
+    color: #111827;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.2rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #10b981;
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(0, 230, 118, 0.2);
 }
 
-.weekly-progress {
-    width: 280px;
+.btn-smart-shopping:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 230, 118, 0.3);
 }
 
-.wp-header {
+/* Top Stats Cards */
+.hp-top-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.hp-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f3f4f6;
     display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #111827;
+    color: #6b7280;
+    letter-spacing: 0.5px;
     margin-bottom: 0.5rem;
 }
 
-.wp-percent {
-    color: #10b981;
-}
-
-.wp-bar-track {
-    width: 100%;
-    height: 6px;
-    background-color: #f3f4f6;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 0.3rem;
-}
-
-.wp-bar-fill {
-    height: 100%;
-    background-color: #10b981;
-    border-radius: 3px;
-}
-
-.wp-subtext {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-/* Day Tabs */
-.hp-day-selector {
+.stat-value {
     display: flex;
-    gap: 2rem;
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 2.5rem;
-    overflow-x: auto;
+    align-items: baseline;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
 }
 
-.day-tab {
-    background: none;
-    border: none;
-    padding: 0 0 1rem 0;
-    font-size: 1rem;
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-unit {
     color: #6b7280;
     font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.stat-status {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-left: 0.25rem;
+}
+
+.text-green {
+    color: #00e676;
+}
+
+/* Goal Bar for Weight */
+.goal-bar-container {
+    margin-top: auto;
+}
+
+.goal-bar-track {
+    width: 100%;
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+}
+
+.goal-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00e676, #b2ff59);
+    border-radius: 3px;
+}
+
+.goal-text {
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 700;
+}
+
+/* BMI Segments */
+.bmi-segments {
+    display: flex;
+    gap: 2px;
+    height: 6px;
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: 0.4rem;
+}
+
+.bmi-segment {
+    flex: 1;
+    border-radius: 3px;
+    opacity: 0.3;
+}
+
+.bmi-segment.active {
+    opacity: 1;
+}
+
+.bmi-segment.blue {
+    background-color: #3b82f6;
+}
+
+.bmi-segment.green {
+    background-color: #00e676;
+}
+
+.bmi-segment.yellow {
+    background-color: #fef08a;
+}
+
+.bmi-segment.red {
+    background-color: #fecaca;
+}
+
+.bmi-desc {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* AI Coach Card layout */
+.ai-coach-card {
+    justify-content: flex-start;
+}
+
+.ai-tip-content {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.ai-icon-wrapper {
+    background-color: #f0fdf4;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ai-tip-text {
+    font-size: 0.85rem;
+    color: #374151;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Weekly Meal Planner Header */
+.hp-planner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.hp-planner-header h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.icon-spaced {
+    margin-right: 0.5rem;
+}
+
+.week-toggle {
+    display: flex;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    padding: 0.25rem;
+}
+
+.toggle-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: none;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    position: relative;
-    white-space: nowrap;
+    transition: all 0.2s;
 }
 
-.day-tab:hover {
+.toggle-btn.active {
+    background: white;
     color: #111827;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.day-tab.active {
+/* Day Selector Box */
+.hp-day-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.day-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    padding: 0.75rem 0.5rem;
+    background-color: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.day-box:hover {
+    border-color: #d1fae5;
+}
+
+.day-box.active {
+    background-color: #00e676;
+    border-color: #00e676;
     color: #111827;
+    box-shadow: 0 4px 10px rgba(0, 230, 118, 0.3);
 }
 
-.day-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background-color: #10b981;
-    border-radius: 3px 3px 0 0;
+.day-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.day-number {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.day-box.active .day-name,
+.day-box.active .day-number {
+    color: #111827;
 }
 
 /* Meal Grid */
@@ -125,8 +330,8 @@
     border-radius: 16px;
     border: 1px solid #f3f4f6;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-    padding: 1.5rem;
-    transition: transform 0.2s;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .hp-meal-card:hover {
@@ -134,30 +339,10 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-.meal-card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-}
-
-.meal-icon {
-    font-size: 1.25rem;
-}
-
-.meal-type {
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    color: #374151;
-}
-
 .meal-card-image {
     width: 100%;
-    height: 160px;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 1.25rem;
+    height: 180px;
+    position: relative;
 }
 
 .meal-card-image img {
@@ -166,72 +351,68 @@
     object-fit: cover;
 }
 
-.meal-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 0.5rem 0;
+.meal-type-pill {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.meal-desc {
+.meal-card-body {
+    padding: 1.25rem;
+}
+
+.meal-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+}
+
+.meal-cals-time {
     font-size: 0.85rem;
     color: #6b7280;
     margin: 0 0 1.25rem 0;
-    line-height: 1.4;
 }
 
-.meal-metrics {
+.meal-macros-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid #f3f4f6;
+    padding-top: 1rem;
+}
+
+.macro-col {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    border-right: 1px solid #f3f4f6;
 }
 
-.meal-cals {
+.macro-col:last-child {
+    border-right: none;
+}
+
+.macro-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #9ca3af;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.macro-value {
+    font-size: 0.9rem;
     font-weight: 800;
-    font-size: 0.95rem;
+    color: #111827;
 }
-
-.color-breakfast {
-    color: #10b981;
-}
-
-.color-lunch {
-    color: #10b981;
-}
-
-.color-dinner {
-    color: #10b981;
-}
-
-.meal-macros {
-    display: flex;
-    gap: 0.35rem;
-}
-
-.macro-badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-}
-
-.p-badge {
-    background: #dbeafe;
-    color: #3b82f6;
-}
-
-.c-badge {
-    background: #fef3c7;
-    color: #d97706;
-}
-
-.f-badge {
-    background: #fee2e2;
-    color: #ef4444;
-}
-
 
 /* --- Right Sidebar --- */
 .hp-sidebar {
@@ -250,203 +431,240 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
-.theme-greenbg {
-    background-color: #ecfdf5;
-    border-color: #d1fae5;
-}
-
+/* Daily Progress Card specific */
 .side-card-title {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #111827;
     margin: 0 0 1.5rem 0;
 }
 
-.m-0 {
-    margin: 0;
-}
-
-.mb-3 {
-    margin-bottom: 1.25rem;
-}
-
-.mb-4 {
-    margin-bottom: 1.5rem;
-}
-
-.mr-2 {
-    margin-right: 0.5rem;
-}
-
-.text-blue {
-    color: #3b82f6;
-}
-
-/* Ring Chart (CSS Implementation) */
 .ring-chart-container {
     display: flex;
     justify-content: center;
     margin-bottom: 2rem;
 }
 
-.radial-progress {
-    width: 150px;
-    height: 150px;
-    background-color: #f3f4f6;
-    border-radius: 50%;
+.custom-ring {
+    position: relative;
+    width: 180px;
+    height: 180px;
 }
 
-.radial-progress .circle {
-    width: 100%;
-    height: 100%;
-}
-
-.radial-progress .circle .mask,
-.radial-progress .circle .fill {
-    width: 150px;
-    height: 150px;
+.ring-center-text {
     position: absolute;
-    border-radius: 50%;
-}
-
-.radial-progress .circle .mask {
-    clip: rect(0px, 150px, 150px, 75px);
-}
-
-.radial-progress .circle .mask .fill {
-    clip: rect(0px, 75px, 150px, 0px);
-    background-color: #10b981;
-}
-
-.radial-progress .circle .mask.full,
-.radial-progress .circle .fill {
-    animation: fill ease-in-out 1s;
-    transform: rotate(135deg);
-    /* Represents ~67% */
-}
-
-.radial-progress .inside-circle {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background-color: white;
-    line-height: 1.2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
-    position: absolute;
-    margin-top: 10px;
-    margin-left: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
-
-.kcal-display {
     display: flex;
     flex-direction: column;
 }
 
-.kcal-num {
-    font-size: 1.75rem;
+.ring-center-text .kcal-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.1;
+}
+
+.ring-center-text .kcal-sub {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
+.progress-stats-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.p-stat-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.p-stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.p-stat-val {
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.text-dark {
+    color: #111827;
+}
+
+.side-divider {
+    border: none;
+    border-top: 1px solid #f3f4f6;
+    margin: 0 0 1.5rem 0;
+}
+
+/* Water Intake section */
+.water-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.water-title {
     font-weight: 800;
     color: #111827;
 }
 
-.kcal-sub {
-    font-size: 0.65rem;
+.water-val {
+    font-size: 0.85rem;
     font-weight: 700;
-    color: #6b7280;
-    letter-spacing: 1px;
 }
 
-/* Macro Bars */
-.macro-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-.macro-row-header {
+.water-drops {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.4rem;
-    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
 }
 
-.macro-name {
-    font-weight: 700;
-    color: #111827;
-}
-
-.macro-val {
-    font-weight: 600;
-    color: #6b7280;
-}
-
-.mini-bar-track {
-    width: 100%;
-    height: 6px;
-    background-color: #f3f4f6;
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.mini-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-}
-
-.protein-fill {
-    background-color: #3b82f6;
-}
-
-.carb-fill {
-    background-color: #f59e0b;
-}
-
-.fat-fill {
-    background-color: #ef4444;
-}
-
-/* Shopping / Action */
-.shopping-desc {
-    font-size: 0.9rem;
-    color: #064e3b;
-    margin: 0 0 1.5rem 0;
-    line-height: 1.5;
-}
-
-/* Hydration Tracker */
-.flex-center-gap {
+.drop {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
 }
 
-.hydration-val {
-    font-weight: 600;
+.drop.filled {
+    background-color: #00e676;
+    color: white;
+}
+
+.drop.semi {
+    background-color: #b2ff59;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.drop.empty {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+}
+
+.btn-add-water {
+    width: 100%;
+    background-color: #f0fdf4;
+    color: #00e676;
+    font-weight: 700;
+    border: 1px solid #dcfce7;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-add-water:hover {
+    background-color: #dcfce7;
+}
+
+/* Weekly Streak Card */
+.hp-streak-card {
+    background: #111827;
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.streak-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+}
+
+.streak-desc {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: #9ca3af;
+    margin: 0 0 1.5rem 0;
 }
 
-.water-tracker {
+.streak-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.streak-icon {
+    width: 48px;
+    height: 48px;
+    background-color: rgba(0, 230, 118, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.streak-days {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.streak-sub {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #00e676;
+    letter-spacing: 0.5px;
+}
+
+/* Quick Links */
+.hp-quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.quick-link-btn {
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
     display: flex;
     justify-content: space-between;
-    gap: 0.5rem;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
-.water-glass {
-    height: 6px;
-    flex: 1;
-    border-radius: 3px;
-    background-color: #f3f4f6;
+.quick-link-btn:hover {
+    border-color: #d1fae5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.water-glass.filled {
-    background-color: #3b82f6;
+.ql-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    color: #111827;
+    font-size: 0.95rem;
 }
 
-/* Responsive */
+.text-gray {
+    color: #9ca3af;
+}
+
 @media (max-width: 1024px) {
     .hp-dashboard-layout {
         flex-direction: column;

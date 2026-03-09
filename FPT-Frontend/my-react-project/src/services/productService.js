@@ -9,9 +9,23 @@ const productService = {
      * @param {string} keyword 
      * @returns {Promise} dữ liệu phản hồi từ API
      */
-    searchProducts: async (keyword = '') => {
+    searchProducts: async (keyword = '', page = 0, size = 12, filters = {}) => {
         try {
-            const response = await api.get(`/api/products/search?keyword=${encodeURIComponent(keyword)}`);
+            const params = new URLSearchParams();
+            if (keyword) params.append('keyword', keyword);
+            params.append('page', page);
+            params.append('size', size);
+
+            if (filters.maxCookingTime) params.append('maxCookingTime', filters.maxCookingTime);
+            if (filters.minCalories) params.append('minCalories', filters.minCalories);
+            if (filters.maxCalories) params.append('maxCalories', filters.maxCalories);
+
+            if (filters.tags && Array.isArray(filters.tags) && filters.tags.length > 0) {
+                // Spring Boot lists in request params can be comma-separated or repeated.
+                params.append('tags', filters.tags.join(','));
+            }
+
+            const response = await api.get(`/api/products/search?${params.toString()}`);
             return response.data;
         } catch (error) {
             console.error('Lỗi khi tìm kiếm sản phẩm:', error);

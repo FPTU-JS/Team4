@@ -76,21 +76,9 @@ const CameraCapture = () => {
     };
 
     return (
-        <div style={{ backgroundColor: '#000', minHeight: '100vh', display: 'flex', flexDirection: 'column', color: '#fff' }}>
-            {/* Header / Top bar */}
-            <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-                <button
-                    onClick={handleClose}
-                    style={{ background: 'rgba(255, 255, 255, 0.2)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer' }}
-                >
-                    <X size={24} />
-                </button>
-                <div style={{ fontWeight: '600', fontSize: '1.2rem' }}>Chụp ảnh nguyên liệu</div>
-                <div style={{ width: '40px' }}></div> {/* Spacer */}
-            </div>
-
-            {/* Viewfinder area */}
-            <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: '#000', height: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+            {/* Viewfinder area (Full Screen) */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
                 {!capturedImage ? (
                     <>
                         <video
@@ -98,31 +86,44 @@ const CameraCapture = () => {
                             autoPlay
                             playsInline
                             muted
-                            style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                         <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
-
-                        {/* Focus box overlay (optional UI touch) */}
-                        <div style={{ position: 'absolute', width: '250px', height: '250px', border: '2px solid rgba(255, 255, 255, 0.5)', borderRadius: '12px', boxShadow: '0 0 0 9999px rgba(0,0,0,0.3)' }}></div>
                     </>
                 ) : (
-                    <img src={capturedImage} alt="Captured" style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={capturedImage} alt="Captured" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 )}
             </div>
 
-            {/* Bottom Controls */}
-            <div style={{ padding: '30px 20px 50px 20px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))' }}>
+            {/* Header / Top bar (Overlay) */}
+            <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, background: 'linear-gradient(rgba(0,0,0,0.7), transparent)' }}>
+                <button
+                    onClick={handleClose}
+                    style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(8px)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer', transition: 'background 0.2s' }}
+                >
+                    <X size={24} />
+                </button>
+                <div style={{ fontWeight: '600', fontSize: '1.2rem', textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>Chụp ảnh nguyên liệu</div>
+                <div style={{ width: '40px' }}></div> {/* Spacer */}
+            </div>
+
+            {/* Spacer to push controls to bottom */}
+            <div style={{ flex: 1, zIndex: 10 }}></div>
+
+            {/* Bottom Controls (Overlay) */}
+            <div style={{ padding: '30px 20px 40px 20px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 10, background: 'linear-gradient(transparent, rgba(0,0,0,0.8) 80%)' }}>
                 {!capturedImage ? (
                     <button
                         onClick={handleCapture}
                         style={{
-                            width: '70px', height: '70px', borderRadius: '50%',
-                            backgroundColor: 'transparent', border: '5px solid #fff',
+                            width: '76px', height: '76px', borderRadius: '50%',
+                            backgroundColor: 'rgba(255,255,255,0.2)', border: '4px solid #fff',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer'
+                            cursor: 'pointer', backdropFilter: 'blur(4px)',
+                            padding: '4px'
                         }}
                     >
-                        <div style={{ width: '54px', height: '54px', borderRadius: '50%', backgroundColor: '#fff' }}></div>
+                        <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}></div>
                     </button>
                 ) : (
                     <>
@@ -130,20 +131,20 @@ const CameraCapture = () => {
                             onClick={handleRetake}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
                         >
-                            <div style={{ background: 'rgba(255, 255, 255, 0.2)', padding: '12px', borderRadius: '50%' }}>
+                            <div style={{ background: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(5px)', padding: '14px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)' }}>
                                 <RefreshCcw size={24} />
                             </div>
-                            <span style={{ fontSize: '0.8rem' }}>Chụp lại</span>
+                            <span style={{ fontSize: '0.9rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Chụp lại</span>
                         </button>
 
                         <button
                             onClick={handleConfirm}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
                         >
-                            <div style={{ background: '#10b981', padding: '12px', borderRadius: '50%', boxShadow: '0 4px 10px rgba(16, 185, 129, 0.4)' }}>
-                                <Check size={24} />
+                            <div style={{ background: '#10b981', padding: '14px', borderRadius: '50%', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.5)', border: '2px solid rgba(255,255,255,0.8)' }}>
+                                <Check size={28} />
                             </div>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Sử dụng ảnh</span>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Sử dụng ảnh</span>
                         </button>
                     </>
                 )}

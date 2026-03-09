@@ -1,6 +1,7 @@
 package org.example.demospring.service;
 
 import org.example.demospring.dto.request.SearchByIngredientsRequest;
+import org.example.demospring.dto.response.PaginatedResponse;
 import org.example.demospring.dto.response.ProductDetailResponse;
 import org.example.demospring.entity.Ingredient;
 import org.example.demospring.entity.Product;
@@ -17,7 +18,8 @@ public interface ProductService {
     Recipe addRecipe(Long productId, Long ingredientId, Float quantity);
 
     // Core Logic (Smart Search)
-    List<ProductDetailResponse> searchProductsByName(String keyword);
+    PaginatedResponse<ProductDetailResponse> searchProductsByName(String keyword, Integer maxCookingTime,
+            Integer minCalories, Integer maxCalories, List<String> tags, int page, int size);
 
     List<ProductDetailResponse> searchProductsByIngredients(SearchByIngredientsRequest request);
 

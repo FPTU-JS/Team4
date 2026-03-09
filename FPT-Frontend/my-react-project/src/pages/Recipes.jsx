@@ -11,29 +11,42 @@ const Recipes = () => {
     const [recipes, setRecipes] = useState([]);
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
+    const itemsPerPage = 6;
+
+    const fetchRecipesData = async () => {
+        try {
+            setIsLoading(true);
+            const productsData = await productService.searchProducts('', currentPage - 1, itemsPerPage);
+            setRecipes(productsData.content || []);
+            setTotalPages(productsData.totalPages || 0);
+            setTotalElements(productsData.totalElements || 0);
+        } catch (error) {
+            console.error("Failed to load recipes", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchRecipesData = async () => {
+        const fetchCategories = async () => {
             try {
-                setIsLoading(true);
-                const [productsData, categoriesData] = await Promise.all([
-                    productService.searchProducts(''),
-                    categoryService.getAllCategories()
-                ]);
-                setRecipes(Array.isArray(productsData) ? productsData : []);
-
+                const categoriesData = await categoryService.getAllCategories();
                 // Thêm 'All Recipes' vào đầu mảng danh mục
                 const categoryList = [{ categoryId: 0, name: 'All Recipes' }, ...categoriesData];
                 setCategories(Array.isArray(categoryList) ? categoryList : []);
             } catch (error) {
-                console.error("Failed to load recipes and categories", error);
-            } finally {
-                setIsLoading(false);
+                console.error("Failed to load categories", error);
             }
         };
-
-        fetchRecipesData();
+        fetchCategories();
     }, []);
+
+    useEffect(() => {
+        fetchRecipesData();
+    }, [currentPage]);
 
     return (
         <div className="recipes-hub-page">
@@ -120,7 +133,7 @@ const Recipes = () => {
                     {/* Main Content Area */}
                     <main className="hub-main">
                         <div className="hub-results-header">
-                            <span className="results-count">Showing 24 of 1,248 results</span>
+                            <span className="results-count">Showing {recipes.length} of {totalElements} results</span>
                             <div className="sort-box">
                                 <span style={{ color: '#6b7280', fontSize: '0.9rem', marginRight: '0.5rem' }}>Sort by:</span>
                                 <select className="sort-select">
@@ -143,7 +156,7 @@ const Recipes = () => {
                                             <img src={recipe.imageUrl} alt={recipe.name} />
                                             <div className="card-badges">
                                                 <span className="badge ai"><Sparkles size={12} /> AI Match</span>
-                                                <button className="favorite-btn" onClick={(e) => { e.stopPropagation(); }}>
+                                                <button className="heart-btn" onClick={(e) => { e.stopPropagation(); }}>
                                                     <Heart size={20} fill="#fff" stroke="#d1d5db" />
                                                 </button>
                                             </div>
@@ -151,18 +164,33 @@ const Recipes = () => {
                                                 <Clock size={14} /> {recipe.cookingTime || '20m'}
                                             </div>
                                         </div>
-                                        <div className="card-content">
-                                            <div className="card-header">
-                                                <h3 className="card-title">{recipe.name}</h3>
+                                        <div className="hub-card-content">
+                                            <div className="hub-card-header">
+                                                <h3 className="hub-card-title">{recipe.name}</h3>
                                                 <div className="rating">
                                                     <Star size={14} fill="#f59e0b" color="#f59e0b" />
                                                     <span>4.9</span>
                                                 </div>
                                             </div>
-                                            <div className="card-meta">
-                                                <span className="meta-item"><Flame size={14} /> {recipe.calories || '300'} kcal</span>
-                                                <span className="meta-item bar">|</span>
-                                                <span className="meta-item">Medium</span>
+                                            <p className="hub-card-desc">{recipe.description || 'Sườn nướng than hoa thơm lừng, ăn kèm mỡ hành.'}</p>
+
+                                            <div className="hub-card-tags">
+                                                {recipe.tags && recipe.tags.length > 0 ? (
+                                                    recipe.tags.slice(0, 2).map((tag, idx) => (
+                                                        <span key={idx} className="hub-tag">{tag}</span>
+                                                    ))
+                                                ) : (
+                                                    <>
+                                                        <span className="hub-tag">cơm tấm</span>
+                                                        <span className="hub-tag">sườn nướng</span>
+                                                    </>
+                                                )}
+                                            </div>
+
+                                            <div className="hub-card-meta" style={{ marginTop: '1rem' }}>
+                                                <span className="hub-meta-item"><Flame size={14} /> {recipe.calories || '650'} kcal</span>
+                                                <span className="hub-meta-item bar">|</span>
+                                                <span className="hub-meta-item">Medium</span>
                                             </div>
                                         </div>
                                     </div>
@@ -171,15 +199,37 @@ const Recipes = () => {
                         </div>
 
                         {/* Pagination */}
-                        <div className="pagination">
-                            <button className="page-btn nav-btn"><ChevronLeft size={18} /></button>
-                            <button className="page-btn active">1</button>
-                            <button className="page-btn">2</button>
-                            <button className="page-btn">3</button>
-                            <span className="page-dots">...</span>
-                            <button className="page-btn">12</button>
-                            <button className="page-btn nav-btn"><ChevronRight size={18} /></button>
-                        </div>
+                        {totalPages > 1 && (
+                            <div className="pagination">
+                                <button
+                                    className="page-btn nav-btn"
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    style={{ opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                                >
+                                    <ChevronLeft size={18} />
+                                </button>
+
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <button
+                                        key={i + 1}
+                                        className={`page-btn ${currentPage === i + 1 ? 'active' : ''}`}
+                                        onClick={() => setCurrentPage(i + 1)}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+
+                                <button
+                                    className="page-btn nav-btn"
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    style={{ opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                                >
+                                    <ChevronRight size={18} />
+                                </button>
+                            </div>
+                        )}
                     </main>
                 </div>
             </div>

@@ -26,13 +26,15 @@ const MainLayout = () => {
                     <Link to="/map" className={currentPath === '/map' ? 'active' : ''}>Map</Link>
                     <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link>
                     <Link to="/community" className={currentPath === '/community' ? 'active' : ''}>Community</Link>
+                    <Link to="/ai-assistant" className={currentPath === '/ai-assistant' ? 'active' : ''}>AI Assistant</Link>
+                    <Link to="/support" className={currentPath === '/support' ? 'active' : ''}>Support</Link>
                 </div>
 
                 <div className="nav-actions">
                     <div className="streak-badge mobile-hide">
                         Daily Streak: 12 <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
                     </div>
-                    <button className="icon-btn" title="Notifications" style={{ marginRight: '-8px' }}>
+                    <button className="icon-btn" title="Notifications" style={{ marginRight: '-16px' }}>
                         <Bell size={20} />
                     </button>
                     <Link to="/profile" className="icon-btn profile-btn" title="Profile/Login">
@@ -59,7 +61,7 @@ const MainLayout = () => {
                     <Store size={24} />
                     <span>Markets</span>
                 </Link>
-                <Link to="/qa" className={`bottom-nav-item ${currentPath === '/qa' ? 'active' : ''}`}>
+                <Link to="/ai-assistant" className={`bottom-nav-item ${currentPath === '/ai-assistant' ? 'active' : ''}`}>
                     <Bot size={24} />
                     <span>Assistant</span>
                 </Link>

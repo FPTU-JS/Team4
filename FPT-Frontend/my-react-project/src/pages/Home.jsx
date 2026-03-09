@@ -37,7 +37,7 @@ const Home = () => {
             try {
                 setIsLoading(true);
                 const data = await productService.searchProducts('');
-                setRecipes(Array.isArray(data) ? data : []);
+                setRecipes(Array.isArray(data) ? data : (data.content || []));
             } catch (error) {
                 console.error("Failed to load recipes", error);
             } finally {

@@ -1,6 +1,7 @@
 package org.example.demospring.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.demospring.dto.response.PaginatedResponse;
 import org.example.demospring.dto.request.SearchByIngredientsRequest;
 import org.example.demospring.dto.response.ProductDetailResponse;
 import org.example.demospring.entity.Ingredient;
@@ -42,8 +43,16 @@ public class ProductController {
     // --- Core Features: Search ---
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDetailResponse>> searchByName(@RequestParam String keyword) {
-        return ResponseEntity.ok(productService.searchProductsByName(keyword));
+    public ResponseEntity<PaginatedResponse<ProductDetailResponse>> searchByName(
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false) Integer maxCookingTime,
+            @RequestParam(required = false) Integer minCalories,
+            @RequestParam(required = false) Integer maxCalories,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        return ResponseEntity.ok(productService.searchProductsByName(keyword, maxCookingTime, minCalories, maxCalories,
+                tags, page, size));
     }
 
     @GetMapping("/ai-recommended")

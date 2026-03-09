@@ -252,11 +252,14 @@
 
 .card-image-wrapper {
     position: relative;
-    height: 220px;
+    aspect-ratio: 4/3;
     width: 100%;
 }
 
 .card-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -339,18 +342,18 @@
     color: #ef4444;
 }
 
-.card-content {
+.hub-card-content {
     padding: 1.5rem;
 }
 
-.card-header {
+.hub-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 0.5rem;
 }
 
-.card-meta {
+.hub-card-meta {
     display: flex;
     gap: 0.5rem;
     color: #6b7280;
@@ -360,26 +363,27 @@
     align-items: center;
 }
 
-.meta-item {
+.hub-meta-item {
     display: flex;
     align-items: center;
     gap: 0.3rem;
 }
 
-.card-title {
+.hub-card-title {
     font-size: 1.2rem;
     font-weight: 700;
     color: #111827;
     margin: 0 0 0.5rem 0;
 }
 
-.card-desc {
+.hub-card-desc {
     font-size: 0.9rem;
     color: #4b5563;
     line-height: 1.5;
     margin: 0 0 1.25rem 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

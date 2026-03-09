@@ -15,6 +15,8 @@ import Map from './pages/Map.jsx'
 import CameraCapture from './pages/CameraCapture.jsx'
 import Community from './pages/Community.jsx'
 import Profile from './pages/Profile.jsx'
+import AIAssistant from './pages/ai/AIAssistant.jsx'
+import Support from './pages/Support.jsx'
 import OAuth2RedirectHandler from './pages/OAuth2RedirectHandler.jsx'
 
 function App() {
@@ -30,7 +32,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="onboarding" element={<Preferences />} />
           <Route path="plan-setup" element={<HealthyPlanSetup />} />
-          <Route path="plan-dashboard" element={<HealthyPlanDashboard />} />
+          <Route path="healthy-plan" element={<HealthyPlanDashboard />} />
           <Route path="recipes" element={<Recipes />} />
           <Route path="ai-recommendations" element={<Recommendations />} />
           <Route path="recipe/:id" element={<RecipeDetail />} />
@@ -38,6 +40,8 @@ function App() {
           <Route path="community" element={<Community />} />
           <Route path="profile" element={<Profile />} />
         </Route>
+        <Route path="/ai-assistant" element={<AIAssistant />} />
+        <Route path="/support" element={<Support />} />
       </Routes>
     </BrowserRouter>
   )

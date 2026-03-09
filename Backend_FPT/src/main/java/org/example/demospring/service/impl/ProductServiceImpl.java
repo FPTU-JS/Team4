@@ -12,6 +12,12 @@ import org.example.demospring.repository.ProductRepository;
 import org.example.demospring.repository.RecipeRepository;
 import org.example.demospring.repository.RestaurantRepository;
 import org.example.demospring.service.ProductService;
+import org.example.demospring.repository.spec.ProductSpecification;
+import org.springframework.data.jpa.domain.Specification;
+import org.example.demospring.dto.response.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -55,9 +61,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDetailResponse> searchProductsByName(String keyword) {
-        List<Product> products = productRepository.findByNameContainingIgnoreCase(keyword);
-        return products.stream().map(this::mapToDetailResponse).collect(Collectors.toList());
+    public PaginatedResponse<ProductDetailResponse> searchProductsByName(String keyword, Integer maxCookingTime,
+            Integer minCalories, Integer maxCalories, List<String> tags, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Product> spec = ProductSpecification.filterBy(keyword, maxCookingTime, minCalories, maxCalories,
+                tags);
+        Page<Product> productPage = productRepository.findAll(spec, pageable);
+
+        List<ProductDetailResponse> content = productPage.getContent()
+                .stream()
+                .map(this::mapToDetailResponse)
+                .collect(Collectors.toList());
+
+        return PaginatedResponse.<ProductDetailResponse>builder()
+                .content(content)
+                .currentPage(productPage.getNumber() + 1)
+                .totalPages(productPage.getTotalPages())
+                .totalElements(productPage.getTotalElements())
+                .size(productPage.getSize())
+                .build();
     }
 
     @Override
