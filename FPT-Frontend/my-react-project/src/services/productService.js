@@ -47,6 +47,16 @@ const productService = {
             console.error(`Lỗi khi lấy thông tin sản phẩm có id ${id}:`, error);
             throw error;
         }
+    },
+
+    getAiRecommendedProducts: async () => {
+        try {
+            const response = await axiosInstance.get('/api/products/ai-recommended');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching AI recommended products:', error);
+            throw error;
+        }
     }
 };
 

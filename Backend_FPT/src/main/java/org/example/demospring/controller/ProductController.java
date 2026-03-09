@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProductController {
 
     private final ProductService productService;
@@ -43,6 +44,11 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<List<ProductDetailResponse>> searchByName(@RequestParam String keyword) {
         return ResponseEntity.ok(productService.searchProductsByName(keyword));
+    }
+
+    @GetMapping("/ai-recommended")
+    public ResponseEntity<List<ProductDetailResponse>> getAiRecommendedProducts() {
+        return ResponseEntity.ok(productService.getAiRecommendedProducts());
     }
 
     @GetMapping("/{id}")

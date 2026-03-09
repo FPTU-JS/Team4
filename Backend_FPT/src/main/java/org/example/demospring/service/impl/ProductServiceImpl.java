@@ -107,6 +107,12 @@ public class ProductServiceImpl implements ProductService {
         return mapToDetailResponse(product);
     }
 
+    @Override
+    public List<ProductDetailResponse> getAiRecommendedProducts() {
+        List<Product> products = productRepository.findByIsAiRecommendedTrue();
+        return products.stream().map(this::mapToDetailResponse).collect(Collectors.toList());
+    }
+
     private ProductDetailResponse mapToDetailResponse(Product product) {
         List<Recipe> recipes = recipeRepository.findByProductId(product.getId());
 

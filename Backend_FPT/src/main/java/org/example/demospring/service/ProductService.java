@@ -22,4 +22,6 @@ public interface ProductService {
     List<ProductDetailResponse> searchProductsByIngredients(SearchByIngredientsRequest request);
 
     ProductDetailResponse getProductById(Long id);
+
+    List<ProductDetailResponse> getAiRecommendedProducts();
 }

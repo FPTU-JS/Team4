@@ -2,27 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Search, Camera, ArrowRight, TrendingUp, Heart, MapPin, Bookmark, Clock, Flame, Star } from 'lucide-react';
 import productService from '../services/productService';
+import categoryService from '../services/categoryService'; // Import categoryService
 import '../css/home.css';
 
 const Home = () => {
     const navigate = useNavigate();
     const [recipes, setRecipes] = useState([]);
+    const [categories, setCategories] = useState([]); // Add state for categories
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchRecipes = async () => {
+        const fetchHomeData = async () => { // Rename to fetchHomeData to reflect fetching multiple things
             try {
                 setIsLoading(true);
-                const data = await productService.searchProducts('');
-                setRecipes(Array.isArray(data) ? data : []);
+                // Fetch both products and categories concurrently
+                const [productsData, categoriesData] = await Promise.all([
+                    productService.searchProducts(''),
+                    categoryService.getAllCategories() // Fetch categories
+                ]);
+                setRecipes(Array.isArray(productsData) ? productsData : []);
+                setCategories(Array.isArray(categoriesData) ? categoriesData : []); // Set categories
             } catch (error) {
-                console.error("Failed to load recipes", error);
+                console.error("Failed to load home data", error); // Update error message
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchRecipes();
+        fetchHomeData();
     }, []);
 
     // Get a few recipes for different sections
@@ -63,9 +70,15 @@ const Home = () => {
 
                     <div className="popular-searches">
                         <span>Popular searches:</span>
-                        <Link to="#" className="tag">Keto Breakfast</Link>
-                        <Link to="#" className="tag">Pasta</Link>
-                        <Link to="#" className="tag">Smoothie</Link>
+                        {isLoading ? (
+                            <span>Loading categories...</span>
+                        ) : categories.length === 0 ? (
+                            <span>No popular categories found.</span>
+                        ) : (
+                            categories.slice(0, 3).map(category => ( // Map through fetched categories
+                                <span key={category.categoryId} className="tag">{category.name}</span>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
@@ -89,7 +102,7 @@ const Home = () => {
                             <div>No recipes available yet.</div>
                         ) : (
                             trendingRecipes.map(recipe => (
-                                <div key={`trend-${recipe.productId}`} className="recipe-card" onClick={() => navigate(`/recipe/${recipe.productId}`)}>
+                                <div key={`trend - ${recipe.productId} `} className="recipe-card" onClick={() => navigate(` / recipe / ${recipe.productId} `)}>
                                     <div className="recipe-image-container">
                                         <img src={recipe.imageUrl || 'https://via.placeholder.com/800x600?text=No+Image'} alt={recipe.name} className="recipe-image" />
                                         <div className="recipe-rating">
@@ -133,7 +146,7 @@ const Home = () => {
                             <div>No personalized recommendations yet.</div>
                         ) : (
                             personalizedRecipes.map(recipe => (
-                                <div key={`pers-${recipe.productId}`} className="list-recipe-item">
+                                <div key={`pers - ${recipe.productId} `} className="list-recipe-item">
                                     <img src={recipe.imageUrl || 'https://via.placeholder.com/200?text=No+Image'} alt={recipe.name} className="list-recipe-image" />
                                     <div className="list-recipe-details">
                                         <h4 className="list-recipe-title">{recipe.name}</h4>

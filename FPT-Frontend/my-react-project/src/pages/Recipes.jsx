@@ -2,30 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Clock, Flame, Heart, Star, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import productService from '../services/productService';
+import categoryService from '../services/categoryService';
 import '../css/recipes.css';
-
-const mockCategories = ['All Recipes', 'Breakfast', 'Vegan & Plant-based', 'Seafood Specials', 'Quick & Easy (15m)', 'Desserts', 'Keto Friendly'];
 
 const Recipes = () => {
     const navigate = useNavigate();
     const [activeCategory, setActiveCategory] = useState('All Recipes');
     const [recipes, setRecipes] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchRecipes = async () => {
+        const fetchRecipesData = async () => {
             try {
                 setIsLoading(true);
-                const data = await productService.searchProducts('');
-                setRecipes(Array.isArray(data) ? data : []);
+                const [productsData, categoriesData] = await Promise.all([
+                    productService.searchProducts(''),
+                    categoryService.getAllCategories()
+                ]);
+                setRecipes(Array.isArray(productsData) ? productsData : []);
+
+                // Thêm 'All Recipes' vào đầu mảng danh mục
+                const categoryList = [{ categoryId: 0, name: 'All Recipes' }, ...categoriesData];
+                setCategories(Array.isArray(categoryList) ? categoryList : []);
             } catch (error) {
-                console.error("Failed to load recipes", error);
+                console.error("Failed to load recipes and categories", error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchRecipes();
+        fetchRecipesData();
     }, []);
 
     return (
@@ -37,13 +44,13 @@ const Recipes = () => {
                     <p className="subtitle">Explore over 10,000 curated recipes by chefs and AI.</p>
 
                     <div className="category-pills">
-                        {mockCategories.map(cat => (
+                        {categories.map(cat => (
                             <button
-                                key={cat}
-                                className={`pill-btn ${activeCategory === cat ? 'active' : ''}`}
-                                onClick={() => setActiveCategory(cat)}
+                                key={cat.categoryId}
+                                className={`pill-btn ${activeCategory === cat.name ? 'active' : ''}`}
+                                onClick={() => setActiveCategory(cat.name)}
                             >
-                                {cat}
+                                {cat.name}
                             </button>
                         ))}
                     </div>
@@ -131,34 +138,31 @@ const Recipes = () => {
                                 <div className="empty-state">No recipes found.</div>
                             ) : (
                                 recipes.map(recipe => (
-                                    <div key={recipe.productId} className="recipe-card-hub" onClick={() => navigate(`/recipe/${recipe.productId}`)}>
-                                        <div className="card-media">
-                                            <img src={recipe.imageUrl || 'https://via.placeholder.com/800x600?text=No+Image'} alt={recipe.name} />
-
-                                            <div className="card-badges-top">
-                                                <div className="left-badges">
-                                                    {recipe.isAiRecommended && (
-                                                        <span className="badge ai-badge"><Sparkles size={12} /> AI RECOMMENDED</span>
-                                                    )}
-                                                    <span className="badge rating-badge"><Star size={12} fill="currentColor" /> {recipe.rating || 'N/A'}</span>
-                                                </div>
-                                                <button className="heart-btn">
-                                                    <Heart size={18} fill="none" stroke="currentColor" />
+                                    <div key={recipe.productId} className="recipe-card-hub" onClick={() => navigate(`/recipe/${recipe.productId}`, { state: { recipe } })}>
+                                        <div className="card-image-wrapper">
+                                            <img src={recipe.imageUrl} alt={recipe.name} />
+                                            <div className="card-badges">
+                                                <span className="badge ai"><Sparkles size={12} /> AI Match</span>
+                                                <button className="favorite-btn" onClick={(e) => { e.stopPropagation(); }}>
+                                                    <Heart size={20} fill="#fff" stroke="#d1d5db" />
                                                 </button>
                                             </div>
-                                        </div>
-
-                                        <div className="card-content">
-                                            <div className="card-metrics">
-                                                <span className="metric"><Clock size={14} /> {recipe.cookingTime ? `${recipe.cookingTime} min` : '??'}</span>
-                                                <span className="metric"><Flame size={14} /> {recipe.calories ? `${recipe.calories} kcal` : '??'}</span>
+                                            <div className="time-badge">
+                                                <Clock size={14} /> {recipe.cookingTime || '20m'}
                                             </div>
-                                            <h3 className="card-title">{recipe.name}</h3>
-                                            <p className="card-desc">{recipe.description}</p>
-                                            <div className="hub-card-tags">
-                                                {(recipe.tags || []).map(tag => (
-                                                    <span key={tag} className="hub-tag">{tag}</span>
-                                                ))}
+                                        </div>
+                                        <div className="card-content">
+                                            <div className="card-header">
+                                                <h3 className="card-title">{recipe.name}</h3>
+                                                <div className="rating">
+                                                    <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                                                    <span>4.9</span>
+                                                </div>
+                                            </div>
+                                            <div className="card-meta">
+                                                <span className="meta-item"><Flame size={14} /> {recipe.calories || '300'} kcal</span>
+                                                <span className="meta-item bar">|</span>
+                                                <span className="meta-item">Medium</span>
                                             </div>
                                         </div>
                                     </div>
