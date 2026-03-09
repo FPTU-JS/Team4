@@ -22,7 +22,7 @@ const Preferences = () => {
 
     const handleNext = () => {
         if (step < 3) setStep(step + 1);
-        else navigate('/ai-suggestions'); // After onboarding, go to AI suggestions
+        else navigate('/recipes'); // After onboarding, go to Recipes
     };
 
     return (

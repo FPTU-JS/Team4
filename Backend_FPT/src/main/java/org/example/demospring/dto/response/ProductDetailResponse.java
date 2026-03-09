@@ -25,6 +25,8 @@ public class ProductDetailResponse {
     private Boolean isAiRecommended;
     private List<String> tags;
     private List<RecipeDetail> recipes;
+    private Double latitude;
+    private Double longitude;
 
     @Data
     @Builder

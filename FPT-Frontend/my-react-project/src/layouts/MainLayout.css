@@ -9,11 +9,25 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 2rem;
+    padding: 1rem 1.5rem;
     background-color: #fafafa;
     position: sticky;
     top: 0;
     z-index: 1000;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 
 .brand-logo {
@@ -32,8 +46,8 @@
 
 .brand-text {
     font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
 
 .nav-links {
@@ -96,8 +110,12 @@
     background-color: #e5e7eb;
 }
 
-.profile-btn {
-    color: #374151;
+.profile-btn-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111827;
+    text-decoration: none;
 }
 
 .main-content {
@@ -105,9 +123,77 @@
     width: 100%;
 }
 
+.mobile-bottom-nav {
+    display: none;
+}
+
 @media (max-width: 900px) {
     .nav-links {
         display: none;
-        /* Hide links on mobile for now */
+    }
+}
+
+@media (max-width: 768px) {
+    .top-navbar {
+        height: 60px;
+        padding: 0 16px;
+    }
+
+    .nav-brand {
+        flex: 1;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    /* Center the logo absolute to container, but let flex space-between still work for menu and profile */
+    .brand-logo {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .mobile-hide,
+    .streak-badge {
+        display: none !important;
+    }
+
+    .mobile-bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 65px;
+        background-color: white;
+        border-top: 1px solid #f3f4f6;
+        z-index: 1000;
+        padding: 0 10px;
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: #9ca3af;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 600;
+        width: 60px;
+        height: 100%;
+    }
+
+    .bottom-nav-item.active {
+        color: #10b981;
+    }
+
+    /* Add padding to layout container to avoid overlap with fixed bottom nav */
+    .layout-container {
+        padding-bottom: 65px;
     }
 }

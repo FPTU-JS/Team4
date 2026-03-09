@@ -143,6 +143,8 @@ public class ProductServiceImpl implements ProductService {
                 .isAiRecommended(product.getIsAiRecommended())
                 .tags(tagsList)
                 .recipes(recipeDetails)
+                .latitude(product.getRestaurant() != null ? product.getRestaurant().getLatitude() : null)
+                .longitude(product.getRestaurant() != null ? product.getRestaurant().getLongitude() : null)
                 .build();
     }
 }
