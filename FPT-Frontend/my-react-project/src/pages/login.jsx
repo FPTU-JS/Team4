@@ -1,10 +1,13 @@
-import React from 'react';
+import React,{ useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../css/login.css';
+import { User, Lock, Eye, EyeOff, MoveLeft } from 'lucide-react';
 import '../css/login.css';
 
 function Login() {
   const navigate = useNavigate();
+
+  //Ẩn hiện pasword
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSocialLogin = (provider) => {
     // Chuyển hướng người dùng đến URL oauth2 của Backend
@@ -44,7 +47,10 @@ function Login() {
 
       {/* Right Form Section */}
       <div className="login-right">
-        <Link to="/" className="back-to-home">Back to Home</Link>
+        <Link to="/" className="back-to-home">
+          <MoveLeft size={16} />
+          Back to Home
+        </Link>
 
         <div className="login-form-container">
           <div className="login-header">
@@ -57,15 +63,36 @@ function Login() {
               <label>Email or Username</label>
               <div className="input-wrapper">
                 <input type="email" placeholder="chef@example.com" required />
-                <span className="input-icon">✉️</span>
+                <span className="input-icon">
+                  <User size={18} strokeWidth={1.5} />
+                </span>
               </div>
             </div>
 
             <div className="input-group">
               <label>Password</label>
               <div className="input-wrapper">
-                <input type="password" placeholder="Enter your password" required />
-                <span className="input-icon">👁️</span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  required
+                />
+                {/* Icon Khóa cố định bên trái */}
+                <span className="input-icon">
+                  <Lock size={18} strokeWidth={1.5} />
+                </span>
+
+                {/* Icon Mắt bấm được bên phải */}
+                <span
+                  className="input-icon-right"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} strokeWidth={1.5} />
+                  ) : (
+                    <Eye size={18} strokeWidth={1.5} />
+                  )}
+                </span>
               </div>
             </div>
 
