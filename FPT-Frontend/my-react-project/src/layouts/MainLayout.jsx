@@ -32,7 +32,7 @@ const MainLayout = () => {
                     <div className="streak-badge mobile-hide">
                         Daily Streak: 12 <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
                     </div>
-                    <button className="icon-btn mobile-hide" title="Notifications">
+                    <button className="icon-btn" title="Notifications" style={{ marginRight: '-8px' }}>
                         <Bell size={20} />
                     </button>
                     <Link to="/profile" className="icon-btn profile-btn" title="Profile/Login">

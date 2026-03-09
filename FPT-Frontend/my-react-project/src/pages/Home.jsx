@@ -165,22 +165,22 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="dashboard-grid">
-
-                {/* Mobile Only: Search Input below Hero */}
-                <div className="mobile-only-search">
-                    <div className="mobile-search-action">
-                        <Search size={20} className="search-icon" />
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Search recipes or ingredients"
-                        />
-                        <div className="search-btn-icon-wrapper">
-                            <Search size={18} color="#f59e0b" />
-                        </div>
+            {/* Mobile Only: Search Input below Hero */}
+            <div className="mobile-only-search">
+                <div className="mobile-search-action">
+                    <Search size={20} className="search-icon" />
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search recipes or ingredients"
+                    />
+                    <div className="search-btn-icon-wrapper">
+                        <Search size={18} color="#f59e0b" />
                     </div>
                 </div>
+            </div>
+
+            <div className="dashboard-grid">
 
                 {/* Left Column */}
                 <div className="main-feed">
@@ -218,144 +218,143 @@ const Home = () => {
                             ))
                         )}
                     </div>
-                </div>
 
-                {/* Personalized For You */}
-                <div className="section-header">
-                    <h2 className="section-title">
-                        <Heart size={24} color="#10b981" fill="#10b981" /> Personalized for You
-                    </h2>
-                </div>
-
-                <div className="personalized-section">
-                    <div className="plan-header">
-                        <div className="plan-icon">
-                            <Sparkles size={20} />
-                        </div>
-                        <div>
-                            <h4 className="plan-title">Based on your "Low Carb" plan</h4>
-                            <p className="plan-desc">We found 2 new recipes matching your preferences</p>
-                        </div>
+                    {/* Personalized For You */}
+                    <div className="section-header">
+                        <h2 className="section-title">
+                            <Heart size={24} color="#10b981" fill="#10b981" /> Personalized for You
+                        </h2>
                     </div>
 
-                    {isLoading ? (
-                        <div>Loading personalized recipes...</div>
-                    ) : personalizedRecipes.length === 0 ? (
-                        <div>No personalized recommendations yet.</div>
-                    ) : (
-                        personalizedRecipes.map(recipe => (
-                            <div key={`pers-${recipe.productId}`} className="list-recipe-item">
-                                <img src={recipe.imageUrl || 'https://via.placeholder.com/200?text=No+Image'} alt={recipe.name} className="list-recipe-image" />
-                                <div className="list-recipe-details">
-                                    <h4 className="list-recipe-title">{recipe.name}</h4>
-                                    <p className="list-recipe-desc">{recipe.description}</p>
-                                    <div className="list-recipe-stats">{recipe.calories ? `${recipe.calories} kcal` : '??'} • {(recipe.tags || [])[0]}</div>
-                                </div>
-                                <Bookmark className="bookmark-icon" size={20} />
+                    <div className="personalized-section">
+                        <div className="plan-header">
+                            <div className="plan-icon">
+                                <Sparkles size={20} />
                             </div>
-                        ))
-                    )}
-                </div>
-            </div>
-
-            {/* Right Column / Sidebar */}
-            <div className="sidebar">
-                {/* Local Markets Map */}
-                <div className="sidebar-card">
-                    <h3 className="sidebar-title">
-                        Local Markets
-                        <Link to="/map" className="view-all">Open Map</Link>
-                    </h3>
-                    <div className="map-container">
-                        <div className="map-pin-overlay">
-                            <MapPin size={16} className="pin-icon" />
                             <div>
-                                <strong>Whole Foods Market</strong><br />
-                                <span style={{ color: '#6b7280' }}>0.8 mi away</span>
+                                <h4 className="plan-title">Based on your "Low Carb" plan</h4>
+                                <p className="plan-desc">We found 2 new recipes matching your preferences</p>
                             </div>
                         </div>
-                    </div>
-                    <button className="btn-outline-green" onClick={() => navigate('/map')}>Find Ingredients Nearby</button>
-                </div>
 
-                {/* Today's Nutrition */}
-                <div className="sidebar-card nutrition-card">
-                    <h3 className="sidebar-title">Today's Nutrition</h3>
-
-                    <div className="nutrition-summary">
-                        <div className="circle-chart">
-                            <span className="kcal-val">1,250</span>
-                            <span className="kcal-label">KCAL LEFT</span>
-                        </div>
-                        <div className="macros">
-                            <div className="macro-item">
-                                <div className="macro-header">
-                                    <span className="macro-name">Protein</span>
-                                    <span className="macro-val">45/120g</span>
+                        {isLoading ? (
+                            <div>Loading personalized recipes...</div>
+                        ) : personalizedRecipes.length === 0 ? (
+                            <div>No personalized recommendations yet.</div>
+                        ) : (
+                            personalizedRecipes.map(recipe => (
+                                <div key={`pers-${recipe.productId}`} className="list-recipe-item">
+                                    <img src={recipe.imageUrl || 'https://via.placeholder.com/200?text=No+Image'} alt={recipe.name} className="list-recipe-image" />
+                                    <div className="list-recipe-details">
+                                        <h4 className="list-recipe-title">{recipe.name}</h4>
+                                        <p className="list-recipe-desc">{recipe.description}</p>
+                                        <div className="list-recipe-stats">{recipe.calories ? `${recipe.calories} kcal` : '??'} • {(recipe.tags || [])[0]}</div>
+                                    </div>
+                                    <Bookmark className="bookmark-icon" size={20} />
                                 </div>
-                                <div className="progress-bar">
-                                    <div className="progress-fill progress-protein"></div>
-                                </div>
-                            </div>
-                            <div className="macro-item">
-                                <div className="macro-header">
-                                    <span className="macro-name">Carbs</span>
-                                    <span className="macro-val">90/200g</span>
-                                </div>
-                                <div className="progress-bar">
-                                    <div className="progress-fill progress-carbs"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="meal-list">
-                        <div className="meal-item completed">
-                            <div className="meal-name">
-                                <span className="meal-dot"></span> Oatmeal & Berries
-                            </div>
-                            <span className="meal-type">Breakfast</span>
-                        </div>
-                        <div className="meal-item current">
-                            <div className="meal-name">
-                                <span className="meal-dot"></span> Chicken Caesar Wrap
-                            </div>
-                            <span className="meal-type">Lunch</span>
-                        </div>
-                        <div className="meal-item">
-                            <div className="meal-name">
-                                <span className="meal-dot"></span> Grilled Salmon & Asparagus
-                            </div>
-                            <span className="meal-type">Dinner</span>
-                        </div>
+                            ))
+                        )}
                     </div>
                 </div>
 
-                {/* Community Top Picks */}
-                <div className="sidebar-card">
-                    <h3 className="sidebar-title">Community Top Picks</h3>
-                    <div className="user-avatars">
-                        <div className="avatar-item">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" alt="User" className="avatar-img" />
-                            <span className="avatar-name">Sarah K.</span>
+                {/* Right Column / Sidebar */}
+                <div className="sidebar">
+                    {/* Local Markets Map */}
+                    <div className="sidebar-card">
+                        <h3 className="sidebar-title">
+                            Local Markets
+                            <Link to="/map" className="view-all">Open Map</Link>
+                        </h3>
+                        <div className="map-container">
+                            <div className="map-pin-overlay">
+                                <MapPin size={16} className="pin-icon" />
+                                <div>
+                                    <strong>Whole Foods Market</strong><br />
+                                    <span style={{ color: '#6b7280' }}>0.8 mi away</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="avatar-item">
-                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80" alt="User" className="avatar-img" />
-                            <span className="avatar-name">Mike R.</span>
+                        <button className="btn-outline-green" onClick={() => navigate('/map')}>Find Ingredients Nearby</button>
+                    </div>
+
+                    {/* Today's Nutrition */}
+                    <div className="sidebar-card nutrition-card">
+                        <h3 className="sidebar-title">Today's Nutrition</h3>
+
+                        <div className="nutrition-summary">
+                            <div className="circle-chart">
+                                <span className="kcal-val">1,250</span>
+                                <span className="kcal-label">KCAL LEFT</span>
+                            </div>
+                            <div className="macros">
+                                <div className="macro-item">
+                                    <div className="macro-header">
+                                        <span className="macro-name">Protein</span>
+                                        <span className="macro-val">45/120g</span>
+                                    </div>
+                                    <div className="progress-bar">
+                                        <div className="progress-fill progress-protein"></div>
+                                    </div>
+                                </div>
+                                <div className="macro-item">
+                                    <div className="macro-header">
+                                        <span className="macro-name">Carbs</span>
+                                        <span className="macro-val">90/200g</span>
+                                    </div>
+                                    <div className="progress-bar">
+                                        <div className="progress-fill progress-carbs"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="avatar-item">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="User" className="avatar-img" />
-                            <span className="avatar-name">Elena G.</span>
+
+                        <div className="meal-list">
+                            <div className="meal-item completed">
+                                <div className="meal-name">
+                                    <span className="meal-dot"></span> Oatmeal & Berries
+                                </div>
+                                <span className="meal-type">Breakfast</span>
+                            </div>
+                            <div className="meal-item current">
+                                <div className="meal-name">
+                                    <span className="meal-dot"></span> Chicken Caesar Wrap
+                                </div>
+                                <span className="meal-type">Lunch</span>
+                            </div>
+                            <div className="meal-item">
+                                <div className="meal-name">
+                                    <span className="meal-dot"></span> Grilled Salmon & Asparagus
+                                </div>
+                                <span className="meal-type">Dinner</span>
+                            </div>
                         </div>
-                        <div className="avatar-item">
-                            <div className="avatar-add">+</div>
-                            <span className="avatar-name">Join</span>
+                    </div>
+
+                    {/* Community Top Picks */}
+                    <div className="sidebar-card">
+                        <h3 className="sidebar-title">Community Top Picks</h3>
+                        <div className="user-avatars">
+                            <div className="avatar-item">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" alt="User" className="avatar-img" />
+                                <span className="avatar-name">Sarah K.</span>
+                            </div>
+                            <div className="avatar-item">
+                                <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80" alt="User" className="avatar-img" />
+                                <span className="avatar-name">Mike R.</span>
+                            </div>
+                            <div className="avatar-item">
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="User" className="avatar-img" />
+                                <span className="avatar-name">Elena G.</span>
+                            </div>
+                            <div className="avatar-item">
+                                <div className="avatar-add">+</div>
+                                <span className="avatar-name">Join</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div >
     );
 };
 
