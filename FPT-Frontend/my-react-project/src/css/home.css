@@ -57,8 +57,8 @@
     margin-bottom: 1.5rem;
 }
 
-.hero-title {
-    font-size: 3.5rem;
+.hero-titlee {
+    font-size: 3rem;
     font-weight: 800;
     margin: 0 0 1rem 0;
     line-height: 1.1;
@@ -72,7 +72,7 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.hero-subtitle {
+.hero-subtitlee {
     font-size: 1.15rem;
     color: #ffffff !important;
     opacity: 1;
@@ -138,8 +138,15 @@
     background: none;
     border: none;
     color: #6b7280;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.8rem;
+    margin-right: 5px;
     cursor: pointer;
+    transition: 0.2 ease-in;
+}
+
+.camera-btn:hover {
+    background-color: #e6e7e9;
+    border-radius: 10%;
 }
 
 .camera-dropdown-menu {
@@ -791,6 +798,11 @@
         margin-top: 1rem;
         border: none;
         cursor: pointer;
+    }
+
+    .mobile-try-camera-btn:hover {
+        background-color: #03d36f;
+
     }
 
     /* Reverting grids to horizontal scroll for mobile */

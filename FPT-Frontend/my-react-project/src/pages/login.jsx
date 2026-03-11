@@ -5,6 +5,8 @@ import '../css/login.css';
 
 function Login() {
   const navigate = useNavigate();
+  const[isLoading, setIsLoading] = useState(false);
+  const[error,setError] = useState('');
 
   //Ẩn hiện pasword
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +19,8 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     // Simulate login for now
+    setIsLoading(true);
+    setError('');
     navigate('/onboarding');
   };
 

@@ -75,10 +75,10 @@ const Home = () => {
                     <div className="ai-badge">
                         <Sparkles size={14} className="badge-icon" /> AI-POWERED CHEF
                     </div>
-                    <h1 className="hero-title">
+                    <h1 className="hero-titlee">
                         Cook Smart with <span className="text-ai">AI</span>
                     </h1>
-                    <p className="hero-subtitle">
+                    <p className="hero-subtitlee">
                         Snap a photo of your fridge or list ingredients. Our AI will craft the perfect recipe for you instantly.
                     </p>
 

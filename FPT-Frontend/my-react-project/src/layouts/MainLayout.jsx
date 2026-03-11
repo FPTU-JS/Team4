@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot } from 'lucide-react';
+import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf } from 'lucide-react';
 import './MainLayout.css';
 
 const MainLayout = () => {
     const location = useLocation();
     const currentPath = location.pathname;
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    //Close Dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Close Dropdown when navigating
+    useEffect(() => {
+        setIsDropdownOpen(false);
+    }, [location]);
+
 
     return (
         <div className="layout-container">
@@ -24,7 +43,7 @@ const MainLayout = () => {
                     <Link to="/" className={currentPath === '/' ? 'active' : ''}>Home</Link>
                     <Link to="/recipes" className={currentPath === '/recipes' ? 'active' : ''}>Recipes</Link>
                     <Link to="/map" className={currentPath === '/map' ? 'active' : ''}>Map</Link>
-                    <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link>
+                    {/* <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link> */}
                     <Link to="/community" className={currentPath === '/community' ? 'active' : ''}>Community</Link>
                     <Link to="/ai-assistant" className={currentPath === '/ai-assistant' ? 'active' : ''}>AI Assistant</Link>
                     <Link to="/support" className={currentPath === '/support' ? 'active' : ''}>Support</Link>
@@ -34,12 +53,37 @@ const MainLayout = () => {
                     <div className="streak-badge mobile-hide">
                         Daily Streak: 12 <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
                     </div>
-                    <button className="icon-btn" title="Notifications" style={{ marginRight: '-16px' }}>
+                    <button className="icon-btn" title="Notifications">
                         <Bell size={20} />
                     </button>
-                    <Link to="/profile" className="icon-btn profile-btn" title="Profile/Login">
-                        <User size={20} />
-                    </Link>
+                    {/* User Dropdown Container */}
+                    <div className="user-dropdown-container" ref={dropdownRef}>
+                        <button
+                            className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            title="Account"
+                        >
+                            <User size={20} />
+                        </button>
+
+                        {isDropdownOpen && (
+                            <div className="dropdown-menu">
+                                <Link to="/profile" className="dropdown-item">
+                                    <Settings size={18} />
+                                    <span>Profile</span>
+                                </Link>
+                                <Link to="/healthy-plan" className="dropdown-item">
+                                    <Leaf size={18} />
+                                    <span>Healthy Plan</span>
+                                </Link>
+                                <hr className="dropdown-divider" />
+                                <button className="dropdown-item logout-btn" onClick={() => console.log('Logout...')}>
+                                    <LogOut size={18} />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 
