@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf } from 'lucide-react';
 import './MainLayout.css';
+import Notification from './Notification';
 
 const MainLayout = () => {
     const location = useLocation();
@@ -53,9 +54,7 @@ const MainLayout = () => {
                     <div className="streak-badge mobile-hide">
                         Daily Streak: 12 <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
                     </div>
-                    <button className="icon-btn" title="Notifications">
-                        <Bell size={20} />
-                    </button>
+                    <Notification />
                     {/* User Dropdown Container */}
                     <div className="user-dropdown-container" ref={dropdownRef}>
                         <button
