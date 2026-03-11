@@ -213,6 +213,7 @@
   justify-content: center;
   pointer-events: none;
 }
+
 .input-icon-right {
   position: absolute;
   right: 14px;
@@ -229,11 +230,6 @@
 
 .input-icon-right:hover {
   color: #f59e0b;
-}
-
-.input-wrapper input:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
 .forgot-password-container {
@@ -292,6 +288,13 @@
 .login-btn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.login-btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.7;
 }
 
 .divider {
@@ -368,6 +371,7 @@
   .login-right {
     padding: 2rem;
   }
+
   .quote-text {
     font-size: 28px;
   }
@@ -375,12 +379,12 @@
 
 @media (max-width: 900px) {
   .login-page {
-    flex-direction: column; 
+    flex-direction: column;
     overflow-y: auto;
   }
 
   .login-left {
-    display: none; 
+    display: none;
   }
 
   .login-right {
@@ -405,7 +409,7 @@
 
 @media (max-width: 480px) {
   .social-login {
-    flex-direction: column; 
+    flex-direction: column;
     gap: 12px;
   }
 

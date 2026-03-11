@@ -7,13 +7,9 @@
 
 .register-page {
     display: flex;
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
+    min-height: 100vh;
+    width: 100%;
     background-color: #fafafa;
-    overflow: hidden;
 }
 
 /* Left Section */
@@ -27,7 +23,7 @@
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
     padding: 3rem;
 }
 
@@ -107,7 +103,7 @@
 .register-header p {
     color: #6b7280;
     font-size: 14px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .input-group {
@@ -155,8 +151,30 @@
     top: 50%;
     transform: translateY(-50%);
     color: #9ca3af;
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
 }
+
+.input-icon-right {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 2;
+}
+
+.input-icon-right:hover {
+    color: #f59e0b;
+}
+
 
 .row-inputs {
     display: flex;
@@ -273,18 +291,60 @@
     text-decoration: underline;
 }
 
+/* --- RESPONSIVE TABLET & MOBILE --- */
+
+@media (max-width: 1024px) {
+  .login-right {
+    padding: 2rem;
+  }
+
+  .quote-text {
+    font-size: 28px;
+  }
+}
+
 @media (max-width: 900px) {
-    .register-page {
-        flex-direction: column;
-        overflow-y: auto;
-    }
+  .register-page {
+    flex-direction: column;
+    overflow-y: auto;
+  }
 
-    .register-left {
-        min-height: 400px;
-        padding: 2rem;
-    }
+  .register-left {
+    display: none;
+  }
 
-    .register-right {
-        padding: 2rem;
-    }
+  .register-right {
+    padding: 4rem 1.5rem 2rem;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+
+  .register-form-container {
+    margin: 0 auto;
+  }
+
+  .register-header h2 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-login {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .social-btn {
+    width: 100%;
+  }
+
+  .register-header h2 {
+    font-size: 24px;
+  }
+
+  .register-btn {
+    padding: 14px;
+    font-size: 15px;
+  }
 }

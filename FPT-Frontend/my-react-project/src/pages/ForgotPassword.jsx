@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MoveLeft, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { auth } from '../firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
@@ -10,6 +11,15 @@ const ForgotPassword = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Hàm kiểm tra định dạng email
+    const validateEmail = (email) => {
+        return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+    };
+    
     const handleReset = async (e) => {
         e.preventDefault();
         try {
@@ -43,7 +53,10 @@ const ForgotPassword = () => {
 
             {/* Right Form Section */}
             <div className="login-right">
-                <Link to="/login" className="back-to-home">Back to Login</Link>
+                <Link to="/login" className="back-to-home">
+                    <MoveLeft size={16} />
+                    Back to Login
+                </Link>
 
                 <div className="login-form-container">
                     <div className="login-header">
@@ -65,7 +78,9 @@ const ForgotPassword = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
-                                <span className="input-icon">✉️</span>
+                                <span className="input-icon">
+                                    <Mail size={18} strokeWidth={1.5}/>
+                                </span>
                             </div>
                         </div>
 

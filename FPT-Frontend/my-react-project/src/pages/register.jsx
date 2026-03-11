@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { User, Lock, Eye, EyeOff, Mail } from 'lucide-react';
 import '../css/register.css';
 
 const Register = () => {
     const navigate = useNavigate();
+    //Ẩn hiện pasword
+    const [showPassword, setShowPassword] = useState(false);
+
+    const[user,setUser]  =useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+
 
     const handleSocialLogin = (provider) => {
         window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
@@ -11,6 +20,18 @@ const Register = () => {
 
     const handleRegister = (e) => {
         e.preventDefault();
+        setError('');
+
+        if (password.trim().length < 8) {
+            setError("Password must be at least 8 characters long.");
+            return;
+        }
+
+        if (password.trim() !== confirmPassword.trim()) {
+            setError("Passwords do not match.");
+            return;
+        }
+
         // Simulate registration success
         alert("Đăng ký thành công!");
         navigate('/login');
@@ -41,19 +62,37 @@ const Register = () => {
                         <p>Join CO-CHE and start your culinary journey.</p>
                     </div>
 
+                    {error && (
+                        <div className="alert alert-error" style={{
+                            color: '#ef4444',
+                            backgroundColor: '#fef2f2',
+                            padding: '10px',
+                            borderRadius: '8px',
+                            marginBottom: '15px',
+                            fontSize: '14px',
+                            border: '1px solid #fee2e2'
+                        }}>
+                            {error}
+                        </div>
+                    )}
+
                     <form onSubmit={handleRegister}>
                         <div className="input-group">
                             <label>Full Name</label>
                             <div className="input-wrapper">
-                                <span className="input-icon-left">👤</span>
-                                <input type="text" placeholder="Enter your full name" required />
+                                <span className="input-icon-left">
+                                    <User size={18} strokeWidth={1.5} />
+                                </span>
+                                <input type="text" placeholder="Enter your full name"
+                                 value={user} onChange={(e) => setUser(e.target.value)} required />
                             </div>
                         </div>
-
                         <div className="input-group">
                             <label>Email Address</label>
                             <div className="input-wrapper">
-                                <span className="input-icon-left">✉️</span>
+                                <span className="input-icon-left">
+                                    <Mail size={18} strokeWidth={1.5} />
+                                </span>
                                 <input type="email" placeholder="Enter your email" required />
                             </div>
                         </div>
@@ -62,15 +101,57 @@ const Register = () => {
                             <div className="input-group">
                                 <label>Password</label>
                                 <div className="input-wrapper">
-                                    <span className="input-icon-left">🔒</span>
-                                    <input type="password" placeholder="Create password" required />
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Enter password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    
+                                    <span className="input-icon-left">
+                                        <Lock size={18} strokeWidth={1.5} />
+                                    </span>
+
+                                   
+                                    <span
+                                        className="input-icon-right"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff size={18} strokeWidth={1.5} />
+                                        ) : (
+                                            <Eye size={18} strokeWidth={1.5} />
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                             <div className="input-group">
                                 <label>Confirm Password</label>
                                 <div className="input-wrapper">
-                                    <span className="input-icon-left">🔓</span>
-                                    <input type="password" placeholder="Confirm password" required />
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Confirm password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                    />
+                                    {/* Icon Khóa cố định bên trái */}
+                                    <span className="input-icon-left">
+                                        <Lock size={18} strokeWidth={1.5} />
+                                    </span>
+
+                                    
+                                    <span
+                                        className="input-icon-right"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff size={18} strokeWidth={1.5} />
+                                        ) : (
+                                            <Eye size={18} strokeWidth={1.5} />
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                         </div>
