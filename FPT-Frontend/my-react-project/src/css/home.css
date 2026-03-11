@@ -32,7 +32,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 45%, rgba(0, 0, 0, 0.3) 100%);
     z-index: 1;
     border-radius: inherit;
 }
@@ -63,17 +63,24 @@
     margin: 0 0 1rem 0;
     line-height: 1.1;
     letter-spacing: -1px;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .text-ai {
     color: #10b981;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .hero-subtitle {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.15rem;
+    color: #ffffff !important;
+    opacity: 1;
+    /* Ensure no opacity inheritance makes it dim */
     margin-bottom: 2.5rem;
     line-height: 1.5;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    font-weight: 500;
 }
 
 /* Search Bar in Hero (Desktop Only) */
@@ -85,6 +92,11 @@
     margin-bottom: 1.5rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     align-items: center;
+}
+
+.search-icon-inside {
+    color: #9ca3af;
+    margin-right: 0.75rem;
 }
 
 /* Mobile-only elements hidden on Desktop by default */
@@ -101,8 +113,8 @@
 }
 
 .search-icon {
-    color: #9ca3af;
-    margin-right: 0.75rem;
+    display: none;
+    /* We moved it outside */
 }
 
 .search-input {
@@ -702,11 +714,6 @@
     .hero-title {
         font-size: 2rem;
         line-height: 1.2;
-    }
-
-    .hero-subtitle {
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
     }
 
     /* Replace search button from inline to large camera button inside hero */

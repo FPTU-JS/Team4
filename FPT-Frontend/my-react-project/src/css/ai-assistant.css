@@ -30,6 +30,24 @@
     flex: 1;
 }
 
+.btn-toggle-sidebar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-toggle-sidebar:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
 .ai-logo {
     color: #10b981;
 }
@@ -117,6 +135,18 @@
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ai-sidebar-left.closed {
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .ai-sidebar-top {

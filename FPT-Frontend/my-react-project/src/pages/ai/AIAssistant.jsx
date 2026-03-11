@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../css/ai-assistant.css';
 import {
     Plus, MessageSquare, Settings, Trash2, Paperclip,
-    Send, MapPin, Sparkles, Navigation
+    Send, MapPin, Sparkles, Navigation, Menu
 } from 'lucide-react';
 
 const AIAssistant = () => {
     const location = useLocation();
     const currentPath = location.pathname;
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const historyItems = [
         { id: 1, label: 'Salmon Recipe Help', group: 'TODAY', active: true },
@@ -43,6 +44,9 @@ const AIAssistant = () => {
             {/* --- Global Header specific to AI --- */}
             <header className="ai-header">
                 <div className="ai-header-left">
+                    <button className="btn-toggle-sidebar" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                        <Menu size={24} />
+                    </button>
                     <Sparkles className="ai-logo" size={24} fill="currentColor" />
                     <h2 className="ai-header-title">CO-CHE AI Assistant</h2>
                 </div>
@@ -53,7 +57,7 @@ const AIAssistant = () => {
                     <Link to="/healthy-plan" className={`ai-nav-link ${currentPath === '/healthy-plan' ? 'active' : ''}`}>Healthy Plan</Link>
                     <Link to="/community" className={`ai-nav-link ${currentPath === '/community' ? 'active' : ''}`}>Community</Link>
                     <Link to="/ai-assistant" className={`ai-nav-link ${currentPath === '/ai-assistant' ? 'active' : ''}`}>AI Assistant</Link>
-                    <span className="ai-nav-link">Support</span>
+                    <Link to="/support" className={`ai-nav-link ${currentPath === '/support' ? 'active' : ''}`}>Support</Link>
                 </div>
                 <div className="ai-header-right">
                     <Link to="/profile" className="ai-nav-btn profile">Profile</Link>
@@ -71,7 +75,7 @@ const AIAssistant = () => {
             <div className="ai-layout-container">
 
                 {/* --- Left Sidebar (History) --- */}
-                <aside className="ai-sidebar-left">
+                <aside className={`ai-sidebar-left ${isSidebarOpen ? 'open' : 'closed'}`}>
                     <div className="ai-sidebar-top">
                         <button className="btn-new-chat">
                             <Plus size={20} strokeWidth={3} /> New Chat
