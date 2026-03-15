@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
-import authService from '../services/authService';
+import { useAuth } from '../pages/AuthContext'
 
 const MainLayout = () => {
     const navigate = useNavigate();
@@ -11,6 +11,7 @@ const MainLayout = () => {
     const currentPath = location.pathname;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const { isAuthenticated, logout } = useAuth();
 
     //Close Dropdown when clicking outside
     useEffect(() => {
@@ -28,12 +29,12 @@ const MainLayout = () => {
         setIsDropdownOpen(false);
     }, [location]);
 
-    const handleLogout = ()=>{
-        authService.logout();
+    const handleLogout = () => {
+        logout();
 
         console.log('User logged out');
 
-        navigate('/',{replace:true})
+        navigate('/', { replace: true })
     };
 
     return (
@@ -60,38 +61,67 @@ const MainLayout = () => {
                 </div>
 
                 <div className="nav-actions">
-                    <div className="streak-badge mobile-hide">
-                        Daily Streak: 12 <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
-                    </div>
-                    <Notification />
-                    {/* User Dropdown Container */}
-                    <div className="user-dropdown-container" ref={dropdownRef}>
-                        <button
-                            className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            title="Account"
-                        >
-                            <User size={20} />
-                        </button>
 
-                        {isDropdownOpen && (
-                            <div className="dropdown-menu">
-                                <Link to="/profile" className="dropdown-item">
-                                    <Settings size={18} />
-                                    <span>Profile</span>
-                                </Link>
-                                <Link to="/healthy-plan" className="dropdown-item">
-                                    <Leaf size={18} />
-                                    <span>Healthy Plan</span>
-                                </Link>
-                                <hr className="dropdown-divider" />
-                                <button className="dropdown-item logout-btn" onClick={handleLogout}>
-                                    <LogOut size={18} />
-                                    <span>Logout</span>
-                                </button>
+                    {isAuthenticated && (
+                        <>
+                            <div className="streak-badge mobile-hide">
+                                Daily Streak: 12
+                                <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
                             </div>
-                        )}
-                    </div>
+
+                            <Notification />
+                        </>
+                    )}
+
+                    {isAuthenticated ? (
+
+                        <div className="user-dropdown-container" ref={dropdownRef}>
+
+                            <button
+                                className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
+                                onClick={() => setIsDropdownOpen(prev => !prev)}
+                                title="Account"
+                            >
+                                <User size={20} />
+                            </button>
+
+                            {isDropdownOpen && (
+                                <div className="dropdown-menu">
+
+                                    <Link to="/profile" className="dropdown-item">
+                                        <Settings size={18} />
+                                        <span>Profile</span>
+                                    </Link>
+
+                                    <Link to="/healthy-plan" className="dropdown-item">
+                                        <Leaf size={18} />
+                                        <span>Healthy Plan</span>
+                                    </Link>
+
+                                    <hr className="dropdown-divider" />
+
+                                    <button
+                                        className="dropdown-item logout-btn"
+                                        onClick={handleLogout}
+                                    >
+                                        <LogOut size={18} />
+                                        <span>Logout</span>
+                                    </button>
+
+                                </div>
+                            )}
+
+                        </div>
+
+                    ) : (
+
+                        <div className="auth-buttons">
+                            <Link to="/login" className="login-nav-link">Login</Link>
+                            <Link to="/register" className="register-nav-btn">Sign Up</Link>
+                        </div>
+
+                    )}
+
                 </div>
             </nav>
 

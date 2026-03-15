@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, Mail, Phone } from 'lucide-react';
 import '../css/register.css';
-import authService from '../services/authService';
-
+import { useAuth } from './AuthContext';
 const Register = () => {
     const navigate = useNavigate();
-
+    const { isAuthenticated } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State để ẩn hiện confirm pass
     const [error, setError] = useState('');
@@ -21,6 +20,12 @@ const Register = () => {
     });
 
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/', { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e) => {
         setFormData({
@@ -61,24 +66,35 @@ const Register = () => {
         }
     };
 
+    if (isAuthenticated) return null;
+
     return (
         <div className="register-page">
+
             <div className="register-left">
+
                 <div className="register-left-content">
+
                     <div className="logo-co-che-green">
                         <span className="logo-icon-green">♨️</span> CO-CHE
                     </div>
+
                     <h1 className="register-quote">
                         Discover culinary excellence tailored to your taste.
                     </h1>
+
                     <p className="register-subtext">
                         Join thousands of food lovers and professional chefs connecting through the art of cooking.
                     </p>
+
                 </div>
+
             </div>
 
             <div className="register-right">
+
                 <div className="register-form-container">
+
                     <div className="register-header">
                         <h2>Create Your Account</h2>
                         <p>Join CO-CHE and start your culinary journey.</p>
@@ -91,11 +107,14 @@ const Register = () => {
                     )}
 
                     <form onSubmit={handleRegister}>
+
                         {/* Full Name */}
                         <div className="input-group">
                             <label>Full Name</label>
+
                             <div className="input-wrapper">
                                 <span className="input-icon-left"><User size={18} /></span>
+
                                 <input
                                     type="text"
                                     name="fullName"
@@ -110,8 +129,10 @@ const Register = () => {
                         {/* Username */}
                         <div className="input-group">
                             <label>Username</label>
+
                             <div className="input-wrapper">
                                 <span className="input-icon-left"><User size={18} /></span>
+
                                 <input
                                     type="text"
                                     name="username"
@@ -126,8 +147,10 @@ const Register = () => {
                         {/* Email */}
                         <div className="input-group">
                             <label>Email</label>
+
                             <div className="input-wrapper">
                                 <span className="input-icon-left"><Mail size={18} /></span>
+
                                 <input
                                     type="email"
                                     name="email"
@@ -142,8 +165,10 @@ const Register = () => {
                         {/* Phone */}
                         <div className="input-group">
                             <label>Phone</label>
+
                             <div className="input-wrapper">
                                 <span className="input-icon-left"><Phone size={18} /></span>
+
                                 <input
                                     type="text"
                                     name="phone"
@@ -155,11 +180,18 @@ const Register = () => {
                         </div>
 
                         <div className="row-inputs">
+
                             {/* Password */}
                             <div className="input-group">
+
                                 <label>Password</label>
+
                                 <div className="input-wrapper">
-                                    <span className="input-icon-left"><Lock size={18} /></span>
+
+                                    <span className="input-icon-left">
+                                        <Lock size={18} />
+                                    </span>
+
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         name="password"
@@ -168,34 +200,58 @@ const Register = () => {
                                         onChange={handleChange}
                                         required
                                     />
-                                    <span className="input-icon-right" onClick={() => setShowPassword(!showPassword)}>
+
+                                    <span
+                                        className="input-icon-right"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </span>
+
                                 </div>
+
                             </div>
 
                             {/* Confirm Password */}
                             <div className="input-group">
+
                                 <label>Confirm Password</label>
+
                                 <div className="input-wrapper">
-                                    <span className="input-icon-left"><Lock size={18} /></span>
+
+                                    <span className="input-icon-left">
+                                        <Lock size={18} />
+                                    </span>
+
                                     <input
-                                        type={showConfirmPassword ? "text" : "password"} // Sửa: Dùng showConfirmPassword
+                                        type={showConfirmPassword ? "text" : "password"}
                                         placeholder="Confirm password"
                                         value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)} // Sửa: Gọi setConfirmPassword để lưu text
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
                                         required
                                     />
-                                    <span className="input-icon-right" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+
+                                    <span
+                                        className="input-icon-right"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    >
                                         {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </span>
+
                                 </div>
+
                             </div>
+
                         </div>
 
-                        <button type="submit" className="register-btn" disabled={isLoading}>
+                        <button
+                            type="submit"
+                            className="register-btn"
+                            disabled={isLoading}
+                        >
                             {isLoading ? "Creating..." : "Sign Up →"}
                         </button>
+
                     </form>
 
                     <div className="divider">
@@ -203,17 +259,36 @@ const Register = () => {
                     </div>
 
                     <div className="social-login">
-                        <button type="button" onClick={() => handleSocialLogin('google')}>Google</button>
-                        <button type="button" onClick={() => handleSocialLogin('facebook')}>Facebook</button>
+
+                        <button
+                            type="button"
+                            className="social-btn"
+                            onClick={() => handleSocialLogin('google')}
+                        >
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" />
+                            Google
+                        </button>
+
+                        <button
+                            type="button"
+                            className="social-btn"
+                            onClick={() => handleSocialLogin('facebook')}
+                        >
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" />
+                            Facebook
+                        </button>
+
                     </div>
 
                     <p className="login-link">
                         Already have an account? <Link to="/login">Login</Link>
                     </p>
+
                 </div>
+
             </div>
+
         </div>
     );
 };
-
 export default Register;

@@ -2,17 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, MoveLeft } from 'lucide-react';
 import '../css/login.css';
-import authService from '../services/authService';
+import { useAuth } from './AuthContext';
 
 function Login() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if(token)
-      navigate('/onboarding',{ replace: true });
-  },[navigate])
-
+  const { login, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,6 +19,11 @@ function Login() {
     password: ''
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/onboarding', { replace: true });
+    }
+  }, [navigate])
   // Hàm cập nhật giá trị khi gõ
   const handleChange = (e) => {
     setFormData({
@@ -45,8 +44,8 @@ function Login() {
     setError('');
 
     try {
-      const response = await authService.login(formData.emailOrUsername, formData.password);
-      navigate('/onboarding');
+      await login(formData.emailOrUsername, formData.password);
+      navigate('/',{replace:true})
     } catch (err) {
       // Xử lý lỗi nếu sai mật khẩu hoặc server lỗi
       setError(err.response?.data?.message || 'Login failed. Please try again.');
@@ -55,8 +54,8 @@ function Login() {
       setIsLoading(false);
     }
   };
-  
-  if (localStorage.getItem('token')) return null;
+
+  if (isAuthenticated) return null;
 
   return (
     <div className="login-page">
