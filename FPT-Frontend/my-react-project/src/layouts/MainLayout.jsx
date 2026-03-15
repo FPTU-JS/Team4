@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
+import authService from '../services/authService';
 
 const MainLayout = () => {
+    const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -26,6 +28,13 @@ const MainLayout = () => {
         setIsDropdownOpen(false);
     }, [location]);
 
+    const handleLogout = ()=>{
+        authService.logout();
+
+        console.log('User logged out');
+
+        navigate('/',{replace:true})
+    };
 
     return (
         <div className="layout-container">
@@ -76,7 +85,7 @@ const MainLayout = () => {
                                     <span>Healthy Plan</span>
                                 </Link>
                                 <hr className="dropdown-divider" />
-                                <button className="dropdown-item logout-btn" onClick={() => console.log('Logout...')}>
+                                <button className="dropdown-item logout-btn" onClick={handleLogout}>
                                     <LogOut size={18} />
                                     <span>Logout</span>
                                 </button>

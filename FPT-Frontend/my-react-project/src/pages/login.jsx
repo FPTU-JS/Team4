@@ -1,28 +1,62 @@
-import React,{ useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, MoveLeft } from 'lucide-react';
 import '../css/login.css';
+import authService from '../services/authService';
 
 function Login() {
   const navigate = useNavigate();
-  const[isLoading, setIsLoading] = useState(false);
-  const[error,setError] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token)
+      navigate('/onboarding',{ replace: true });
+  },[navigate])
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   //Ẩn hiện pasword
   const [showPassword, setShowPassword] = useState(false);
+
+  //Form data lấy email 
+  const [formData, setFormData] = useState({
+    emailOrUsername: '',
+    password: ''
+  });
+
+  // Hàm cập nhật giá trị khi gõ
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSocialLogin = (provider) => {
     // Chuyển hướng người dùng đến URL oauth2 của Backend
     window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     // Simulate login for now
     setIsLoading(true);
     setError('');
-    navigate('/onboarding');
+
+    try {
+      const response = await authService.login(formData.emailOrUsername, formData.password);
+      navigate('/onboarding');
+    } catch (err) {
+      // Xử lý lỗi nếu sai mật khẩu hoặc server lỗi
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
+  if (localStorage.getItem('token')) return null;
 
   return (
     <div className="login-page">
@@ -61,12 +95,14 @@ function Login() {
             <h2>Welcome Back</h2>
             <p>Enter your credentials to access your chef dashboard.</p>
           </div>
+          {/* Hiện lỗi login */}
+          {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
 
           <form onSubmit={handleLogin}>
             <div className="input-group">
               <label>Email or Username</label>
               <div className="input-wrapper">
-                <input type="email" placeholder="chef@example.com" required />
+                <input type="text" name='emailOrUsername' onChange={handleChange} value={formData.emailOrUsername} placeholder="chef@example.com" required />
                 <span className="input-icon">
                   <User size={18} strokeWidth={1.5} />
                 </span>
@@ -78,6 +114,9 @@ function Login() {
               <div className="input-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
+                  name='password'
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="Enter your password"
                   required
                 />
