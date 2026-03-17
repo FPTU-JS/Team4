@@ -57,7 +57,7 @@ const RecipeDetail = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [servings, setServings] = useState(MOCK_RECIPE.servings);
+    const [servings, setServings] = useState(2);
     const [checkedItems, setCheckedItems] = useState({});
 
     useEffect(() => {
@@ -90,6 +90,12 @@ const RecipeDetail = () => {
     const handleIncrement = () => setServings(s => s + 1);
     const handleDecrement = () => setServings(s => Math.max(1, s - 1));
 
+    const getDifficulty = (time) => {
+        if (!time) return 'N/A';
+        if (time <= 10) return 'Easy';
+        if (time <= 20 && time > 10) return 'Medium';
+        return 'Difficult';
+    };
     if (isLoading) {
         return <div className="loading-state" style={{ padding: '4rem', textAlign: 'center' }}>Loading delicious details...</div>;
     }
@@ -107,24 +113,25 @@ const RecipeDetail = () => {
     return (
         <div className="recipe-detail-page animate-fade-in">
             {/* Header / Back Action */}
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '1rem', paddingBottom: 0 }}>
+            <div className='back-navigation'>
                 <button
                     onClick={() => navigate('/recipes')}
-                    style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: '#4b5563', fontWeight: 600, fontSize: '0.95rem' }}
+                    className="back-btn"
                 >
-                    <ArrowLeft size={18} /> Back to Recipes
+                    <ArrowLeft size={20} />
+                    <span>Back to Recipes</span>
                 </button>
             </div>
 
             {/* Hero Section */}
             <div className="hero-wrapper">
-                <img src={recipe.imageUrl || 'https://images.unsplash.com/photo-1621510456681-2330135e5871?w=1600&q=80'} alt={recipe.name} />
+                <img  src={recipe.imageUrl || 'https://images.unsplash.com/photo-1621510456681-2330135e5871?w=1600&q=80'} alt={recipe.name} />
                 <div className="hero-overlay">
                     <div className="hero-badges">
                         {recipe.isAiRecommended && <span className="badge-premium">AI Recommended</span>}
                         <span className="badge-rating"><span className="star">★</span> {recipe.rating || 'N/A'}</span>
                     </div>
-                    <h1 className="hero-title">{recipe.name}</h1>
+                    <h1 className="hero-titlee">{recipe.name}</h1>
                     <div className="hero-stats">
                         <div className="stat-box">
                             <span className="stat-label"><Clock size={16} /> Cook Time</span>
@@ -132,7 +139,9 @@ const RecipeDetail = () => {
                         </div>
                         <div className="stat-box">
                             <span className="stat-label"><Activity size={16} /> Difficulty</span>
-                            <span className="stat-value">{MOCK_RECIPE.difficulty}</span>
+                            <span className="stat-value">
+                                {getDifficulty(recipe.cookingTime)}
+                            </span>
                         </div>
                         <div className="stat-box">
                             <span className="stat-label"><Users size={16} /> Servings</span>
@@ -173,7 +182,10 @@ const RecipeDetail = () => {
                                     <div className="ingredient-info">
                                         <div className="ingredient-name">{item.ingredientName}</div>
                                         <div className="ingredient-amount">
-                                            {item.quantity ? (item.quantity * (servings / MOCK_RECIPE.servings)).toFixed(2) : ''} {item.unit}
+                                            {item.quantity
+                                                ? (item.quantity * (servings / 2)).toFixed(2)
+                                                : ''
+                                            } {item.unit}
                                         </div>
                                     </div>
                                 </label>

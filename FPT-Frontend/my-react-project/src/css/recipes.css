@@ -2,42 +2,41 @@
 
 .recipes-hub-page {
     background-color: #f8fafc;
-    min-height: calc(100vh - 72px);
+    min-height: 100vh;
     width: 100%;
 }
 
 .recipes-hub {
-    padding: 2rem 0 4rem 0;
+    padding: 2rem 1rem 4rem 1rem;
     max-width: 1400px;
     margin: 0 auto;
 }
 
-/* Header & Pills */
+/* Header & Category Pills */
 .hub-header {
     margin-bottom: 3rem;
-    padding: 0 1rem;
+    text-align: left;
 }
 
 .hub-title {
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 800;
     color: #111827;
     margin-bottom: 0.5rem;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.025em;
 }
 
 .hub-header .subtitle {
-    color: #6b7280;
+    color: #64748b;
     font-size: 1.1rem;
     margin-bottom: 2rem;
 }
 
 .category-pills {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     overflow-x: auto;
-    padding-bottom: 1rem;
-    /* Hide scrollbar for a cleaner look */
+    padding: 0.5rem 0;
     scrollbar-width: none;
 }
 
@@ -47,66 +46,80 @@
 
 .pill-btn {
     white-space: nowrap;
-    padding: 0.6rem 1.25rem;
-    border-radius: 30px;
-    border: 1px solid #e5e7eb;
+    padding: 0.6rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
     background: white;
-    color: #4b5563;
+    color: #64748b;
     font-weight: 500;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pill-btn:hover {
-    background: #f9fafb;
+    border-color: #10b981;
+    color: #10b981;
 }
 
 .pill-btn.active {
     background: #10b981;
     color: white;
     border-color: #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 /* Layout */
 .hub-layout {
-    display: flex;
-    gap: 3rem;
-    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2.5rem;
 }
 
 /* Sidebar */
 .hub-sidebar {
-    width: 260px;
-    flex-shrink: 0;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
 }
 
 .search-box {
     position: relative;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
 }
 
 .search-box input {
     width: 100%;
-    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
     background: white;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .search-box input:focus {
+    outline: none;
     border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .search-icon {
     position: absolute;
-    left: 1rem;
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #9ca3af;
+    color: #94a3b8;
 }
 
 .filter-group {
@@ -114,11 +127,31 @@
 }
 
 .filter-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
 }
+
+.reset-btn {
+    background: none;
+    border: none;
+    color: #10b981;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.reset-btn:hover {
+    background-color: #ecfdf5;
+    text-decoration: underline;
+}
+
 
 /* Radios and Checkboxes */
 .radio-label,
@@ -167,29 +200,50 @@
 /* Difficulty Buttons */
 .difficulty-buttons {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
+/* Style mặc định */
 .diff-btn {
-    padding: 0.5rem 1rem;
+    width: 100%;
+    /* Để các nút xếp dọc đẹp hơn trong sidebar */
+    text-align: left;
+    padding: 0.6rem 1rem;
     border-radius: 8px;
     background: white;
-    border: 1px solid #e5e7eb;
-    font-size: 0.85rem;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 0.9rem;
     cursor: pointer;
-    color: #4b5563;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .diff-btn:hover {
-    background: #f9fafb;
+    border-color: #10b981;
+    background: #f0fdf4;
+    color: #10b981;
 }
 
-.diff-btn:active {
-    background: #f3f4f6;
+/* Khi nút được chọn */
+.diff-btn.active {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+/* Hiệu ứng chấm tròn nhỏ khi active (tùy chọn) */
+.diff-btn.active::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
 }
 
 /* Main Content Area */
@@ -228,32 +282,27 @@
 /* Grid & Cards */
 .hub-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
-    margin-bottom: 4rem;
 }
 
 .recipe-card-hub {
-    background: #ffffff;
-    border-radius: 20px;
+    background: white;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
 }
 
 .recipe-card-hub:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
 .card-image-wrapper {
     position: relative;
-    aspect-ratio: 4/3;
-    width: 100%;
+    padding-top: 75%;
+    /* 4:3 Aspect Ratio */
 }
 
 .card-image-wrapper img {
@@ -319,19 +368,26 @@
     backdrop-filter: blur(4px);
 }
 
+.badge.ai {
+    background: #10b981;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+}
+
 .heart-btn {
-    width: 36px;
-    height: 36px;
     background: white;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     border: none;
-    color: #9ca3af;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .heart-btn:hover {
@@ -340,6 +396,22 @@
 
 .heart-btn.active {
     color: #ef4444;
+}
+
+.hub-tag {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+/* Results Header */
+.hub-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
 .hub-card-content {
@@ -405,28 +477,33 @@
     font-weight: 600;
 }
 
+.sort-select {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 0.9rem;
+}
+
 /* Pagination */
 .pagination {
+    margin-top: 4rem;
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 0.5rem;
 }
 
 .page-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
     background: white;
-    border: 1px solid #e5e7eb;
-    color: #4b5563;
+    border: 1px solid #e2e8f0;
     font-weight: 600;
-    font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: 0.2s;
 }
 
 .page-btn:hover:not(.active) {
@@ -445,16 +522,14 @@
     padding: 0 0.25rem;
 }
 
+/* Responsive */
 @media (max-width: 1024px) {
     .hub-layout {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
 
     .hub-sidebar {
-        width: 100%;
-    }
-
-    .hub-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        position: static;
+        margin-bottom: 2rem;
     }
 }

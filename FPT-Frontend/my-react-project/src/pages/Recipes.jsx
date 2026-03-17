@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Clock, Flame, Heart, Star, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import productService from '../services/productService';
@@ -7,6 +7,15 @@ import '../css/recipes.css';
 
 const Recipes = () => {
     const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({
+        maxCookingTime: null,
+        minCalories: 0,
+        maxCalories: 2000,
+        tags: [],
+        difficulty: null
+    })
+
     const [activeCategory, setActiveCategory] = useState('All Recipes');
     const [recipes, setRecipes] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -16,10 +25,19 @@ const Recipes = () => {
     const [totalElements, setTotalElements] = useState(0);
     const itemsPerPage = 6;
 
+    // Hàm quy ước độ khó dựa trên thời gian
+    const getDifficulty = (time) => {
+        if (!time) return 'Medium';
+        const t = parseInt(time);
+        if (t <= 10) return 'Easy';
+        if (time <= 20 && time > 10) return 'Medium';
+        return 'Difficult';
+    };
+
     const fetchRecipesData = async () => {
         try {
             setIsLoading(true);
-            const productsData = await productService.searchProducts('', currentPage - 1, itemsPerPage);
+            const productsData = await productService.searchProducts(searchTerm, currentPage - 1, itemsPerPage, filters);
             setRecipes(productsData.content || []);
             setTotalPages(productsData.totalPages || 0);
             setTotalElements(productsData.totalElements || 0);
@@ -34,7 +52,6 @@ const Recipes = () => {
         const fetchCategories = async () => {
             try {
                 const categoriesData = await categoryService.getAllCategories();
-                // Thêm 'All Recipes' vào đầu mảng danh mục
                 const categoryList = [{ categoryId: 0, name: 'All Recipes' }, ...categoriesData];
                 setCategories(Array.isArray(categoryList) ? categoryList : []);
             } catch (error) {
@@ -46,12 +63,19 @@ const Recipes = () => {
 
     useEffect(() => {
         fetchRecipesData();
-    }, [currentPage]);
+    }, [currentPage, searchTerm, activeCategory, JSON.stringify(filters)]);
+
+    // Logic lọc Client-side cho Difficulty
+    const filteredRecipes = useMemo(() => {
+        return recipes.filter(recipe => {
+            if (!filters.difficulty) return true;
+            return getDifficulty(recipe.cookingTime) === filters.difficulty;
+        });
+    }, [recipes, filters.difficulty]);
 
     return (
         <div className="recipes-hub-page">
             <div className="recipes-hub fade-in">
-                {/* Header Area */}
                 <div className="hub-header">
                     <h1 className="hub-title">Recipe Discovery Hub</h1>
                     <p className="subtitle">Explore over 10,000 curated recipes by chefs and AI.</p>
@@ -70,36 +94,70 @@ const Recipes = () => {
                 </div>
 
                 <div className="hub-layout">
-                    {/* Left Sidebar Filters */}
                     <aside className="hub-sidebar">
+                        <div className="sidebar-header">
+                            <h3>Filters</h3>
+                            <button
+                                className="reset-btn"
+                                onClick={() => {
+                                    setSearchTerm('');
+                                    setFilters({ maxCookingTime: null, minCalories: 0, maxCalories: 2000, tags: [], difficulty: null });
+                                    setActiveCategory('All Recipes');
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                Reset All
+                            </button>
+                        </div>
+
                         <div className="search-box">
                             <Search size={20} className="search-icon" />
-                            <input type="text" placeholder="Search recipes..." />
+                            <input
+                                type="text"
+                                placeholder="Search recipes..."
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                            />
                         </div>
 
                         <div className="filter-group">
                             <h3 className="filter-title">Cooking Time</h3>
-                            <label className="radio-label">
-                                <input type="radio" name="time" />
-                                <span className="radio-text">Under 15 mins</span>
-                            </label>
-                            <label className="radio-label">
-                                <input type="radio" name="time" />
-                                <span className="radio-text">15 - 30 mins</span>
-                            </label>
-                            <label className="radio-label">
-                                <input type="radio" name="time" />
-                                <span className="radio-text">30 - 60 mins</span>
-                            </label>
+                            {[
+                                { label: 'Any Time', value: null },
+                                { label: 'Under 15 mins', value: 15 },
+                                { label: 'Under 30 mins', value: 30 },
+                                { label: 'Under 60 mins', value: 60 }
+                            ].map((time) => (
+                                <label key={time.label} className="radio-label">
+                                    <input
+                                        type="radio"
+                                        name="time"
+                                        checked={filters.maxCookingTime === time.value}
+                                        onChange={() => setFilters({ ...filters, maxCookingTime: time.value })}
+                                    />
+                                    <span className="radio-text">{time.label}</span>
+                                </label>
+                            ))}
                         </div>
 
                         <div className="filter-group">
                             <h3 className="filter-title">Calories</h3>
                             <div className="range-slider-wrapper">
-                                <input type="range" min="0" max="1500" className="styled-slider" />
+                                <input
+                                    type="range"
+                                    min="100"
+                                    max="2000"
+                                    step="50"
+                                    value={filters.maxCalories}
+                                    className="styled-slider"
+                                    onChange={(e) => setFilters({ ...filters, maxCalories: parseInt(e.target.value) })}
+                                />
                                 <div className="range-labels">
-                                    <span>0 kcal</span>
-                                    <span>1500+ kcal</span>
+                                    <span>100 kcal</span>
+                                    <span>{filters.maxCalories} kcal</span>
                                 </div>
                             </div>
                         </div>
@@ -107,53 +165,65 @@ const Recipes = () => {
                         <div className="filter-group">
                             <h3 className="filter-title">Difficulty</h3>
                             <div className="difficulty-buttons">
-                                <button className="diff-btn">Beginner</button>
-                                <button className="diff-btn">Intermediate</button>
-                                <button className="diff-btn">Advanced</button>
+                                {['Easy', 'Medium', 'Difficult'].map((level) => (
+                                    <button
+                                        key={level}
+                                        className={`diff-btn ${filters.difficulty === level ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setFilters({
+                                                ...filters,
+                                                difficulty: filters.difficulty === level ? null : level
+                                            });
+                                            setCurrentPage(1);
+                                        }}
+                                    >
+                                        {level}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
                         <div className="filter-group">
                             <h3 className="filter-title">Dietary Preferences</h3>
-                            <label className="checkbox-label">
-                                <input type="checkbox" defaultChecked />
-                                <span className="checkbox-text">Gluten-Free</span>
-                            </label>
-                            <label className="checkbox-label">
-                                <input type="checkbox" />
-                                <span className="checkbox-text">Dairy-Free</span>
-                            </label>
-                            <label className="checkbox-label">
-                                <input type="checkbox" />
-                                <span className="checkbox-text">Nut-Free</span>
-                            </label>
+                            {['Gluten-Free', 'Dairy-Free', 'Nut-Free', 'Vegan'].map(tag => (
+                                <label key={tag} className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.tags.includes(tag)}
+                                        onChange={(e) => {
+                                            const newTags = e.target.checked
+                                                ? [...filters.tags, tag]
+                                                : filters.tags.filter(t => t !== tag);
+                                            setFilters({ ...filters, tags: newTags });
+                                        }}
+                                    />
+                                    <span className="checkbox-text">{tag}</span>
+                                </label>
+                            ))}
                         </div>
                     </aside>
 
-                    {/* Main Content Area */}
                     <main className="hub-main">
                         <div className="hub-results-header">
-                            <span className="results-count">Showing {recipes.length} of {totalElements} results</span>
-                            <div className="sort-box">
-                                <span style={{ color: '#6b7280', fontSize: '0.9rem', marginRight: '0.5rem' }}>Sort by:</span>
-                                <select className="sort-select">
-                                    <option>Most Popular</option>
-                                    <option>Highest Rated</option>
-                                    <option>Newest</option>
-                                </select>
-                            </div>
+                            <span className="results-count">
+                                Showing {filteredRecipes.length} of {totalElements} results
+                            </span>
                         </div>
 
                         <div className="hub-grid">
                             {isLoading ? (
                                 <div className="loading-state">Loading recipes...</div>
-                            ) : recipes.length === 0 ? (
-                                <div className="empty-state">No recipes found.</div>
+                            ) : filteredRecipes.length === 0 ? (
+                                <div className="empty-state">No recipes found matching your criteria.</div>
                             ) : (
-                                recipes.map(recipe => (
-                                    <div key={recipe.productId} className="recipe-card-hub" onClick={() => navigate(`/recipe/${recipe.productId}`, { state: { recipe } })}>
+                                filteredRecipes.map(recipe => (
+                                    <div
+                                        key={recipe.productId}
+                                        className="recipe-card-hub"
+                                        onClick={() => navigate(`/recipe/${recipe.productId}`, { state: { recipe } })}
+                                    >
                                         <div className="card-image-wrapper">
-                                            <img src={recipe.imageUrl} alt={recipe.name} />
+                                            <img src={recipe.imageUrl || 'https://via.placeholder.com/300'} alt={recipe.name} />
                                             <div className="card-badges">
                                                 <span className="badge ai"><Sparkles size={12} /> AI Match</span>
                                                 <button className="heart-btn" onClick={(e) => { e.stopPropagation(); }}>
@@ -161,7 +231,7 @@ const Recipes = () => {
                                                 </button>
                                             </div>
                                             <div className="time-badge">
-                                                <Clock size={14} /> {recipe.cookingTime || '20m'}
+                                                <Clock size={14} /> {recipe.cookingTime ? `${recipe.cookingTime}m` : '20m'}
                                             </div>
                                         </div>
                                         <div className="hub-card-content">
@@ -181,8 +251,8 @@ const Recipes = () => {
                                                     ))
                                                 ) : (
                                                     <>
-                                                        <span className="hub-tag">cơm tấm</span>
-                                                        <span className="hub-tag">sườn nướng</span>
+                                                        <span className="hub-tag">Vietnamese</span>
+                                                        <span className="hub-tag">Tasty</span>
                                                     </>
                                                 )}
                                             </div>
@@ -190,7 +260,8 @@ const Recipes = () => {
                                             <div className="hub-card-meta" style={{ marginTop: '1rem' }}>
                                                 <span className="hub-meta-item"><Flame size={14} /> {recipe.calories || '650'} kcal</span>
                                                 <span className="hub-meta-item bar">|</span>
-                                                <span className="hub-meta-item">Medium</span>
+                                                {/* Hiển thị độ khó dựa trên hàm tính toán */}
+                                                <span className="hub-meta-item">{getDifficulty(recipe.cookingTime)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +269,6 @@ const Recipes = () => {
                             )}
                         </div>
 
-                        {/* Pagination */}
                         {totalPages > 1 && (
                             <div className="pagination">
                                 <button
