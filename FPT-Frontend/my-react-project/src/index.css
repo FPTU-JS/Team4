@@ -57,20 +57,18 @@
 }
 
 /* Dark Mode Variables */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-main: #121212;
-        --bg-surface: #1E1E1E;
-        --bg-card: rgba(30, 30, 30, 0.9);
+[data-theme='dark'] {
+    --bg-main: #121212;
+    --bg-surface: #1E1E1E;
+    --bg-card: rgba(30, 30, 30, 0.9);
 
-        --text-primary: #F5F6FA;
-        --text-secondary: #A4B0BE;
+    --text-primary: #F5F6FA;
+    --text-secondary: #A4B0BE;
 
-        --border-color: #2F3640;
+    --border-color: #2F3640;
 
-        --glass-bg: rgba(30, 30, 30, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.05);
-    }
+    --glass-bg: rgba(30, 30, 30, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
 }
 
 /* Global Resets */

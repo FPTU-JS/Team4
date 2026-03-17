@@ -5,7 +5,7 @@
     max-width: 1400px;
     margin: 0 auto;
     font-family: 'DM Sans', 'Inter', sans-serif;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .hp-dashboard-layout {
@@ -36,7 +36,7 @@
 }
 
 .hp-subtitle {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.95rem;
     margin: 0;
 }
@@ -76,11 +76,11 @@
 }
 
 .hp-stat-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
     padding: 1.25rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
 }
@@ -88,7 +88,7 @@
 .stat-label {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-secondary);
     letter-spacing: 0.5px;
     margin-bottom: 0.5rem;
 }
@@ -107,7 +107,7 @@
 }
 
 .stat-unit {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -130,7 +130,7 @@
 .goal-bar-track {
     width: 100%;
     height: 6px;
-    background-color: #e5e7eb;
+    background-color: var(--border-color);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 0.4rem;
@@ -186,7 +186,7 @@
 
 .bmi-desc {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-style: italic;
 }
 
@@ -214,7 +214,7 @@
 
 .ai-tip-text {
     font-size: 0.85rem;
-    color: #374151;
+    color: var(--text-primary);
     line-height: 1.4;
     margin: 0;
 }
@@ -241,7 +241,7 @@
 
 .week-toggle {
     display: flex;
-    background-color: #f3f4f6;
+    background-color: var(--bg-main);
     border-radius: 8px;
     padding: 0.25rem;
 }
@@ -250,7 +250,7 @@
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     background: none;
     border: none;
     border-radius: 6px;
@@ -259,8 +259,8 @@
 }
 
 .toggle-btn.active {
-    background: white;
-    color: #111827;
+    background: var(--bg-surface);
+    color: var(--text-primary);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -280,8 +280,8 @@
     justify-content: center;
     min-width: 64px;
     padding: 0.75rem 0.5rem;
-    background-color: white;
-    border: 1px solid #f3f4f6;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
@@ -302,7 +302,7 @@
 .day-name {
     font-size: 0.7rem;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin-bottom: 0.25rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -326,9 +326,9 @@
 }
 
 .hp-meal-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -355,7 +355,7 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background: white;
+    background: var(--bg-surface);
     padding: 0.35rem 0.75rem;
     border-radius: 20px;
     font-size: 0.7rem;
@@ -372,20 +372,20 @@
 .meal-title {
     font-size: 1.15rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 0.25rem 0;
 }
 
 .meal-cals-time {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0 0 1.25rem 0;
 }
 
 .meal-macros-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
 
@@ -393,7 +393,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-right: 1px solid #f3f4f6;
+    border-right: 1px solid var(--border-color);
 }
 
 .macro-col:last-child {
@@ -403,7 +403,7 @@
 .macro-label {
     font-size: 0.65rem;
     font-weight: 700;
-    color: #9ca3af;
+    color: var(--text-secondary);
     letter-spacing: 0.5px;
     margin-bottom: 0.25rem;
 }
@@ -411,7 +411,7 @@
 .macro-value {
     font-size: 0.9rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 /* --- Right Sidebar --- */
@@ -424,10 +424,10 @@
 }
 
 .hp-side-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
     padding: 1.5rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
@@ -435,7 +435,7 @@
 .side-card-title {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 1.5rem 0;
 }
 
@@ -464,14 +464,14 @@
 .ring-center-text .kcal-num {
     font-size: 2rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     line-height: 1.1;
 }
 
 .ring-center-text .kcal-sub {
     font-size: 0.7rem;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-secondary);
     letter-spacing: 0.5px;
     margin-top: 0.25rem;
 }
@@ -494,7 +494,7 @@
 .p-stat-label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin-bottom: 0.25rem;
 }
 
@@ -504,12 +504,12 @@
 }
 
 .text-dark {
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .side-divider {
     border: none;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--border-color);
     margin: 0 0 1.5rem 0;
 }
 
@@ -523,7 +523,7 @@
 
 .water-title {
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .water-val {
@@ -557,8 +557,8 @@
 }
 
 .drop.empty {
-    background-color: #e5e7eb;
-    color: #9ca3af;
+    background-color: var(--bg-main);
+    color: var(--text-secondary);
 }
 
 .btn-add-water {
@@ -635,8 +635,8 @@
 }
 
 .quick-link-btn {
-    background: white;
-    border: 1px solid #f3f4f6;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1rem 1.25rem;
     display: flex;
@@ -657,12 +657,12 @@
     align-items: center;
     gap: 0.75rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     font-size: 0.95rem;
 }
 
 .text-gray {
-    color: #9ca3af;
+    color: var(--text-secondary);
 }
 
 @media (max-width: 1024px) {

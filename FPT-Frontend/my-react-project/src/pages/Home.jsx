@@ -271,7 +271,7 @@ const Home = () => {
                                 <MapPin size={16} className="pin-icon" />
                                 <div>
                                     <strong>Whole Foods Market</strong><br />
-                                    <span style={{ color: '#6b7280' }}>0.8 mi away</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>0.8 mi away</span>
                                 </div>
                             </div>
                         </div>

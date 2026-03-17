@@ -135,7 +135,7 @@ const Recipes = () => {
                         <div className="hub-results-header">
                             <span className="results-count">Showing {recipes.length} of {totalElements} results</span>
                             <div className="sort-box">
-                                <span style={{ color: '#6b7280', fontSize: '0.9rem', marginRight: '0.5rem' }}>Sort by:</span>
+                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginRight: '0.5rem' }}>Sort by:</span>
                                 <select className="sort-select">
                                     <option>Most Popular</option>
                                     <option>Highest Rated</option>

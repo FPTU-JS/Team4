@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf } from 'lucide-react';
+import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf, Sun, Moon } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
 import { useAuth } from '../pages/AuthContext'
@@ -12,6 +12,16 @@ const MainLayout = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { isAuthenticated, logout } = useAuth();
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    };
 
     //Close Dropdown when clicking outside
     useEffect(() => {
@@ -74,53 +84,72 @@ const MainLayout = () => {
                     )}
 
                     {isAuthenticated ? (
-
-                        <div className="user-dropdown-container" ref={dropdownRef}>
-
+                        <>
                             <button
-                                className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
-                                onClick={() => setIsDropdownOpen(prev => !prev)}
-                                title="Account"
+                                className="icon-btn theme-toggle-btn"
+                                onClick={toggleTheme}
+                                title="Toggle Theme"
+                                style={{ marginRight: '10px' }}
                             >
-                                <User size={20} />
+                                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
                             </button>
 
-                            {isDropdownOpen && (
-                                <div className="dropdown-menu">
+                            <div className="user-dropdown-container" ref={dropdownRef}>
 
-                                    <Link to="/profile" className="dropdown-item">
-                                        <Settings size={18} />
-                                        <span>Profile</span>
-                                    </Link>
+                                <button
+                                    className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
+                                    onClick={() => setIsDropdownOpen(prev => !prev)}
+                                    title="Account"
+                                >
+                                    <User size={20} />
+                                </button>
 
-                                    <Link to="/healthy-plan" className="dropdown-item">
-                                        <Leaf size={18} />
-                                        <span>Healthy Plan</span>
-                                    </Link>
+                                {isDropdownOpen && (
+                                    <div className="dropdown-menu">
 
-                                    <hr className="dropdown-divider" />
+                                        <Link to="/profile" className="dropdown-item">
+                                            <Settings size={18} />
+                                            <span>Profile</span>
+                                        </Link>
 
-                                    <button
-                                        className="dropdown-item logout-btn"
-                                        onClick={handleLogout}
-                                    >
-                                        <LogOut size={18} />
-                                        <span>Logout</span>
-                                    </button>
+                                        <Link to="/healthy-plan" className="dropdown-item">
+                                            <Leaf size={18} />
+                                            <span>Healthy Plan</span>
+                                        </Link>
 
-                                </div>
-                            )}
+                                        <hr className="dropdown-divider" />
 
-                        </div>
+                                        <button
+                                            className="dropdown-item logout-btn"
+                                            onClick={handleLogout}
+                                        >
+                                            <LogOut size={18} />
+                                            <span>Logout</span>
+                                        </button>
 
+                                    </div>
+                                )}
+
+                            </div>
+                        </>
                     ) : (
 
-                        <div className="auth-buttons">
-                            <Link to="/login" className="login-nav-link">Login</Link>
-                            <Link to="/register" className="register-nav-btn">Sign Up</Link>
-                        </div>
+                            <>
+                                <button
+                                    className="icon-btn theme-toggle-btn"
+                                    onClick={toggleTheme}
+                                    title="Toggle Theme"
+                                    style={{ marginRight: '15px' }}
+                                >
+                                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                                </button>
+                                <div className="auth-buttons">
+                                    <Link to="/login" className="login-nav-link">Login</Link>
+                                    <Link to="/register" className="register-nav-btn">Sign Up</Link>
+                                </div>
+                            </>
 
-                    )}
+                        )}
 
                 </div>
             </nav>

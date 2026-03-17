@@ -1,7 +1,7 @@
 /* recipes.css */
 
 .recipes-hub-page {
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     min-height: calc(100vh - 72px);
     width: 100%;
 }
@@ -21,13 +21,13 @@
 .hub-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
     letter-spacing: -0.5px;
 }
 
 .hub-header .subtitle {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 1.1rem;
     margin-bottom: 2rem;
 }
@@ -49,9 +49,9 @@
     white-space: nowrap;
     padding: 0.6rem 1.25rem;
     border-radius: 30px;
-    border: 1px solid #e5e7eb;
-    background: white;
-    color: #4b5563;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
     font-weight: 500;
     font-size: 0.95rem;
     cursor: pointer;
@@ -59,13 +59,13 @@
 }
 
 .pill-btn:hover {
-    background: #f9fafb;
+    background: var(--bg-main);
 }
 
 .pill-btn.active {
-    background: #10b981;
+    background: var(--primary);
     color: white;
-    border-color: #10b981;
+    border-color: var(--primary);
 }
 
 /* Layout */
@@ -90,15 +90,16 @@
     width: 100%;
     padding: 0.8rem 1rem 0.8rem 2.8rem;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-primary);
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.2s;
 }
 
 .search-box input:focus {
-    border-color: #10b981;
+    border-color: var(--primary);
 }
 
 .search-icon {
@@ -106,7 +107,7 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #9ca3af;
+    color: var(--text-secondary);
 }
 
 .filter-group {
@@ -116,7 +117,7 @@
 .filter-title {
     font-size: 1rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin-bottom: 1.25rem;
 }
 
@@ -127,7 +128,7 @@
     align-items: center;
     margin-bottom: 0.8rem;
     cursor: pointer;
-    color: #4b5563;
+    color: var(--text-secondary);
     font-size: 0.95rem;
 }
 
@@ -135,14 +136,14 @@
     width: 18px;
     height: 18px;
     margin-right: 0.75rem;
-    accent-color: #10b981;
+    accent-color: var(--primary);
 }
 
 .checkbox-label input[type="checkbox"] {
     width: 18px;
     height: 18px;
     margin-right: 0.75rem;
-    accent-color: #10b981;
+    accent-color: var(--primary);
     border-radius: 4px;
 }
 
@@ -153,7 +154,7 @@
 
 .styled-slider {
     width: 100%;
-    accent-color: #10b981;
+    accent-color: var(--primary);
     margin-bottom: 0.5rem;
 }
 
@@ -161,7 +162,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 /* Difficulty Buttons */
@@ -174,22 +175,22 @@
 .diff-btn {
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     font-size: 0.85rem;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    color: #4b5563;
+    color: var(--text-secondary);
     transition: all 0.2s;
 }
 
 .diff-btn:hover {
-    background: #f9fafb;
+    background: var(--bg-main);
 }
 
 .diff-btn:active {
-    background: #f3f4f6;
+    background: var(--border-color);
 }
 
 /* Main Content Area */
@@ -206,15 +207,16 @@
 }
 
 .results-count {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.95rem;
 }
 
 .sort-select {
     padding: 0.5rem 2rem 0.5rem 1rem;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    background-color: white;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
     font-size: 0.95rem;
     outline: none;
     appearance: none;
@@ -234,12 +236,12 @@
 }
 
 .recipe-card-hub {
-    background: #ffffff;
+    background: var(--bg-surface);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     cursor: pointer;
@@ -311,7 +313,7 @@
 }
 
 .ai-badge {
-    background-color: #10b981;
+    background-color: var(--primary);
 }
 
 .rating-badge {
@@ -322,13 +324,13 @@
 .heart-btn {
     width: 36px;
     height: 36px;
-    background: white;
+    background: var(--bg-surface);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
-    color: #9ca3af;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -339,7 +341,7 @@
 }
 
 .heart-btn.active {
-    color: #ef4444;
+    color: var(--primary);
 }
 
 .hub-card-content {
@@ -356,7 +358,7 @@
 .hub-card-meta {
     display: flex;
     gap: 0.5rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     font-weight: 500;
     margin-bottom: 1rem;
@@ -372,13 +374,13 @@
 .hub-card-title {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 0.5rem 0;
 }
 
 .hub-card-desc {
     font-size: 0.9rem;
-    color: #4b5563;
+    color: var(--text-secondary);
     line-height: 1.5;
     margin: 0 0 1.25rem 0;
     display: -webkit-box;
@@ -397,8 +399,8 @@
 }
 
 .hub-card-tags .hub-tag {
-    background: #f1f5f9;
-    color: #475569;
+    background: var(--bg-main);
+    color: var(--text-secondary);
     padding: 0.3rem 0.7rem;
     border-radius: 6px;
     font-size: 0.75rem;
@@ -420,9 +422,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    border: 1px solid #e5e7eb;
-    color: #4b5563;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
@@ -430,17 +432,17 @@
 }
 
 .page-btn:hover:not(.active) {
-    background: #f9fafb;
+    background: var(--bg-main);
 }
 
 .page-btn.active {
-    background: #10b981;
+    background: var(--primary);
     color: white;
-    border-color: #10b981;
+    border-color: var(--primary);
 }
 
 .page-dots {
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-weight: 600;
     padding: 0 0.25rem;
 }
