@@ -65,7 +65,7 @@ const productService = {
 
     getAiRecommendedProducts: async () => {
         try {
-            const response = await axiosInstance.get('/api/products/ai-recommended');
+            const response = await api.get('/api/products/ai-recommended');
             return response.data;
         } catch (error) {
             console.error('Error fetching AI recommended products:', error);

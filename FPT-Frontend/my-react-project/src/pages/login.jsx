@@ -45,7 +45,7 @@ function Login() {
 
     try {
       await login(formData.emailOrUsername, formData.password);
-      navigate('/',{replace:true})
+      navigate('/', { replace: true })
     } catch (err) {
       // Xử lý lỗi nếu sai mật khẩu hoặc server lỗi
       setError(err.response?.data?.message || 'Login failed. Please try again.');
@@ -94,8 +94,13 @@ function Login() {
             <h2>Welcome Back</h2>
             <p>Enter your credentials to access your chef dashboard.</p>
           </div>
+          
           {/* Hiện lỗi login */}
-          {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+          {error && (
+            <div className="alert alert-error">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleLogin}>
             <div className="input-group">
