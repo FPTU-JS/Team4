@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Clock, Flame, Heart, Star, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import productService from '../services/productService';
 import categoryService from '../services/categoryService';
+import RecipeSkeleton from '../components/RecipeSkeleton';
 import '../css/recipes.css';
 
 const Recipes = () => {
@@ -146,7 +147,10 @@ const Recipes = () => {
 
                         <div className="hub-grid">
                             {isLoading ? (
-                                <div className="loading-state">Loading recipes...</div>
+                                // Render 6 skeletons as placeholder
+                                Array.from({ length: 6 }).map((_, idx) => (
+                                    <RecipeSkeleton key={idx} />
+                                ))
                             ) : recipes.length === 0 ? (
                                 <div className="empty-state">No recipes found.</div>
                             ) : (

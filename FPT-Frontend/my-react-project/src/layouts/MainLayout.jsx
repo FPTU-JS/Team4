@@ -3,7 +3,8 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf, Sun, Moon } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
-import { useAuth } from '../pages/AuthContext'
+import { Toaster } from 'react-hot-toast';
+import { useAuth } from '../pages/AuthContext';
 
 const MainLayout = () => {
     const navigate = useNavigate();
@@ -49,6 +50,19 @@ const MainLayout = () => {
 
     return (
         <div className="layout-container">
+            <Toaster 
+                position="bottom-right"
+                toastOptions={{
+                    style: {
+                        background: 'var(--bg-surface)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--border-color)',
+                    },
+                    success: {
+                        iconTheme: { primary: '#10b981', secondary: '#fff' }
+                    }
+                }}
+            />
             <nav className="top-navbar">
                 <div className="nav-brand">
                     <button className="mobile-menu-btn">

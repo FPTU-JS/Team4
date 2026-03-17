@@ -1,54 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Lock, Eye, EyeOff, MoveLeft } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import toast from 'react-hot-toast';
 import '../css/login.css';
-import { useAuth } from './AuthContext';
+// Define Yup validation schema
+const schema = yup.object({
+  emailOrUsername: yup.string().required('Email or Username is required'),
+  password: yup.string().required('Password is required'),
+}).required();
 
 function Login() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  //Ẩn hiện pasword
   const [showPassword, setShowPassword] = useState(false);
 
-  //Form data lấy email 
-  const [formData, setFormData] = useState({
-    emailOrUsername: '',
-    password: ''
+  // Initialize react-hook-form
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      emailOrUsername: '',
+      password: ''
+    }
   });
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/onboarding', { replace: true });
     }
-  }, [navigate])
-  // Hàm cập nhật giá trị khi gõ
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  }, [isAuthenticated, navigate]);
 
   const handleSocialLogin = (provider) => {
     // Chuyển hướng người dùng đến URL oauth2 của Backend
     window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    // Simulate login for now
+  const onSubmit = async (data) => {
     setIsLoading(true);
-    setError('');
+    const loadingToast = toast.loading('Logging in...');
 
     try {
-      await login(formData.emailOrUsername, formData.password);
+      await login(data.emailOrUsername, data.password);
+      toast.success('Successfully logged in!', { id: loadingToast });
       navigate('/', { replace: true })
     } catch (err) {
-      // Xử lý lỗi nếu sai mật khẩu hoặc server lỗi
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      toast.error(err.response?.data?.message || 'Login failed. Please try again.', { id: loadingToast });
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -94,42 +92,34 @@ function Login() {
             <h2>Welcome Back</h2>
             <p>Enter your credentials to access your chef dashboard.</p>
           </div>
-          
-          {/* Hiện lỗi login */}
-          {error && (
-            <div className="alert alert-error">
-              {error}
-            </div>
-          )}
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input-group">
               <label>Email or Username</label>
-              <div className="input-wrapper">
-                <input type="text" name='emailOrUsername' onChange={handleChange} value={formData.emailOrUsername} placeholder="chef@example.com" required />
-                <span className="input-icon">
+              <div className={`input-wrapper ${errors.emailOrUsername ? 'has-error' : ''}`}>
+                <span className="input-icon-left">
                   <User size={18} strokeWidth={1.5} />
                 </span>
+                <input 
+                  type="text" 
+                  {...register('emailOrUsername')}
+                  placeholder="chef@example.com" 
+                />
               </div>
+              {errors.emailOrUsername && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.emailOrUsername.message}</span>}
             </div>
 
             <div className="input-group">
               <label>Password</label>
-              <div className="input-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name='password'
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                />
-                {/* Icon Khóa cố định bên trái */}
-                <span className="input-icon">
+              <div className={`input-wrapper ${errors.password ? 'has-error' : ''}`}>
+                <span className="input-icon-left">
                   <Lock size={18} strokeWidth={1.5} />
                 </span>
-
-                {/* Icon Mắt bấm được bên phải */}
+                <input
+                  type={showPassword ? "text" : "password"}
+                  {...register('password')}
+                  placeholder="Enter your password"
+                />
                 <span
                   className="input-icon-right"
                   onClick={() => setShowPassword(!showPassword)}
@@ -141,6 +131,7 @@ function Login() {
                   )}
                 </span>
               </div>
+              {errors.password && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.password.message}</span>}
             </div>
 
             <div className="forgot-password-container">

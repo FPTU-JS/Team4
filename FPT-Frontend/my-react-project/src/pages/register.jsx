@@ -1,66 +1,59 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, Mail, Phone } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import toast from 'react-hot-toast';
 import '../css/register.css';
-import { useAuth } from './AuthContext';
+import { useAuth, authService } from './AuthContext';
+// Create Yup Validation Schema for Registration
+const schema = yup.object({
+    fullName: yup.string().required('Full Name is required'),
+    username: yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
+    email: yup.string().email('Must be a valid email').required('Email is required'),
+    phone: yup.string().matches(/^[0-9]+$/, "Must be only digits").min(9, 'Must be at least 9 digits').notRequired(),
+    password: yup.string().required('Password is required').min(8, 'Password must be at least 8 characters long'),
+    confirmPassword: yup.string()
+        .required('Confirm Password is required')
+        .oneOf([yup.ref('password')], 'Passwords do not match'),
+}).required();
+
 const Register = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State để ẩn hiện confirm pass
-    const [error, setError] = useState('');
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const [formData, setFormData] = useState({
-        fullName: '',
-        username: '',
-        email: '',
-        password: '',
-        phone: ''
-    });
-
-    const [confirmPassword, setConfirmPassword] = useState('');
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate('/', { replace: true });
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            fullName: '',
+            username: '',
+            email: '',
+            phone: '',
+            password: '',
+            confirmPassword: ''
         }
-    }, [isAuthenticated, navigate]);
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
+    });
 
     const handleSocialLogin = (provider) => {
         window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
     };
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        setError('');
-
-        if (formData.password.trim().length < 8) {
-            setError("Password must be at least 8 characters long.");
-            return;
-        }
-
-        if (formData.password.trim() !== confirmPassword.trim()) {
-            setError("Passwords do not match.");
-            return;
-        }
-
+    const onSubmit = async (data) => {
         setIsLoading(true);
+        const loadingToast = toast.loading('Creating your account...');
 
         try {
-            // Gửi formData (chỉ chứa fullName, username, email, password, phone)
-            await authService.register(formData);
-            alert("Registration successful!");
+            // we exclude confirmPassword when sending to backend
+            const { confirmPassword, ...submitData } = data;
+            await authService.register(submitData);
+            toast.success("Registration successful! You can now log in.", { id: loadingToast });
             navigate('/login');
         } catch (err) {
-            setError(err.response?.data?.message || "Registration failed.");
+            toast.error(err.response?.data?.message || "Registration failed.", { id: loadingToast });
         } finally {
             setIsLoading(false);
         }
@@ -100,83 +93,70 @@ const Register = () => {
                         <p>Join CO-CHE and start your culinary journey.</p>
                     </div>
 
-                    {error && (
-                        <div className="alert alert-error">
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleRegister}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
 
                         {/* Full Name */}
                         <div className="input-group">
                             <label>Full Name</label>
 
-                            <div className="input-wrapper">
+                            <div className={`input-wrapper ${errors.fullName ? 'has-error' : ''}`}>
                                 <span className="input-icon-left"><User size={18} /></span>
 
                                 <input
                                     type="text"
-                                    name="fullName"
+                                    {...register('fullName')}
                                     placeholder="Enter your full name"
-                                    value={formData.fullName}
-                                    onChange={handleChange}
-                                    required
                                 />
                             </div>
+                            {errors.fullName && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.fullName.message}</span>}
                         </div>
 
                         {/* Username */}
                         <div className="input-group">
                             <label>Username</label>
 
-                            <div className="input-wrapper">
+                            <div className={`input-wrapper ${errors.username ? 'has-error' : ''}`}>
                                 <span className="input-icon-left"><User size={18} /></span>
 
                                 <input
                                     type="text"
-                                    name="username"
+                                    {...register('username')}
                                     placeholder="marcopierre"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    required
                                 />
                             </div>
+                            {errors.username && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.username.message}</span>}
                         </div>
 
                         {/* Email */}
                         <div className="input-group">
                             <label>Email</label>
 
-                            <div className="input-wrapper">
+                            <div className={`input-wrapper ${errors.email ? 'has-error' : ''}`}>
                                 <span className="input-icon-left"><Mail size={18} /></span>
 
                                 <input
                                     type="email"
-                                    name="email"
+                                    {...register('email')}
                                     placeholder="Enter email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
                                 />
                             </div>
+                            {errors.email && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.email.message}</span>}
                         </div>
 
                         {/* Phone */}
                         <div className="input-group">
                             <label>Phone</label>
 
-                            <div className="input-wrapper">
+                            <div className={`input-wrapper ${errors.phone ? 'has-error' : ''}`}>
                                 <span className="input-icon-left"><Phone size={18} /></span>
 
                                 <input
                                     type="text"
-                                    name="phone"
+                                    {...register('phone')}
                                     placeholder="0123 456 789"
-                                    value={formData.phone}
-                                    onChange={handleChange}
                                 />
                             </div>
+                            {errors.phone && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.phone.message}</span>}
                         </div>
 
                         <div className="row-inputs">
@@ -186,7 +166,7 @@ const Register = () => {
 
                                 <label>Password</label>
 
-                                <div className="input-wrapper">
+                                <div className={`input-wrapper ${errors.password ? 'has-error' : ''}`}>
 
                                     <span className="input-icon-left">
                                         <Lock size={18} />
@@ -194,11 +174,8 @@ const Register = () => {
 
                                     <input
                                         type={showPassword ? "text" : "password"}
-                                        name="password"
+                                        {...register('password')}
                                         placeholder="Enter password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
                                     />
 
                                     <span
@@ -209,6 +186,7 @@ const Register = () => {
                                     </span>
 
                                 </div>
+                                {errors.password && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.password.message}</span>}
 
                             </div>
 
@@ -217,7 +195,7 @@ const Register = () => {
 
                                 <label>Confirm Password</label>
 
-                                <div className="input-wrapper">
+                                <div className={`input-wrapper ${errors.confirmPassword ? 'has-error' : ''}`}>
 
                                     <span className="input-icon-left">
                                         <Lock size={18} />
@@ -225,10 +203,8 @@ const Register = () => {
 
                                     <input
                                         type={showConfirmPassword ? "text" : "password"}
+                                        {...register('confirmPassword')}
                                         placeholder="Confirm password"
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        required
                                     />
 
                                     <span
@@ -239,6 +215,7 @@ const Register = () => {
                                     </span>
 
                                 </div>
+                                {errors.confirmPassword && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.confirmPassword.message}</span>}
 
                             </div>
 
