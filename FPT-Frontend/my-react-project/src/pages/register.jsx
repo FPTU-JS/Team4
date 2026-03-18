@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, Mail, Phone } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -6,7 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import toast from 'react-hot-toast';
 import '../css/register.css';
-import { useAuth, authService } from './AuthContext';
+import { useAuth } from './AuthContext';
+import authService from '../services/authService';
 // Create Yup Validation Schema for Registration
 const schema = yup.object({
     fullName: yup.string().required('Full Name is required'),
@@ -48,6 +50,7 @@ const Register = () => {
 
         try {
             // we exclude confirmPassword when sending to backend
+            // eslint-disable-next-line no-unused-vars
             const { confirmPassword, ...submitData } = data;
             await authService.register(submitData);
             toast.success("Registration successful! You can now log in.", { id: loadingToast });
@@ -58,6 +61,12 @@ const Register = () => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/', { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     if (isAuthenticated) return null;
 
@@ -163,60 +172,46 @@ const Register = () => {
 
                             {/* Password */}
                             <div className="input-group">
-
                                 <label>Password</label>
-
                                 <div className={`input-wrapper ${errors.password ? 'has-error' : ''}`}>
-
                                     <span className="input-icon-left">
                                         <Lock size={18} />
                                     </span>
-
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         {...register('password')}
                                         placeholder="Enter password"
                                     />
-
                                     <span
                                         className="input-icon-right"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </span>
-
                                 </div>
                                 {errors.password && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.password.message}</span>}
-
                             </div>
 
                             {/* Confirm Password */}
                             <div className="input-group">
-
                                 <label>Confirm Password</label>
-
                                 <div className={`input-wrapper ${errors.confirmPassword ? 'has-error' : ''}`}>
-
                                     <span className="input-icon-left">
                                         <Lock size={18} />
                                     </span>
-
                                     <input
                                         type={showConfirmPassword ? "text" : "password"}
                                         {...register('confirmPassword')}
                                         placeholder="Confirm password"
                                     />
-
                                     <span
                                         className="input-icon-right"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     >
                                         {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </span>
-
                                 </div>
                                 {errors.confirmPassword && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.confirmPassword.message}</span>}
-
                             </div>
 
                         </div>
@@ -268,4 +263,21 @@ const Register = () => {
         </div>
     );
 };
-export default Register;
+
+const ErrorFallback = ({ error }) => {
+  console.error("REGISTER CRASH:", error);
+  return (
+    <div role="alert" style={{color: 'red', padding: '20px', zIndex: 9999, position: 'relative', background: 'white'}}>
+      <h2>Something went wrong in Register.jsx:</h2>
+      <pre>{error.message}</pre>
+    </div>
+  )
+}
+
+const RegisterWrapper = () => (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <Register />
+    </ErrorBoundary>
+);
+
+export default RegisterWrapper;

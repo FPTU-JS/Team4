@@ -63,13 +63,18 @@
     font-weight: 500;
     font-size: 15px;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
+    padding: 6px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     color: var(--text-primary);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 17px;
+    border: 1px solid var(--border-color);
 }
 
 .nav-actions {

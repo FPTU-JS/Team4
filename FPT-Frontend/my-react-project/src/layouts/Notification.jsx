@@ -1,26 +1,32 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import '../css/notification.css'; 
 
 export default function Notification() {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+            setIsOpen(false);
+        }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Dữ liệu mẫu
-  const [notifications, setNotifications] = useState([
+  const [notifications] = useState([
     { id: 1, title: "Đã đến giờ uống nước!", time: "10 phút trước" },
     { id: 2, title: "Bạn đã đạt mục tiêu Calo hôm nay 🥗", time: "2 giờ trước" }
   ]);
 
   return (
-    // Bắt sự kiện di chuột VÀO (onMouseEnter) và di chuột RA (onMouseLeave) ở thẻ bao bọc ngoài cùng
-    <div 
-      className="notification-container"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
+    <div className="notification-container" ref={containerRef}>
       
       {/* Nút Chuông */}
-      <button className="bell-btn">
+      <button className="bell-btn" onClick={() => setIsOpen(!isOpen)}>
         🔔 {/* Bạn có thể thay bằng thẻ <svg> hoặc <i class="..."> icon chuông của bạn ở đây */}
         
         {notifications.length > 0 && (

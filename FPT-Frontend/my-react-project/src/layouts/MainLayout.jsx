@@ -3,6 +3,8 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf, Sun, Moon } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
+import FloatingAIBubble from '../components/FloatingAIBubble';
+import FloatingSupportBubble from '../components/FloatingSupportBubble';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from '../pages/AuthContext';
 
@@ -37,6 +39,7 @@ const MainLayout = () => {
 
     // Close Dropdown when navigating
     useEffect(() => {
+        // eslint-disable-next-line
         setIsDropdownOpen(false);
     }, [location]);
 
@@ -80,8 +83,6 @@ const MainLayout = () => {
                     <Link to="/map" className={currentPath === '/map' ? 'active' : ''}>Map</Link>
                     {/* <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link> */}
                     <Link to="/community" className={currentPath === '/community' ? 'active' : ''}>Community</Link>
-                    <Link to="/ai-assistant" className={currentPath === '/ai-assistant' ? 'active' : ''}>AI Assistant</Link>
-                    <Link to="/support" className={currentPath === '/support' ? 'active' : ''}>Support</Link>
                 </div>
 
                 <div className="nav-actions">
@@ -186,11 +187,13 @@ const MainLayout = () => {
                     <Store size={24} />
                     <span>Markets</span>
                 </Link>
-                <Link to="/ai-assistant" className={`bottom-nav-item ${currentPath === '/ai-assistant' ? 'active' : ''}`}>
-                    <Bot size={24} />
-                    <span>Assistant</span>
-                </Link>
             </div>
+
+            {/* Global Floating AI Bubble */}
+            <FloatingAIBubble />
+            
+            {/* Global Floating Support Bubble */}
+            <FloatingSupportBubble />
         </div>
     );
 };

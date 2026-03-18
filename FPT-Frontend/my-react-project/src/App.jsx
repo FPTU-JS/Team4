@@ -8,8 +8,8 @@ import OAuth2RedirectHandler from './pages/OAuth2RedirectHandler.jsx'
 import AnimatedPage from './components/AnimatedPage.jsx'
 
 // Lazy-loaded Pages
-const Login = lazy(() => import('./pages/Login.jsx'))
-const Register = lazy(() => import('./pages/Register.jsx'))
+const Login = lazy(() => import('./pages/login.jsx'))
+const Register = lazy(() => import('./pages/register.jsx'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'))
 const Home = lazy(() => import('./pages/Home.jsx'))
 const Preferences = lazy(() => import('./pages/onboarding/Preferences.jsx'))
@@ -23,7 +23,6 @@ const CameraCapture = lazy(() => import('./pages/CameraCapture.jsx'))
 const Community = lazy(() => import('./pages/Community.jsx'))
 const Profile = lazy(() => import('./pages/Profile.jsx'))
 const AIAssistant = lazy(() => import('./pages/ai/AIAssistant.jsx'))
-const Support = lazy(() => import('./pages/Support.jsx'))
 
 // Fallback Loader
 const FallbackLoader = () => (
@@ -58,7 +57,6 @@ const AnimatedRoutes = () => {
           <Route path="profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
         </Route>
         <Route path="/ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
-        <Route path="/support" element={<AnimatedPage><Support /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
   );

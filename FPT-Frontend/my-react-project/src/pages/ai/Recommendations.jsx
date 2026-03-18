@@ -5,6 +5,7 @@ import productService from '../../services/productService';
 import '../../css/recommendations.css';
 
 const Recommendations = () => {
+    // eslint-disable-next-line
     const { state } = useLocation();
     const navigate = useNavigate();
 

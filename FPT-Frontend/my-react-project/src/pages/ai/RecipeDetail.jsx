@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Clock, Activity, Users, Flame, ChefHat, Sparkles, ArrowLeft } from 'lucide-react';
 import productService from '../../services/productService';
 import '../../css/recipe-detail.css';

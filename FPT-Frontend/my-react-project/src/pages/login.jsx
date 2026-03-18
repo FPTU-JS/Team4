@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { User, Lock, Eye, EyeOff, MoveLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import '../css/login.css';
+import { useAuth } from './AuthContext';
 // Define Yup validation schema
 const schema = yup.object({
   emailOrUsername: yup.string().required('Email or Username is required'),
@@ -138,8 +140,8 @@ function Login() {
               <Link to="/forgot-password" className="forgot-password">Forgot Password?</Link>
             </div>
 
-            <button type="submit" className="login-btn">
-              Login to CO-CHE <span>→</span>
+            <button type="submit" className="login-btn" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Login to CO-CHE'} <span>→</span>
             </button>
           </form>
 
