@@ -112,7 +112,7 @@
     padding: 0 1rem;
 }
 
-.search-icon {
+.search-input-wrapper .search-icon {
     display: none;
     /* We moved it outside */
 }
@@ -517,6 +517,18 @@
 .nutrition-card {
     background: #f0fdf4;
     border-color: #dcfce7;
+    color: #111827;
+}
+
+.nutrition-card .section-title,
+.nutrition-card .kcal-val,
+.nutrition-card .macro-val {
+    color: #111827;
+}
+
+.nutrition-card .kcal-label,
+.nutrition-card .macro-name {
+    color: #4b5563;
 }
 
 .nutrition-summary {
@@ -651,6 +663,32 @@
     color: var(--text-secondary);
     font-size: 0.75rem;
     font-weight: 600;
+}
+
+/* --- Dark Mode for Nutrition Card --- */
+[data-theme='dark'] .nutrition-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+[data-theme='dark'] .nutrition-card .section-title,
+[data-theme='dark'] .nutrition-card .kcal-val,
+[data-theme='dark'] .nutrition-card .macro-val {
+    color: var(--text-primary);
+}
+[data-theme='dark'] .nutrition-card .kcal-label,
+[data-theme='dark'] .nutrition-card .macro-name {
+    color: var(--text-secondary);
+}
+[data-theme='dark'] .nutrition-card .circle-chart {
+    background: var(--bg-main);
+    border-color: #10b981;
+}
+[data-theme='dark'] .nutrition-card .progress-bar {
+    background: var(--border-color);
+}
+[data-theme='dark'] .nutrition-card .meal-item {
+    background: var(--bg-main);
+    border-color: var(--border-color);
 }
 
 /* Top Picks */

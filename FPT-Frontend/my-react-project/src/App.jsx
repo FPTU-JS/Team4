@@ -23,6 +23,7 @@ const CameraCapture = lazy(() => import('./pages/CameraCapture.jsx'))
 const Community = lazy(() => import('./pages/Community.jsx'))
 const Profile = lazy(() => import('./pages/Profile.jsx'))
 const AIAssistant = lazy(() => import('./pages/ai/AIAssistant.jsx'))
+const HelpCenter = lazy(() => import('./pages/HelpCenter.jsx'))
 
 // Fallback Loader
 const FallbackLoader = () => (
@@ -47,16 +48,18 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<AnimatedPage><Home /></AnimatedPage>} />
           <Route path="onboarding" element={<AnimatedPage><Preferences /></AnimatedPage>} />
-          <Route path="plan-setup" element={<AnimatedPage><HealthyPlanSetup /></AnimatedPage>} />
-          <Route path="healthy-plan" element={<AnimatedPage><HealthyPlanDashboard /></AnimatedPage>} />
+
           <Route path="recipes" element={<AnimatedPage><Recipes /></AnimatedPage>} />
           <Route path="ai-recommendations" element={<AnimatedPage><Recommendations /></AnimatedPage>} />
           <Route path="recipe/:id" element={<AnimatedPage><RecipeDetail /></AnimatedPage>} />
           <Route path="map" element={<AnimatedPage><Map /></AnimatedPage>} />
           <Route path="community" element={<AnimatedPage><Community /></AnimatedPage>} />
           <Route path="profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
+          <Route path="plan-setup" element={<AnimatedPage><HealthyPlanSetup /></AnimatedPage>} />
+          <Route path="healthy-plan" element={<AnimatedPage><HealthyPlanDashboard /></AnimatedPage>} />
+          <Route path="ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
         </Route>
-        <Route path="/ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
+        <Route path="/help-center" element={<AnimatedPage><HelpCenter /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
   );

@@ -81,7 +81,8 @@ const MainLayout = () => {
                     <Link to="/" className={currentPath === '/' ? 'active' : ''}>Home</Link>
                     <Link to="/recipes" className={currentPath === '/recipes' ? 'active' : ''}>Recipes</Link>
                     <Link to="/map" className={currentPath === '/map' ? 'active' : ''}>Map</Link>
-                    {/* <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link> */}
+                    <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link>
+                    <Link to="/ai-assistant" className={currentPath === '/ai-assistant' ? 'active' : ''}>AI Assistant</Link>
                     <Link to="/community" className={currentPath === '/community' ? 'active' : ''}>Community</Link>
                 </div>
 
@@ -113,37 +114,17 @@ const MainLayout = () => {
 
                                 <button
                                     className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
-                                    onClick={() => setIsDropdownOpen(prev => !prev)}
-                                    title="Account"
+                                    onClick={() => navigate('/help-center')}
+                                    title="Account & Help Center"
+                                    style={{ padding: 0, overflow: 'hidden', border: '2px solid #10b981' }}
                                 >
-                                    <User size={20} />
+                                    <img 
+                                        src="https://ui-avatars.com/api/?name=Chef+Julian&background=fce7f3&color=db2777" 
+                                        alt="Avatar" 
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                    />
                                 </button>
 
-                                {isDropdownOpen && (
-                                    <div className="dropdown-menu">
-
-                                        <Link to="/profile" className="dropdown-item">
-                                            <Settings size={18} />
-                                            <span>Profile</span>
-                                        </Link>
-
-                                        <Link to="/healthy-plan" className="dropdown-item">
-                                            <Leaf size={18} />
-                                            <span>Healthy Plan</span>
-                                        </Link>
-
-                                        <hr className="dropdown-divider" />
-
-                                        <button
-                                            className="dropdown-item logout-btn"
-                                            onClick={handleLogout}
-                                        >
-                                            <LogOut size={18} />
-                                            <span>Logout</span>
-                                        </button>
-
-                                    </div>
-                                )}
 
                             </div>
                         </>
@@ -189,11 +170,7 @@ const MainLayout = () => {
                 </Link>
             </div>
 
-            {/* Global Floating AI Bubble */}
-            <FloatingAIBubble />
-            
-            {/* Global Floating Support Bubble */}
-            <FloatingSupportBubble />
+
         </div>
     );
 };
