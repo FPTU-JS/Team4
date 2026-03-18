@@ -5,7 +5,7 @@
     padding: 2rem;
     max-width: 1400px;
     margin: 0 auto;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 /* --- Hero Section --- */
@@ -86,7 +86,7 @@
 /* Search Bar in Hero (Desktop Only) */
 .search-container {
     display: flex;
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
     padding: 0.5rem;
     margin-bottom: 1.5rem;
@@ -95,7 +95,7 @@
 }
 
 .search-icon-inside {
-    color: #9ca3af;
+    color: var(--text-secondary);
     margin-right: 0.75rem;
 }
 
@@ -112,7 +112,7 @@
     padding: 0 1rem;
 }
 
-.search-icon {
+.search-input-wrapper .search-icon {
     display: none;
     /* We moved it outside */
 }
@@ -122,11 +122,12 @@
     outline: none;
     width: 100%;
     font-size: 1rem;
-    color: #111827;
+    color: var(--text-primary);
+    background: transparent;
 }
 
 .search-input::placeholder {
-    color: #9ca3af;
+    color: var(--text-secondary);
 }
 
 .camera-dropdown-container {
@@ -137,7 +138,7 @@
 .camera-btn {
     background: none;
     border: none;
-    color: #6b7280;
+    color: var(--text-secondary);
     padding: 0.5rem 0.8rem;
     margin-right: 5px;
     cursor: pointer;
@@ -145,7 +146,7 @@
 }
 
 .camera-btn:hover {
-    background-color: #e6e7e9;
+    background-color: var(--bg-main);
     border-radius: 10%;
 }
 
@@ -154,10 +155,10 @@
     top: 100%;
     right: 0;
     margin-top: 0.5rem;
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     padding: 0.5rem;
     min-width: 160px;
     z-index: 50;
@@ -175,7 +176,7 @@
     background: none;
     border-radius: 8px;
     font-size: 0.9rem;
-    color: #374151;
+    color: var(--text-primary);
     font-weight: 500;
     cursor: pointer;
     text-align: left;
@@ -183,7 +184,7 @@
 }
 
 .camera-dropdown-item:hover {
-    background-color: #f3f4f6;
+    background-color: var(--bg-main);
     color: #10b981;
 }
 
@@ -268,11 +269,11 @@
 .recipe-card {
     border-radius: 16px;
     overflow: hidden;
-    background: white;
+    background: var(--bg-surface);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
 }
 
 .recipe-card:hover {
@@ -295,7 +296,7 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: white;
+    background: var(--bg-surface);
     padding: 0.35rem 0.65rem;
     border-radius: 8px;
     font-size: 0.8rem;
@@ -304,6 +305,7 @@
     align-items: center;
     gap: 0.25rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
 }
 
 .star-icon {
@@ -330,21 +332,21 @@
     font-size: 1.1rem;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .recipe-category {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
 }
 
 /* Personalized For You List */
 .personalized-section {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
     padding: 1.5rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
@@ -354,7 +356,7 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .plan-icon {
@@ -371,12 +373,12 @@
 .plan-title {
     font-weight: 600;
     margin: 0 0 0.25rem 0;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .plan-desc {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -385,7 +387,7 @@
     align-items: center;
     gap: 1.2rem;
     padding: 1.2rem 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .list-recipe-item:last-child {
@@ -408,12 +410,12 @@
     font-weight: 700;
     margin: 0 0 0.25rem 0;
     font-size: 1rem;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .list-recipe-desc {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0 0 0.5rem 0;
     line-height: 1.4;
     display: -webkit-box;
@@ -424,7 +426,7 @@
 
 .list-recipe-stats {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
@@ -446,10 +448,10 @@
 }
 
 .sidebar-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
     padding: 1.5rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
@@ -460,7 +462,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 /* Local Markets Map */
@@ -515,6 +517,18 @@
 .nutrition-card {
     background: #f0fdf4;
     border-color: #dcfce7;
+    color: #111827;
+}
+
+.nutrition-card .section-title,
+.nutrition-card .kcal-val,
+.nutrition-card .macro-val {
+    color: #111827;
+}
+
+.nutrition-card .kcal-label,
+.nutrition-card .macro-name {
+    color: #4b5563;
 }
 
 .nutrition-summary {
@@ -539,13 +553,13 @@
 .kcal-val {
     font-weight: 800;
     font-size: 1.2rem;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .kcal-label {
     font-size: 0.65rem;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 .macros {
@@ -568,13 +582,13 @@
 }
 
 .macro-name {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
 .macro-val {
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .progress-bar {
@@ -609,7 +623,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
+    background: var(--bg-surface);
     padding: 0.8rem 1rem;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -630,7 +644,7 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    color: #374151;
+    color: var(--text-primary);
     font-weight: 500;
 }
 
@@ -646,9 +660,35 @@
 }
 
 .meal-type {
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-size: 0.75rem;
     font-weight: 600;
+}
+
+/* --- Dark Mode for Nutrition Card --- */
+[data-theme='dark'] .nutrition-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+[data-theme='dark'] .nutrition-card .section-title,
+[data-theme='dark'] .nutrition-card .kcal-val,
+[data-theme='dark'] .nutrition-card .macro-val {
+    color: var(--text-primary);
+}
+[data-theme='dark'] .nutrition-card .kcal-label,
+[data-theme='dark'] .nutrition-card .macro-name {
+    color: var(--text-secondary);
+}
+[data-theme='dark'] .nutrition-card .circle-chart {
+    background: var(--bg-main);
+    border-color: #10b981;
+}
+[data-theme='dark'] .nutrition-card .progress-bar {
+    background: var(--border-color);
+}
+[data-theme='dark'] .nutrition-card .meal-item {
+    background: var(--bg-main);
+    border-color: var(--border-color);
 }
 
 /* Top Picks */
@@ -689,7 +729,7 @@
 
 .avatar-name {
     font-size: 0.75rem;
-    color: #4b5563;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -752,19 +792,19 @@
 
     /* Mobile specific elements would be inserted in JSX and styled here, or we adapt existing */
     .mobile-search-action {
-        background-color: white;
+        background-color: var(--bg-surface);
         border-radius: 16px;
         padding: 0.75rem 1rem;
         display: flex;
         align-items: center;
         margin-bottom: 2rem;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
+        border: 1px solid var(--border-color);
     }
 
     .mobile-search-action .search-icon {
         margin-right: 12px;
-        color: #9ca3af;
+        color: var(--text-secondary);
     }
 
     .mobile-search-action .search-input {
@@ -772,6 +812,8 @@
         border: none;
         outline: none;
         font-size: 1rem;
+        background: transparent;
+        color: var(--text-primary);
     }
 
     .search-btn-icon-wrapper {

@@ -1,238 +1,189 @@
 import React, { useState } from 'react';
-import { Settings, BarChart2, Leaf, ArrowRight, User } from 'lucide-react';
+import { Search, Bell, Settings, Target, Droplet, BarChart2, Filter, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../css/healthy-plan-setup.css';
 
 const HealthyPlanSetup = () => {
-    const [weight, setWeight] = useState('');
-    const [height, setHeight] = useState('');
-    const [activityLevel, setActivityLevel] = useState('Moderately Active (3-5 days/week)');
-    const [primaryGoal, setPrimaryGoal] = useState('Muscle Gain');
-    const [preferences, setPreferences] = useState({
-        lowCarb: true,
-        keto: false,
-        vegan: false,
-        paleo: false,
-        intermittentFasting: true
-    });
-
-    const togglePreference = (key) => {
-        setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
-    };
-
     return (
-        <div className="plan-setup-page fade-in">
-            <div className="setup-header">
-                <h1 className="heading-h1">Healthy Plan Setup</h1>
-                <p className="subtitle">Define your body metrics and primary health goals to personalize your AI-driven nutrition strategy.</p>
-            </div>
-
-            <div className="setup-grid">
-                {/* Left Column: Forms */}
-                <div className="setup-left-panel">
-                    {/* Body Metrics */}
-                    <div className="setup-card">
-                        <div className="card-header-flex">
-                            <BarChart2 className="card-icon" size={20} />
-                            <h2 className="card-title-m">Body Metrics</h2>
-                        </div>
-
-                        <div className="form-group">
-                            <label className="form-label">Weight (kg)</label>
-                            <input
-                                type="number"
-                                className="form-input"
-                                placeholder="e.g. 75"
-                                value={weight}
-                                onChange={(e) => setWeight(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label className="form-label">Height (cm)</label>
-                            <input
-                                type="number"
-                                className="form-input"
-                                placeholder="e.g. 180"
-                                value={height}
-                                onChange={(e) => setHeight(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label className="form-label">Activity Level</label>
-                            <select
-                                className="form-select"
-                                value={activityLevel}
-                                onChange={(e) => setActivityLevel(e.target.value)}
-                            >
-                                <option>Sedentary (office job)</option>
-                                <option>Lightly Active (1-2 days/week)</option>
-                                <option>Moderately Active (3-5 days/week)</option>
-                                <option>Very Active (6-7 days/week)</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label className="form-label">Primary Goal</label>
-                            <select
-                                className="form-select"
-                                value={primaryGoal}
-                                onChange={(e) => setPrimaryGoal(e.target.value)}
-                            >
-                                <option>Weight Loss</option>
-                                <option>Maintenance</option>
-                                <option>Muscle Gain</option>
-                                <option>General Health</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Dietary Preference */}
-                    <div className="setup-card">
-                        <div className="card-header-flex">
-                            <Leaf className="card-icon" size={20} />
-                            <h2 className="card-title-m">Dietary Preference</h2>
-                        </div>
-                        <div className="tags-container">
-                            <button
-                                className={`pref-tag ${preferences.lowCarb ? 'active' : ''}`}
-                                onClick={() => togglePreference('lowCarb')}
-                            >
-                                LOW CARB
-                            </button>
-                            <button
-                                className={`pref-tag ${preferences.keto ? 'active' : ''}`}
-                                onClick={() => togglePreference('keto')}
-                            >
-                                KETO
-                            </button>
-                            <button
-                                className={`pref-tag ${preferences.vegan ? 'active' : ''}`}
-                                onClick={() => togglePreference('vegan')}
-                            >
-                                VEGAN
-                            </button>
-                            <button
-                                className={`pref-tag ${preferences.paleo ? 'active' : ''}`}
-                                onClick={() => togglePreference('paleo')}
-                            >
-                                PALEO
-                            </button>
-                            <button
-                                className={`pref-tag ${preferences.intermittentFasting ? 'active' : ''}`}
-                                onClick={() => togglePreference('intermittentFasting')}
-                            >
-                                INTERMITTENT FASTING
-                            </button>
-                        </div>
-                    </div>
+        <div className="hp-new-layout">
+            <main className="hp-setup-main">
+                <div className="hp-setup-header">
+                    <h1>Healthy Plan Setup</h1>
+                    <p>Define your body metrics and primary health goals to personalize your AI-driven nutrition strategy.</p>
                 </div>
 
-                {/* Right Column: Analytics & Visualization */}
-                <div className="setup-right-panel">
+                <div className="hp-setup-grid">
+                    {/* Left Column */}
+                    <div className="hp-setup-left">
+                        
+                        <div className="setup-white-card">
+                            <h2 className="setup-card-title">
+                                <BarChart2 size={20} color="#10b981" /> Body Metrics
+                            </h2>
 
-                    {/* Projection Card */}
-                    <div className="setup-card">
-                        <div className="projection-header">
-                            <div>
-                                <h2 className="card-title-m">Body Transformation Projection</h2>
-                                <p className="card-desc">Estimated progress based on your metrics and {primaryGoal} goal.</p>
+                            <div className="setup-form-group">
+                                <label>Weight (kg)</label>
+                                <input type="number" placeholder="e.g. 75" />
                             </div>
-                            <div className="chart-legend">
-                                <span className="legend-item"><span className="dot dot-fat"></span> Fat %</span>
-                                <span className="legend-item"><span className="dot dot-lean"></span> Lean Mass</span>
+
+                            <div className="setup-form-group">
+                                <label>Height (cm)</label>
+                                <input type="number" placeholder="e.g. 180" />
+                            </div>
+
+                            <div className="setup-form-group">
+                                <label>Activity Level</label>
+                                <select defaultValue="Moderately Active (3-5 days/week)">
+                                    <option>Sedentary</option>
+                                    <option>Lightly Active (1-2 days/week)</option>
+                                    <option>Moderately Active (3-5 days/week)</option>
+                                    <option>Very Active (6-7 days/week)</option>
+                                </select>
+                            </div>
+
+                            <div className="setup-form-group mb-0">
+                                <label>Primary Goal</label>
+                                <select defaultValue="Muscle Gain">
+                                    <option>Weight Loss</option>
+                                    <option>Maintenance</option>
+                                    <option>Muscle Gain</option>
+                                </select>
                             </div>
                         </div>
 
-                        {/* Dummy Bar Chart */}
-                        <div className="chart-container">
-                            <div className="bar-wrapper">
-                                <div className="bar-lean" style={{ height: '60%' }}></div>
-                                <div className="bar-fat" style={{ height: '30%' }}></div>
-                                <span className="bar-label">Week 1</span>
-                            </div>
-                            <div className="bar-wrapper">
-                                <div className="bar-lean" style={{ height: '45%' }}></div>
-                                <div className="bar-fat" style={{ height: '25%' }}></div>
-                                <span className="bar-label">Week 2</span>
-                            </div>
-                            <div className="bar-wrapper">
-                                <div className="bar-lean" style={{ height: '65%' }}></div>
-                                <div className="bar-fat" style={{ height: '22%' }}></div>
-                                <span className="bar-label">Week 3</span>
-                            </div>
-                            <div className="bar-wrapper">
-                                <div className="bar-lean" style={{ height: '68%' }}></div>
-                                <div className="bar-fat" style={{ height: '20%' }}></div>
-                                <span className="bar-label">Week 4</span>
-                            </div>
-                            <div className="bar-wrapper">
-                                <div className="bar-lean" style={{ height: '70%' }}></div>
-                                <div className="bar-fat" style={{ height: '18%' }}></div>
-                                <span className="bar-label">Week 5</span>
-                            </div>
-                            <div className="bar-wrapper">
-                                <div className="bar-lean" style={{ height: '72%' }}></div>
-                                <div className="bar-fat" style={{ height: '15%' }}></div>
-                                <span className="bar-label">Week 6</span>
+                        <div className="setup-white-card">
+                            <h2 className="setup-card-title">
+                                <Filter size={20} color="#10b981" /> Dietary Preference
+                            </h2>
+                            <div className="dietary-tags-container">
+                                <button className="diet-tag active">LOW CARB</button>
+                                <button className="diet-tag">KETO</button>
+                                <button className="diet-tag">VEGAN</button>
+                                <button className="diet-tag">PALEO</button>
+                                <button className="diet-tag active">INTERMITTENT FASTING</button>
                             </div>
                         </div>
+
                     </div>
 
-                    {/* Lower Section Split */}
-                    <div className="split-cards">
-                        <div className="setup-card theme-green flex-1">
-                            <div className="card-header-flex">
-                                <Settings className="card-icon" size={20} />
-                                <h2 className="card-title-m">AI Nutritional Analysis</h2>
+                    {/* Right Column */}
+                    <div className="hp-setup-right">
+                        
+                        {/* Projection Chart */}
+                        <div className="setup-white-card no-pb">
+                            <div className="projection-chart-header">
+                                <div>
+                                    <h2 className="setup-card-title-lg">Body Transformation Projection</h2>
+                                    <p className="setup-card-desc">Estimated progress based on your metrics and Muscle Gain goal.</p>
+                                </div>
+                                <div className="setup-legend">
+                                    <span className="lg-item"><span className="lg-dot green"></span> Fat %</span>
+                                    <span className="lg-item"><span className="lg-dot grey"></span> Lean Mass</span>
+                                </div>
                             </div>
-                            <p className="card-desc dark">
-                                Based on your <strong>{activityLevel.split(' ')[0]}</strong> lifestyle and <strong>{primaryGoal}</strong> goal, we recommend a daily surplus of 300 calories. Your target is set to 2,850 kcal/day.
-                            </p>
-                            <p className="card-subtext">
-                                This recommendation prioritizes a 40/30/30 protein-to-carb-to-fat ratio to support muscle protein synthesis while maintaining metabolic health.
-                            </p>
-                        </div>
-
-                        <div className="setup-card flex-1 center-content">
-                            <h2 className="huge-number text-green">2,850</h2>
-                            <span className="tiny-label">DAILY TARGET KCAL</span>
-                            <div className="loading-dots">
-                                <span className="dot bg-green"></span>
-                                <span className="dot bg-green-light"></span>
-                                <span className="dot bg-gray"></span>
+                            
+                            <div className="abstract-chart-container">
+                                <div className="ac-col">
+                                    <div className="ac-bar">
+                                        <div className="ac-lean h-50"></div>
+                                        <div className="ac-fat h-25"></div>
+                                    </div>
+                                    <div className="ac-label">Week 1</div>
+                                </div>
+                                <div className="ac-col">
+                                    <div className="ac-bar">
+                                        <div className="ac-lean h-45"></div>
+                                        <div className="ac-fat h-20"></div>
+                                    </div>
+                                    <div className="ac-label">Week 2</div>
+                                </div>
+                                <div className="ac-col">
+                                    <div className="ac-bar">
+                                        <div className="ac-lean h-60"></div>
+                                        <div className="ac-fat h-18"></div>
+                                    </div>
+                                    <div className="ac-label">Week 3</div>
+                                </div>
+                                <div className="ac-col">
+                                    <div className="ac-bar">
+                                        <div className="ac-lean h-62"></div>
+                                        <div className="ac-fat h-15"></div>
+                                    </div>
+                                    <div className="ac-label">Week 4</div>
+                                </div>
+                                <div className="ac-col">
+                                    <div className="ac-bar">
+                                        <div className="ac-lean h-63"></div>
+                                        <div className="ac-fat h-12"></div>
+                                    </div>
+                                    <div className="ac-label">Week 5</div>
+                                </div>
+                                <div className="ac-col">
+                                    <div className="ac-bar">
+                                        <div className="ac-lean h-65"></div>
+                                        <div className="ac-fat h-10"></div>
+                                    </div>
+                                    <div className="ac-label">Week 6</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Suggested Meals Carousel (Static mockup) */}
-                    <div className="suggested-meals">
-                        <div className="meal-img-card">
-                            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80" alt="Fresh Veggies" />
-                            <span className="meal-label">FRESH VEGGIES</span>
-                        </div>
-                        <div className="meal-img-card">
-                            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80" alt="Superfoods" />
-                            <span className="meal-label">SUPERFOODS</span>
-                        </div>
-                        <div className="meal-img-card">
-                            <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80" alt="Lean Protein" />
-                            <span className="meal-label">LEAN PROTEIN</span>
-                        </div>
-                        <div className="meal-img-card">
-                            <img src="https://images.unsplash.com/photo-1621510456681-2330135e5871?w=400&q=80" alt="Detox Juices" />
-                            <span className="meal-label">DETOX JUICES</span>
-                        </div>
-                    </div>
+                        {/* Analysis & Target */}
+                        <div className="analysis-target-row">
+                            <div className="setup-green-card flex-2">
+                                <h3 className="sgc-title text-black">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" style={{width: 18, marginRight: 8}} alt=""/> 
+                                    AI Nutritional Analysis
+                                </h3>
+                                <p className="sgc-text">
+                                    Based on your <span className="text-green-bold">Moderately Active</span> lifestyle and <span className="text-green-bold">Muscle Gain</span> goal, we recommend a daily surplus of 300 calories. Your target is set to 2,850 kcal/day.
+                                </p>
+                                <p className="sgc-subtext">
+                                    This recommendation prioritizes a 40/30/30 protein-to-carb-to-fat ratio to support muscle protein synthesis while maintaining metabolic health.
+                                </p>
+                            </div>
 
-                    <div className="setup-action">
-                        <button className="btn-primary large full-width flex-center">
-                            Update My Plan <ArrowRight size={20} className="ml-2" />
-                        </button>
-                    </div>
+                            <div className="setup-white-card target-kcal-card flex-1">
+                                <div className="huge-green-val">2,850</div>
+                                <div className="target-lbl">DAILY TARGET KCAL</div>
+                                <div className="three-dots">
+                                    <span className="dot active"></span>
+                                    <span className="dot active"></span>
+                                    <span className="dot"></span>
+                                </div>
+                            </div>
+                        </div>
 
+                        {/* Image Cards Row */}
+                        <div className="setup-img-row">
+                            <div className="s-img-card">
+                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80" alt="Fresh Veggies"/>
+                                <div className="s-img-overlay">FRESH VEGGIES</div>
+                            </div>
+                            <div className="s-img-card">
+                                <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80" alt="Superfoods"/>
+                                <div className="s-img-overlay">SUPERFOODS</div>
+                            </div>
+                            <div className="s-img-card">
+                                <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80" alt="Lean Protein"/>
+                                <div className="s-img-overlay">LEAN PROTEIN</div>
+                            </div>
+                            <div className="s-img-card">
+                                <img src="https://images.unsplash.com/photo-1621510456681-2330135e5871?w=400&q=80" alt="Detox Juices"/>
+                                <div className="s-img-overlay">DETOX JUICES</div>
+                            </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="setup-action-wrapper">
+                            <button className="btn-update-plan">
+                                Update My Plan <ArrowRight size={20} />
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 };

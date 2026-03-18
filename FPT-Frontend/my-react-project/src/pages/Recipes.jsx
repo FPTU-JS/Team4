@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Clock, Flame, Heart, Star, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import productService from '../services/productService';
 import categoryService from '../services/categoryService';
+import RecipeSkeleton from '../components/RecipeSkeleton';
 import '../css/recipes.css';
 
 const Recipes = () => {
@@ -208,11 +209,22 @@ const Recipes = () => {
                             <span className="results-count">
                                 Showing {filteredRecipes.length} of {totalElements} results
                             </span>
+                            <div className="sort-box">
+                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginRight: '0.5rem' }}>Sort by:</span>
+                                <select className="sort-select">
+                                    <option>Most Popular</option>
+                                    <option>Highest Rated</option>
+                                    <option>Newest</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div className="hub-grid">
                             {isLoading ? (
-                                <div className="loading-state">Loading recipes...</div>
+                                // Render 6 skeletons as placeholder
+                                Array.from({ length: 6 }).map((_, idx) => (
+                                    <RecipeSkeleton key={idx} />
+                                ))
                             ) : filteredRecipes.length === 0 ? (
                                 <div className="empty-state">No recipes found matching your criteria.</div>
                             ) : (

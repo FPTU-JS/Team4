@@ -47,9 +47,9 @@
 
 .recipe-detail-page {
     font-family: 'Inter', sans-serif;
-    color: #111827;
+    color: var(--text-primary);
     padding-bottom: 4rem;
-    background-color: #fafafa;
+    background-color: var(--bg-main);
 }
 
 /* --- Hero Section --- */
@@ -172,7 +172,7 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 1.5rem 0;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 /* --- Ingredients Sidebar --- */
@@ -186,8 +186,8 @@
 .servings-control {
     display: flex;
     align-items: center;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     overflow: hidden;
 }
@@ -201,13 +201,13 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #6b7280;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
 .servings-btn:hover {
-    background: #f3f4f6;
-    color: #111827;
+    background: var(--bg-main);
+    color: var(--text-primary);
 }
 
 .servings-count {
@@ -221,8 +221,8 @@
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    background: white;
-    border: 1px solid #f3f4f6;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     padding: 1rem;
     border-radius: 12px;
     margin-bottom: 0.75rem;
@@ -240,7 +240,7 @@
 .ingredient-checkbox {
     width: 20px;
     height: 20px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--border-color);
     border-radius: 50%;
     appearance: none;
     cursor: pointer;
@@ -277,12 +277,12 @@
 
 .ingredient-amount {
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 .chef-tip-box {
-    background: #ecfdf5;
-    border: 1px solid #d1fae5;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
     padding: 1.25rem;
     border-radius: 12px;
     margin-top: 2rem;
@@ -326,8 +326,8 @@
 .step-number {
     width: 40px;
     height: 40px;
-    background: #f0fdf4;
-    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -338,7 +338,7 @@
 }
 
 .step-number.active {
-    background: #10b981;
+    background: var(--primary);
     color: white;
 }
 
@@ -353,7 +353,7 @@
 }
 
 .step-desc {
-    color: #4b5563;
+    color: var(--text-secondary);
     line-height: 1.6;
     margin: 0 0 1.25rem 0;
 }
@@ -377,11 +377,11 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
-    background: white;
+    background: var(--bg-surface);
     padding: 2.5rem;
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     text-align: center;
 }
 
@@ -394,14 +394,14 @@
 .nutrient-val {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     line-height: 1;
     margin-bottom: 0.25rem;
 }
 
 .nutrient-label {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
@@ -411,7 +411,7 @@
 .nutrient-bar {
     width: 100%;
     height: 4px;
-    background: #f3f4f6;
+    background: var(--bg-main);
     border-radius: 2px;
     overflow: hidden;
     position: relative;
@@ -453,7 +453,7 @@
 }
 
 .write-review-btn {
-    color: #10b981;
+    color: var(--primary);
     font-weight: 600;
     background: transparent;
     border: none;
@@ -466,11 +466,11 @@
 }
 
 .review-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
     padding: 1.5rem;
     margin-bottom: 1rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
@@ -503,13 +503,13 @@
 
 .reviewer-name {
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 0.25rem 0;
 }
 
 .review-time {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -520,7 +520,7 @@
 }
 
 .review-text {
-    color: #4b5563;
+    color: var(--text-secondary);
     line-height: 1.6;
     font-size: 0.95rem;
     margin: 0;
@@ -530,9 +530,9 @@
     width: 100%;
     padding: 1rem;
     background: transparent;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    color: #4b5563;
+    color: var(--text-secondary);
     font-weight: 600;
     cursor: pointer;
     margin-top: 1rem;
@@ -540,7 +540,7 @@
 }
 
 .load-more-btn:hover {
-    background: #f9fafb;
+    background: var(--bg-main);
 }
 
 /* --- Responsive cho Tablet & Mobile --- */

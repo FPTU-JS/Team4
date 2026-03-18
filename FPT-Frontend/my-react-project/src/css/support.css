@@ -2,7 +2,7 @@
 .support-layout {
     display: flex;
     height: 100vh;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     font-family: 'Inter', -apple-system, sans-serif;
     overflow: hidden;
 }
@@ -10,8 +10,8 @@
 /* ---------------- 左 SIDEBAR ---------------- */
 .support-sidebar {
     width: 250px;
-    background-color: #ffffff;
-    border-right: 1px solid #f1f5f9;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     z-index: 10;
@@ -29,7 +29,7 @@
 .admin-logo-icon {
     width: 36px;
     height: 36px;
-    background-color: #ecfdf5;
+    background-color: var(--bg-main);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -44,7 +44,7 @@
     margin: 0;
     font-size: 0.95rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .premium-badge {
@@ -66,7 +66,7 @@
     align-items: center;
     gap: 0.8rem;
     padding: 0.75rem 1rem;
-    color: #64748b;
+    color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -75,13 +75,13 @@
 }
 
 .sidebar-link:hover {
-    background-color: #f8fafc;
-    color: #1e293b;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
 
 .sidebar-link.active {
-    background-color: #d1fae5;
-    color: #065f46;
+    background-color: var(--bg-main);
+    color: var(--primary);
 }
 
 .sidebar-link.active svg {
@@ -117,7 +117,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: var(--bg-surface);
     /* Base background for the hero area */
 }
 
@@ -126,8 +126,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 2rem;
-    border-bottom: 1px solid #f1f5f9;
-    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
 }
 
 .header-left {
@@ -140,13 +140,13 @@
     margin: 0;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .header-search {
     display: flex;
     align-items: center;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     border-radius: 6px;
     padding: 0.4rem 0.75rem;
     width: 300px;
@@ -159,7 +159,7 @@
     outline: none;
     font-size: 0.85rem;
     width: 100%;
-    color: #334155;
+    color: var(--text-primary);
 }
 
 .search-icon {
@@ -175,7 +175,7 @@
 .notification-btn {
     background: transparent;
     border: none;
-    color: #64748b;
+    color: var(--text-secondary);
     position: relative;
     cursor: pointer;
     display: flex;
@@ -211,47 +211,47 @@
 .user-name {
     font-size: 0.85rem;
     font-weight: 500;
-    color: #475569;
+    color: var(--text-primary);
 }
 
 /* ---------------- BODY SCROLL AREA ---------------- */
 .support-content-scroll {
     flex: 1;
     overflow-y: auto;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     /* Light grey for the content area */
 }
 
 .support-hero {
-    background-color: #ffffff;
+    background-color: var(--bg-surface);
     padding: 4rem 2rem;
     text-align: center;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .hero-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
 }
 
 .hero-subtitle {
     font-size: 1.1rem;
-    color: #64748b;
+    color: var(--text-secondary);
     margin-bottom: 2.5rem;
 }
 
 .hero-search-wrapper {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     border-radius: 12px;
     display: flex;
     align-items: center;
     padding: 1rem 1.5rem;
     gap: 1rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     transition: box-shadow 0.2s, border-color 0.2s;
 }
 
@@ -270,7 +270,7 @@
     background: transparent;
     outline: none;
     font-size: 1rem;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .support-body {
@@ -282,7 +282,7 @@
 .section-header h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
     margin-bottom: 1.5rem;
 }
 
@@ -295,11 +295,11 @@
 }
 
 .category-card {
-    background-color: #ffffff;
+    background-color: var(--bg-surface);
     border-radius: 12px;
     padding: 1.5rem;
     text-decoration: none;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -317,13 +317,13 @@
     margin: 0 0 0.5rem 0;
     font-size: 1rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .category-card p {
     margin: 0;
     font-size: 0.8rem;
-    color: #64748b;
+    color: var(--text-secondary);
     line-height: 1.4;
 }
 
@@ -337,14 +337,14 @@
 /* FAQ Accordion */
 .faq-list {
     margin-bottom: 3rem;
-    background-color: #ffffff;
+    background-color: var(--bg-surface);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     overflow: hidden;
 }
 
 .faq-item {
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .faq-item:last-child {
@@ -361,7 +361,7 @@
     border: none;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #334155;
+    color: var(--text-primary);
     cursor: pointer;
     text-align: left;
 }
@@ -379,7 +379,7 @@
     max-height: 0;
     overflow: hidden;
     padding: 0 1.5rem;
-    background-color: #fafafa;
+    background-color: var(--bg-main);
     transition: all 0.3s ease-in-out;
 }
 
@@ -391,15 +391,15 @@
 .faq-answer p {
     margin: 0;
     font-size: 0.9rem;
-    color: #475569;
+    color: var(--text-secondary);
     line-height: 1.5;
 }
 
 /* Ticket Form */
 .ticket-form-card {
-    background-color: #ffffff;
+    background-color: var(--bg-surface);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     padding: 2rem;
 }
 
@@ -407,13 +407,13 @@
     margin: 0 0 0.5rem 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .ticket-header p {
     margin: 0 0 2rem 0;
     font-size: 0.9rem;
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 .ticket-form {
@@ -437,7 +437,7 @@
 .form-group label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #334155;
+    color: var(--text-primary);
 }
 
 .form-group input,
@@ -445,20 +445,20 @@
 .select-wrapper select {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 0.9rem;
-    color: #1e293b;
+    color: var(--text-primary);
     outline: none;
     transition: border-color 0.2s;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .select-wrapper select:focus {
-    border-color: #10b981;
-    background-color: #ffffff;
+    border-color: var(--primary);
+    background-color: var(--bg-surface);
 }
 
 .select-wrapper {
@@ -539,13 +539,13 @@
 }
 
 .green-box {
-    background-color: #d1fae5;
-    border: 1px solid #a7f3d0;
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--primary);
 }
 
 .green-box h3,
 .green-box p {
-    color: #065f46;
+    color: var(--primary);
     position: relative;
     z-index: 2;
 }
@@ -586,12 +586,12 @@
 }
 
 .white-box {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
 }
 
 .white-box h3 {
-    color: #1e293b;
+    color: var(--text-primary);
     margin-bottom: 1.25rem;
 }
 
@@ -615,7 +615,7 @@
 .info-label {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .email-link {
@@ -630,7 +630,7 @@
 
 .info-text {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 /* ---------------- FOOTER ---------------- */
@@ -657,11 +657,11 @@
 }
 
 .footer-links a:hover {
-    color: #10b981;
+    color: var(--primary);
 }
 
 .copyright {
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 0.75rem;
     margin: 0;
 }
