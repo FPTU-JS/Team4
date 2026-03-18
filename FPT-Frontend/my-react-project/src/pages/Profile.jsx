@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/profile.css';
 import {
     User, Utensils, Bookmark, MessageSquare, Dumbbell,
     Flame, ArrowRight, Eye, Heart, Plus, Trophy, Award
 } from 'lucide-react';
+import { useAuth } from './AuthContext';
 
 const Profile = () => {
-    const [activeTab, setActiveTab] = useState('recipes');
 
+    const {isAuthenticated } = useAuth();
+    const [activeTab, setActiveTab] = useState('recipes');
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login', { replace: true });
+        }
+    }, [isAuthenticated, navigate])
     const myRecipes = [
         {
             id: 1,
@@ -28,7 +37,7 @@ const Profile = () => {
             image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400'
         },
     ];
-
+    if (!isAuthenticated) return null;
     return (
         <div className="profile-page-wrapper">
             <div className="profile-page-container">
