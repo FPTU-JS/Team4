@@ -185,8 +185,8 @@
     padding: 7px 14px;
     border-radius: 8px;
     text-decoration: none;
-    background-color: var(--primary);
-    color: white;
+    background-color: rgb(0, 0, 0);
+    color: #ffffff !important;
     transition: all 0.2s ease;
 }
 
