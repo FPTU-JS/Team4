@@ -183,6 +183,7 @@
 .input-wrapper input {
   width: 100%;
   padding: 14px 16px;
+  padding-left: 40px; 
   padding-right: 40px;
   font-size: 15px;
   color: var(--text-primary);
@@ -202,7 +203,7 @@
   color: #94a3b8;
 }
 
-.input-icon {
+.input-icon-left {
   position: absolute;
   left: 14px;
   top: 50%;

@@ -343,7 +343,33 @@
   background-color: var(--bg-main);
 }
 
+.back-to-home {
+  position: absolute;
+  top: 2rem;
+  right: 4rem;
+  color: #f59e0b;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease;
+}
+
+.back-to-home:hover {
+  text-decoration: underline;
+  transform: translateX(-5px);
+}
+
 /* --- RESPONSIVE TABLET & MOBILE --- */
+
+@media (max-width: 900px) {
+  .back-to-home {
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+}
 
 @media (max-width: 1024px) {
   .login-right {
