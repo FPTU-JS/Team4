@@ -4,9 +4,9 @@
     display: flex;
     min-height: calc(100vh - 80px);
     /* Adjust based on navbar height */
-    background-color: #f9fafb;
+    background-color: var(--bg-main);
     font-family: 'Inter', sans-serif;
-    color: #111827;
+    color: var(--text-primary);
     padding: 0;
     margin: -1.5rem -1rem;
     /* Negate the main-content padding to make sidebar flush left */
@@ -15,8 +15,8 @@
 /* --- Left Sidebar --- */
 .filter-sidebar {
     flex: 0 0 280px;
-    background-color: #fafafa;
-    border-right: 1px solid #e5e7eb;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
     padding: 2rem 1.5rem;
     overflow-y: auto;
 }
@@ -32,7 +32,7 @@
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .ai-suggestion-box {
@@ -68,7 +68,7 @@
 .filter-group {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .filter-group.border-bottom-0 {
@@ -81,13 +81,13 @@
     align-items: center;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-primary);
     margin: 0 0 1rem 0;
     cursor: pointer;
 }
 
 .chevron {
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-size: 1.2rem;
     line-height: 0.5;
 }
@@ -103,7 +103,7 @@
     align-items: center;
     gap: 0.75rem;
     font-size: 0.9rem;
-    color: #4b5563;
+    color: var(--text-secondary);
     cursor: pointer;
 }
 
@@ -111,7 +111,7 @@
     width: 18px;
     height: 18px;
     accent-color: #10b981;
-    border-color: #d1d5db;
+    border-color: var(--border-color);
     border-radius: 4px;
     cursor: pointer;
 }
@@ -120,17 +120,17 @@
 .discovery-main {
     flex: 1;
     padding: 2.5rem 3rem;
-    background-color: #fafafa;
+    background-color: var(--bg-main);
 }
 
 .breadcrumbs {
     font-size: 0.9rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin-bottom: 1rem;
 }
 
 .breadcrumbs a {
-    color: #6b7280;
+    color: var(--text-secondary);
     text-decoration: none;
 }
 
@@ -150,7 +150,7 @@
 .page-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 2rem 0;
     letter-spacing: -0.5px;
 }
@@ -193,7 +193,7 @@
 
 .sort-label {
     font-size: 0.9rem;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 .sort-select {
@@ -201,7 +201,7 @@
     background: transparent;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
     outline: none;
     cursor: pointer;
 }
@@ -215,11 +215,11 @@
 }
 
 .discovery-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
@@ -262,7 +262,7 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: white;
+    background: var(--bg-surface);
     border: none;
     width: 32px;
     height: 32px;
@@ -290,12 +290,12 @@
     font-size: 1.15rem;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .card-desc {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0 0 1rem 0;
     line-height: 1.4;
     flex: 1;
@@ -307,7 +307,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.75rem;
-    color: #4b5563;
+    color: var(--text-secondary);
 }
 
 .meta-item {
@@ -335,17 +335,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: #4b5563;
+    color: var(--text-secondary);
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .page-btn:hover:not(.active) {
-    background: #f3f4f6;
+    background: var(--bg-main);
 }
 
 .page-btn.active {
@@ -355,7 +355,7 @@
 }
 
 .page-ellipsis {
-    color: #9ca3af;
+    color: var(--text-secondary);
     padding: 0 0.5rem;
 }
 
@@ -367,7 +367,7 @@
     .filter-sidebar {
         width: auto;
         border-right: none;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--border-color);
         padding: 1.5rem;
     }
 

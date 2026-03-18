@@ -9,7 +9,7 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #fafafa;
+  background-color: var(--bg-main);
 }
 
 /* Left Section */
@@ -116,7 +116,7 @@
 /* Right Section */
 .login-right {
   flex: 1;
-  background-color: #fafafa;
+  background-color: var(--bg-main);
   display: flex;
   flex-direction: column;
   padding: 2rem 4rem;
@@ -153,13 +153,13 @@
 .login-header h2 {
   font-size: 36px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
   margin-bottom: 8px;
   letter-spacing: -0.5px;
 }
 
 .login-header p {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 15px;
   margin-bottom: 30px;
 }
@@ -172,7 +172,7 @@
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
@@ -185,9 +185,9 @@
   padding: 14px 16px;
   padding-right: 40px;
   font-size: 15px;
-  color: #1e293b;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   outline: none;
   transition: all 0.2s;
@@ -310,7 +310,7 @@
 .divider::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .divider span {
@@ -330,12 +330,12 @@
   justify-content: center;
   gap: 10px;
   padding: 12px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -346,13 +346,13 @@
 }
 
 .social-btn:hover {
-  background-color: #f8fafc;
+  background-color: var(--bg-main);
 }
 
 .register-link {
   text-align: center;
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .register-link a {

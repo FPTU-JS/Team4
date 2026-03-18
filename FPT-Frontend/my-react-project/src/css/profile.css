@@ -1,11 +1,11 @@
 /* profile.css */
 
 .profile-page-wrapper {
-    background-color: #f9fafb;
+    background-color: var(--bg-main);
     min-height: 100vh;
     padding: 2rem 0 4rem 0;
     font-family: 'DM Sans', 'Inter', sans-serif;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .profile-page-container {
@@ -38,38 +38,38 @@
     padding: 0.85rem 1rem;
     border-radius: 8px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.95rem;
 }
 
 .nav-menu-item:hover {
-    background-color: #f3f4f6;
-    color: #374151;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
 
 .nav-menu-item.active {
-    background-color: #00e676;
-    color: #111827;
+    background-color: var(--primary);
+    color: white;
 }
-
+    
 .nav-menu-item.active svg {
-    color: #111827;
+    color: white;
 }
 
 .sidebar-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
     padding: 1.25rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .sidebar-card-title {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #9ca3af;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0 0 1rem 0;
@@ -87,8 +87,8 @@
     border-radius: 6px;
     font-size: 0.75rem;
     font-weight: 700;
-    background-color: #ecfdf5;
-    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--primary);
 }
 
 .diet-pill.red {
@@ -105,25 +105,25 @@
 .goal-icon-wrap {
     width: 40px;
     height: 40px;
-    background-color: #dcfce7;
+    background-color: rgba(16, 185, 129, 0.2);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #10b981;
+    color: var(--primary);
 }
 
 .goal-info h4 {
     margin: 0 0 0.25rem 0;
     font-size: 0.95rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .goal-info p {
     margin: 0;
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 /* Main Content Area */
@@ -137,10 +137,10 @@
 
 /* Top Banner Card */
 .profile-banner-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
@@ -159,7 +159,7 @@
     position: absolute;
     top: -40px;
     left: 2rem;
-    background: white;
+    background: var(--bg-surface);
     padding: 4px;
     border-radius: 16px;
 }
@@ -179,8 +179,8 @@
 }
 
 .btn-green-solid {
-    background-color: #00e676;
-    color: #111827;
+    background-color: var(--primary);
+    color: white;
     font-weight: 700;
     padding: 0.6rem 1.25rem;
     border-radius: 8px;
@@ -191,12 +191,12 @@
 }
 
 .btn-white-outline {
-    background-color: white;
-    color: #374151;
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
     font-weight: 600;
     padding: 0.6rem 1.25rem;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     font-size: 0.9rem;
     transition: background 0.2s;
@@ -218,7 +218,7 @@
     font-size: 1.8rem;
     font-weight: 800;
     margin: 0;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .badge-gold {
@@ -235,7 +235,7 @@
 }
 
 .profile-bio-text {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.95rem;
     line-height: 1.5;
     max-width: 600px;
@@ -244,7 +244,7 @@
 
 .profile-stats-divider {
     border: none;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--border-color);
     margin: 1.5rem 0;
 }
 
@@ -262,13 +262,13 @@
 .stat-num {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #10b981;
+    color: var(--primary);
 }
 
 .stat-lbl {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-secondary);
     letter-spacing: 0.5px;
 }
 
@@ -276,10 +276,10 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #ecfdf5;
+    background-color: rgba(16, 185, 129, 0.1);
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    border: 1px solid #d1fae5;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .streak-pill-text {
@@ -290,14 +290,14 @@
 .streak-num {
     font-size: 1rem;
     font-weight: 800;
-    color: #10b981;
+    color: var(--primary);
     line-height: 1.1;
 }
 
 .streak-lbl {
     font-size: 0.65rem;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-secondary);
     letter-spacing: 0.5px;
 }
 
@@ -311,7 +311,7 @@
 .card-title {
     font-size: 1.15rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -326,8 +326,8 @@
     font-size: 0.7rem;
     font-weight: 700;
     padding: 0.25rem 0.5rem;
-    background-color: #ecfdf5;
-    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--primary);
     border-radius: 4px;
 }
 
@@ -349,26 +349,26 @@
     justify-content: space-between;
     font-size: 0.85rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .skill-bar-bg {
     width: 100%;
     height: 6px;
-    background-color: #f3f4f6;
+    background-color: var(--bg-main);
     border-radius: 3px;
     overflow: hidden;
 }
 
 .skill-bar-fill {
     height: 100%;
-    background-color: #00e676;
+    background-color: var(--primary);
     border-radius: 3px;
 }
 
 .iron-chef-box {
     margin-top: 1.5rem;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     border-radius: 8px;
     padding: 1rem;
     display: flex;
@@ -379,26 +379,26 @@
 .iron-chef-icon {
     width: 36px;
     height: 36px;
-    background-color: white;
-    border: 2px solid #00e676;
+    background-color: var(--bg-surface);
+    border: 2px solid var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #00e676;
+    color: var(--primary);
 }
 
 .iron-chef-text h5 {
     margin: 0 0 0.2rem 0;
     font-size: 0.9rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .iron-chef-text p {
     margin: 0;
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 /* Achievements List */
@@ -417,7 +417,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: #f3f4f6;
+    background-color: var(--bg-main);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -425,7 +425,7 @@
 }
 
 .ach-icon.green {
-    background-color: #00e676;
+    background-color: var(--primary);
     color: white;
 }
 
@@ -435,14 +435,14 @@
 
 .ach-time {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0 0 0.25rem 0;
 }
 
 .ach-desc {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 0.5rem 0;
 }
 
@@ -457,7 +457,7 @@
 .profile-tabs {
     display: flex;
     gap: 2rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 2rem;
 }
 
@@ -466,7 +466,7 @@
     border: none;
     font-size: 0.95rem;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-secondary);
     padding: 0 0 1rem 0;
     cursor: pointer;
     position: relative;
@@ -474,11 +474,11 @@
 }
 
 .p-tab:hover {
-    color: #374151;
+    color: var(--text-primary);
 }
 
 .p-tab.active {
-    color: #00e676;
+    color: var(--primary);
 }
 
 .p-tab.active::after {
@@ -488,7 +488,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #00e676;
+    background-color: var(--primary);
 }
 
 /* Recipes Grid */
@@ -499,9 +499,9 @@
 }
 
 .recipe-card-new {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--border-color);
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
     display: flex;
@@ -538,14 +538,14 @@
 .recipe-card-title {
     font-size: 1rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0;
     line-height: 1.3;
 }
 
 .time-pill {
-    background-color: #ecfdf5;
-    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--primary);
     font-size: 0.65rem;
     font-weight: 700;
     padding: 0.2rem 0.5rem;
@@ -558,7 +558,7 @@
 
 .recipe-card-desc {
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     line-height: 1.5;
     margin: 0 0 1rem 0;
     flex: 1;
@@ -568,14 +568,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
 
 .recipe-metrics {
     display: flex;
     gap: 1rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.75rem;
     font-weight: 600;
 }
@@ -589,8 +589,8 @@
 .btn-arrow-circle {
     width: 32px;
     height: 32px;
-    background-color: #ecfdf5;
-    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -601,14 +601,14 @@
 }
 
 .btn-arrow-circle:hover {
-    background-color: #d1fae5;
+    background-color: rgba(16, 185, 129, 0.2);
 }
 
 /* Create Empty Card */
 .create-recipe-card {
-    border: 2px dashed #e5e7eb;
+    border: 2px dashed var(--border-color);
     border-radius: 12px;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -620,14 +620,14 @@
 }
 
 .create-recipe-card:hover {
-    border-color: #10b981;
+    border-color: var(--primary);
 }
 
 .create-icon-btn {
     width: 48px;
     height: 48px;
-    background-color: #dcfce7;
-    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.2);
+    color: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -638,13 +638,13 @@
 .create-recipe-card h4 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0 0 0.5rem 0;
 }
 
 .create-recipe-card p {
     font-size: 0.85rem;
-    color: #9ca3af;
+    color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
 }

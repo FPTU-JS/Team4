@@ -21,6 +21,7 @@ import '../css/support.css';
 
 const Support = () => {
     const location = useLocation();
+    // eslint-disable-next-line no-unused-vars
     const currentPath = location.pathname;
 
     const [openFaq, setOpenFaq] = useState(null);

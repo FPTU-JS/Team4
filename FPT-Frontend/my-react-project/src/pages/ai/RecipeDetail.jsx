@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Clock, Activity, Users, Flame, ChefHat, Sparkles, ArrowLeft } from 'lucide-react';
 import productService from '../../services/productService';
 import '../../css/recipe-detail.css';
@@ -169,7 +169,7 @@ const RecipeDetail = () => {
 
                     <div className="ingredients-list">
                         {(recipe.recipes || []).length === 0 ? (
-                            <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No ingredients found for this recipe.</p>
+                            <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>No ingredients found for this recipe.</p>
                         ) : (
                             recipe.recipes.map((item, idx) => (
                                 <label key={idx} className="ingredient-item">
@@ -207,7 +207,7 @@ const RecipeDetail = () => {
                 {/* Right Main Content - Instructions */}
                 <div className="instructions-section">
                     <h2 className="section-title">Instructions & Description</h2>
-                    <p style={{ color: '#4b5563', lineHeight: 1.6, marginBottom: '2rem', fontSize: '1.05rem' }}>
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '2rem', fontSize: '1.05rem' }}>
                         {recipe.description || 'No description provided.'}
                     </p>
 

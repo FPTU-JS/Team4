@@ -146,7 +146,7 @@ const Map = () => {
                             <Popup>
                                 <div style={{ textAlign: 'center' }}>
                                     <h4 style={{ margin: '0 0 5px 0', color: '#3b82f6' }}>Vị trí của bạn</h4>
-                                    <p style={{ margin: 0, color: '#666', fontSize: '12px' }}>You are here</p>
+                                    <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '12px' }}>You are here</p>
                                 </div>
                             </Popup>
                         </Marker>
@@ -158,7 +158,7 @@ const Map = () => {
                             <Popup>
                                 <div style={{ textAlign: 'center' }}>
                                     <h4 style={{ margin: '0 0 5px 0' }}>{place.name}</h4>
-                                    <p style={{ margin: 0, color: '#666', fontSize: '12px' }}>{place.tags.join(', ')}</p>
+                                    <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '12px' }}>{place.tags.join(', ')}</p>
                                 </div>
                             </Popup>
                         </Marker>

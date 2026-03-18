@@ -182,7 +182,7 @@ const AIAssistant = () => {
                         {/* Suggestions / Ingredients */}
                         <div className="info-section">
                             <h4 className="info-section-title">SUGGESTIONS</h4>
-                            <h4 className="info-section-title" style={{ marginTop: '-0.5rem', color: '#10b981' }}>RELATED INGREDIENTS</h4>
+                            <h4 className="info-section-title" style={{ marginTop: '-0.5rem', color: 'var(--primary)' }}>RELATED INGREDIENTS</h4>
 
                             <div className="ingredients-grid">
                                 <div className="ingredient-card">

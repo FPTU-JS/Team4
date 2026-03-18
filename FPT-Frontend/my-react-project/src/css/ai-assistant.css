@@ -4,9 +4,9 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     font-family: 'DM Sans', 'Inter', sans-serif;
-    color: #111827;
+    color: var(--text-primary);
     overflow: hidden;
     /* Prevent body scroll */
 }
@@ -14,8 +14,8 @@
 /* Header */
 .ai-header {
     height: 72px;
-    background-color: white;
-    border-bottom: 1px solid #e5e7eb;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -34,7 +34,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #4b5563;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,12 +44,12 @@
 }
 
 .btn-toggle-sidebar:hover {
-    background-color: #f3f4f6;
-    color: #111827;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
 
 .ai-logo {
-    color: #10b981;
+    color: var(--primary);
 }
 
 .ai-header-title {
@@ -74,7 +74,7 @@
 }
 
 .ai-nav-link {
-    color: #4b5563;
+    color: var(--text-secondary);
     font-size: 0.95rem;
     font-weight: 600;
     text-decoration: none;
@@ -86,13 +86,13 @@
 
 .ai-nav-link:hover,
 .ai-nav-link.active {
-    color: #111827;
-    background-color: #e5e7eb;
+    color: var(--text-primary);
+    background-color: var(--bg-main);
 }
 
 .ai-nav-btn.profile {
-    background-color: #00e676;
-    color: #111827;
+    background-color: var(--primary);
+    color: white;
     font-weight: 700;
     padding: 0.5rem 1.25rem;
     border-radius: 6px;
@@ -104,11 +104,11 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: #f3f4f6;
+    background-color: var(--bg-main);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #111827;
+    color: var(--text-primary);
     cursor: pointer;
     border: none;
 }
@@ -130,8 +130,8 @@
 /* Left Sidebar (History) */
 .ai-sidebar-left {
     width: 280px;
-    background-color: white;
-    border-right: 1px solid #e5e7eb;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -155,8 +155,8 @@
 
 .btn-new-chat {
     width: 100%;
-    background-color: #ecfdf5;
-    color: #10b981;
+    background-color: var(--bg-main);
+    color: var(--primary);
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -164,13 +164,14 @@
     gap: 0.5rem;
     padding: 0.85rem;
     border-radius: 8px;
-    border: none;
+    border: 1px solid var(--primary);
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .btn-new-chat:hover {
-    background-color: #d1fae5;
+    background-color: var(--primary);
+    color: white;
 }
 
 .ai-history-list {
@@ -186,7 +187,7 @@
 .history-label {
     font-size: 0.7rem;
     font-weight: 700;
-    color: #9ca3af;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0 0 0.5rem 0.5rem;
@@ -198,7 +199,7 @@
     gap: 0.75rem;
     padding: 0.75rem;
     border-radius: 8px;
-    color: #4b5563;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -206,24 +207,24 @@
 }
 
 .history-item:hover {
-    background-color: #f9fafb;
+    background-color: var(--bg-main);
 }
 
 .history-item.active {
-    background-color: #ecfdf5;
-    color: #111827;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
 
 .ai-sidebar-bottom {
     padding: 1rem 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border-color);
 }
 
 .btn-clear-chat {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #10b981;
+    color: var(--primary);
     font-weight: 600;
     font-size: 0.9rem;
     border: none;
@@ -237,7 +238,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
 }
 
 .chat-scroll-area {
@@ -251,9 +252,9 @@
 
 .date-pill {
     align-self: center;
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    color: #6b7280;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
     font-size: 0.75rem;
     font-weight: 600;
     padding: 0.4rem 1rem;
@@ -287,7 +288,7 @@
 }
 
 .chat-avatar.ai {
-    background-color: #10b981;
+    background-color: var(--primary);
     color: white;
 }
 
@@ -306,15 +307,15 @@
 }
 
 .chat-row.ai .chat-bubble {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    color: #111827;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     border-top-left-radius: 4px;
 }
 
 .chat-row.user .chat-bubble {
-    background-color: #00e676;
-    color: #111827;
+    background-color: var(--primary);
+    color: white;
     font-weight: 500;
     border-top-right-radius: 4px;
 }
@@ -330,7 +331,7 @@
 }
 
 .ai-list li::marker {
-    color: #10b981;
+    color: var(--primary);
 }
 
 /* Embedded Recipe Card in Chat */
@@ -338,8 +339,8 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    background-color: #f8fafc;
-    border: 1px solid #e5e7eb;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0.75rem;
     margin-top: 1.5rem;
@@ -348,7 +349,7 @@
 }
 
 .embed-recipe-card:hover {
-    border-color: #10b981;
+    border-color: var(--primary);
 }
 
 .embed-img {
@@ -361,13 +362,13 @@
 .embed-info h5 {
     margin: 0 0 0.25rem 0;
     font-size: 0.95rem;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .embed-info p {
     margin: 0;
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     line-height: 1.4;
 }
 
@@ -380,8 +381,8 @@
 .chat-input-box {
     display: flex;
     align-items: center;
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 0.5rem 0.5rem 0.5rem 1.25rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -390,7 +391,7 @@
 .btn-attach {
     background: none;
     border: none;
-    color: #9ca3af;
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 0.25rem;
 }
@@ -401,20 +402,21 @@
     outline: none;
     font-size: 1rem;
     padding: 0.5rem 1rem;
-    color: #111827;
+    color: var(--text-primary);
     font-family: inherit;
+    background: transparent;
 }
 
 .chat-input-field::placeholder {
-    color: #9ca3af;
+    color: var(--text-secondary);
 }
 
 .btn-send {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #00e676;
-    color: #111827;
+    background-color: var(--primary);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -430,15 +432,15 @@
 .chat-disclaimer {
     text-align: center;
     font-size: 0.7rem;
-    color: #9ca3af;
+    color: var(--text-secondary);
     margin-top: 0.75rem;
 }
 
 /* Right Sidebar (Info Panel) */
 .ai-sidebar-right {
     width: 320px;
-    background-color: #f8fafc;
-    border-left: 1px solid #e5e7eb;
+    background-color: var(--bg-surface);
+    border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -456,7 +458,7 @@
 .info-section-title {
     font-size: 0.75rem;
     font-weight: 800;
-    color: #6b7280;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0 0 1rem 0;
@@ -495,14 +497,14 @@
 }
 
 .add-shopping-card {
-    border: 2px dashed #d1d5db;
+    border: 2px dashed var(--border-color);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    color: #10b981;
+    color: var(--primary);
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -510,9 +512,9 @@
 
 /* Wine Pairing */
 .wine-card {
-    background: white;
+    background: var(--bg-surface);
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color);
     padding: 1rem;
     display: flex;
     gap: 1rem;
@@ -528,13 +530,13 @@
 .wine-info h4 {
     margin: 0 0 0.25rem 0;
     font-size: 0.95rem;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .wine-info p {
     margin: 0;
     font-size: 0.8rem;
-    color: #10b981;
+    color: var(--primary);
     line-height: 1.4;
 }
 
@@ -549,12 +551,12 @@
 .map-header h4 {
     margin: 0;
     font-size: 0.95rem;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .badge-open {
-    background-color: #ecfdf5;
-    color: #10b981;
+    background-color: var(--bg-main);
+    color: var(--primary);
     font-size: 0.65rem;
     font-weight: 800;
     padding: 0.2rem 0.5rem;
@@ -580,8 +582,8 @@
     position: absolute;
     bottom: 0.5rem;
     right: 0.5rem;
-    background-color: white;
-    color: #111827;
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
     font-size: 0.7rem;
     font-weight: 700;
     padding: 0.2rem 0.5rem;
@@ -592,7 +594,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    color: #10b981;
+    color: var(--primary);
     font-size: 0.85rem;
     font-weight: 600;
     border: none;

@@ -1,48 +1,73 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Login from './pages/Login.jsx'
-import Register from './pages/Register.jsx'
-import ForgotPassword from './pages/ForgotPassword.jsx'
+import React, { Suspense, lazy } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
+
+// Layouts & Main Handlers
 import MainLayout from './layouts/MainLayout.jsx'
-import Home from './pages/Home.jsx'
-import Preferences from './pages/onboarding/Preferences.jsx'
-import Recommendations from './pages/ai/Recommendations.jsx'
-import RecipeDetail from './pages/ai/RecipeDetail.jsx'
-import Recipes from './pages/Recipes.jsx'
-import HealthyPlanSetup from './pages/HealthyPlanSetup.jsx'
-import HealthyPlanDashboard from './pages/HealthyPlanDashboard.jsx'
-import Map from './pages/Map.jsx'
-import CameraCapture from './pages/CameraCapture.jsx'
-import Community from './pages/Community.jsx'
-import Profile from './pages/Profile.jsx'
-import AIAssistant from './pages/ai/AIAssistant.jsx'
-import Support from './pages/Support.jsx'
 import OAuth2RedirectHandler from './pages/OAuth2RedirectHandler.jsx'
+import AnimatedPage from './components/AnimatedPage.jsx'
+
+// Lazy-loaded Pages
+const Login = lazy(() => import('./pages/login.jsx'))
+const Register = lazy(() => import('./pages/register.jsx'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'))
+const Home = lazy(() => import('./pages/Home.jsx'))
+const Preferences = lazy(() => import('./pages/onboarding/Preferences.jsx'))
+const Recommendations = lazy(() => import('./pages/ai/Recommendations.jsx'))
+const RecipeDetail = lazy(() => import('./pages/ai/RecipeDetail.jsx'))
+const Recipes = lazy(() => import('./pages/Recipes.jsx'))
+const HealthyPlanSetup = lazy(() => import('./pages/HealthyPlanSetup.jsx'))
+const HealthyPlanDashboard = lazy(() => import('./pages/HealthyPlanDashboard.jsx'))
+const Map = lazy(() => import('./pages/Map.jsx'))
+const CameraCapture = lazy(() => import('./pages/CameraCapture.jsx'))
+const Community = lazy(() => import('./pages/Community.jsx'))
+const Profile = lazy(() => import('./pages/Profile.jsx'))
+const AIAssistant = lazy(() => import('./pages/ai/AIAssistant.jsx'))
+
+// Fallback Loader
+const FallbackLoader = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-main)' }}>
+    <div style={{ width: '40px', height: '40px', border: '4px solid var(--border-color)', borderTop: '4px solid var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+    <style>
+      {`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}
+    </style>
+  </div>
+)
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/login" element={<AnimatedPage><Login /></AnimatedPage>} />
+        <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
+        <Route path="/forgot-password" element={<AnimatedPage><ForgotPassword /></AnimatedPage>} />
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+        <Route path="/camera" element={<AnimatedPage><CameraCapture /></AnimatedPage>} />
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<AnimatedPage><Home /></AnimatedPage>} />
+          <Route path="onboarding" element={<AnimatedPage><Preferences /></AnimatedPage>} />
+          <Route path="plan-setup" element={<AnimatedPage><HealthyPlanSetup /></AnimatedPage>} />
+          <Route path="healthy-plan" element={<AnimatedPage><HealthyPlanDashboard /></AnimatedPage>} />
+          <Route path="recipes" element={<AnimatedPage><Recipes /></AnimatedPage>} />
+          <Route path="ai-recommendations" element={<AnimatedPage><Recommendations /></AnimatedPage>} />
+          <Route path="recipe/:id" element={<AnimatedPage><RecipeDetail /></AnimatedPage>} />
+          <Route path="map" element={<AnimatedPage><Map /></AnimatedPage>} />
+          <Route path="community" element={<AnimatedPage><Community /></AnimatedPage>} />
+          <Route path="profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
+        </Route>
+        <Route path="/ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-        <Route path="/camera" element={<CameraCapture />} />
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="onboarding" element={<Preferences />} />
-          <Route path="plan-setup" element={<HealthyPlanSetup />} />
-          <Route path="healthy-plan" element={<HealthyPlanDashboard />} />
-          <Route path="recipes" element={<Recipes />} />
-          <Route path="ai-recommendations" element={<Recommendations />} />
-          <Route path="recipe/:id" element={<RecipeDetail />} />
-          <Route path="map" element={<Map />} />
-          <Route path="community" element={<Community />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
-        <Route path="/ai-assistant" element={<AIAssistant />} />
-        <Route path="/support" element={<Support />} />
-      </Routes>
+      <Suspense fallback={<FallbackLoader />}>
+        <AnimatedRoutes />
+      </Suspense>
     </BrowserRouter>
   )
 }
