@@ -1,14 +1,25 @@
 import React from 'react';
-import { 
-    Search, Bell, HelpCircle, ChevronDown, 
+import {
+    Search, Bell, HelpCircle, ChevronDown,
     MessageSquare, Mail, Clock, Shield,
     User, CreditCard, Sparkles, BookOpen,
-    LayoutDashboard, CookingPot, Settings, Upload
+    LayoutDashboard, CookingPot, Settings, Upload, LogOut
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../pages/AuthContext';
 import '../css/help-center.css';
 
 const HelpCenter = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuth();
+
+    // 3. Đưa hàm handleLogout vào trong Component
+    const handleLogout = () => {
+        logout();
+        console.log('User logged out');
+        navigate('/', { replace: true });
+    };
+
     return (
         <div className="help-center-layout">
             {/* Sidebar */}
@@ -39,6 +50,22 @@ const HelpCenter = () => {
                     <div className="hc-nav-item active">
                         <HelpCircle size={20} /> HelpCenter
                     </div>
+                    <button
+                        className="hc-nav-item hc-logout-btn"
+                        onClick={handleLogout}
+                        style={{
+                            width: '100%',
+                            border: 'none',
+                            background: 'none',
+                            cursor: 'pointer',
+                            marginTop: 'auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}
+                    >
+                        <LogOut size={20} /> Logout
+                    </button>
                 </nav>
 
                 <button className="hc-upgrade-btn">
@@ -53,15 +80,15 @@ const HelpCenter = () => {
                     <div className="hc-topbar-left">
                         <HelpCircle size={20} color="#10b981" /> Help Center
                     </div>
-                    
+
                     <div className="hc-topbar-right">
                         <div className="hc-search-mini">
                             <Search size={16} color="#9ca3af" />
                             <input type="text" placeholder="Search knowledge base" />
                         </div>
-                        
+
                         <Bell size={20} color="#6b7280" style={{ cursor: 'pointer' }} />
-                        
+
                         <div className="hc-user-profile">
                             <img src="https://ui-avatars.com/api/?name=Chef+Julian&background=fce7f3&color=db2777" alt="Chef Julian" className="hc-avatar" />
                             <span style={{ fontSize: '0.9rem', fontWeight: '500', color: '#374151' }}>Chef Julian</span>
@@ -71,11 +98,11 @@ const HelpCenter = () => {
 
                 {/* Content */}
                 <main className="hc-content">
-                    
+
                     <section className="hc-hero">
                         <h1>How can we help you, Chef?</h1>
                         <p>Browse our articles, tutorials, and community guides to get the most out of CO-CHE.</p>
-                        
+
                         <div className="hc-search-large">
                             <Search size={20} color="#9ca3af" />
                             <input type="text" placeholder="What are you looking for? (e.g., 'AI spice matching')" />
@@ -164,7 +191,7 @@ const HelpCenter = () => {
                     <div className="hc-ticket-form">
                         <h2>Submit a Support Ticket</h2>
                         <p className="form-subtitle">Can't find what you're looking for? Let us know and we'll get back to you within 24 hours.</p>
-                        
+
                         <div className="hc-form-row">
                             <div className="hc-form-group">
                                 <label>Full Name</label>

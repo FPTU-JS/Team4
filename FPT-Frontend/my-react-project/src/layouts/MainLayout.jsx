@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, LogOut, Settings, Leaf, Sun, Moon } from 'lucide-react';
+import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, Settings, Leaf, Sun, Moon } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
 import FloatingAIBubble from '../components/FloatingAIBubble';
@@ -14,7 +14,7 @@ const MainLayout = () => {
     const currentPath = location.pathname;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
     useEffect(() => {
@@ -42,14 +42,6 @@ const MainLayout = () => {
         // eslint-disable-next-line
         setIsDropdownOpen(false);
     }, [location]);
-
-    const handleLogout = () => {
-        logout();
-
-        console.log('User logged out');
-
-        navigate('/', { replace: true })
-    };
 
     return (
         <div className="layout-container">
