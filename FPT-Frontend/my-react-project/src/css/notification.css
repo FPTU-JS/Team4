@@ -1,7 +1,7 @@
 .notification-container {
   position: relative;
-  display: inline-block;
-  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .bell-btn {

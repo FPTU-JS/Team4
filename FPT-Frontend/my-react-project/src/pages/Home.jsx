@@ -2,13 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Search, Camera, ArrowRight, TrendingUp, Heart, MapPin, Bookmark, Clock, Flame, Star, Upload } from 'lucide-react';
 import productService from '../services/productService';
+import { useAuth } from './AuthContext';
 import '../css/home.css';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();
     const [recipes, setRecipes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCameraMenu, setShowCameraMenu] = useState(false);
+    const [searchText, setSearchText] = useState('');
 
     const cameraInputRef = useRef(null);
     const uploadInputRef = useRef(null);
@@ -62,8 +65,25 @@ const Home = () => {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            console.log("Photo captured:", file);
-            // Optionally handle the file or preview it here later
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                navigate('/ai-assistant', { state: { capturedImage: reader.result } });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleGenerate = () => {
+        if (searchText.trim()) {
+            navigate('/ai-assistant', { state: { initialPrompt: `Create a recipe with: ${searchText}` } });
+        } else {
+            navigate('/recipes');
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleGenerate();
         }
     };
 
@@ -110,6 +130,9 @@ const Home = () => {
                                 type="text"
                                 className="search-input"
                                 placeholder="Type ingredients (e.g., avocado, eggs...)"
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                onKeyDown={handleKeyDown}
                             />
                         </div>
                         <div className="camera-dropdown-container" ref={dropdownRef}>
@@ -152,7 +175,7 @@ const Home = () => {
                             onChange={handleFileChange}
                         />
 
-                        <button className="generate-btn" onClick={() => navigate('/recipes')}>
+                        <button className="generate-btn" onClick={handleGenerate}>
                             Generate <ArrowRight size={18} />
                         </button>
                     </div>
@@ -174,8 +197,11 @@ const Home = () => {
                         type="text"
                         className="search-input"
                         placeholder="Search recipes or ingredients"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
-                    <div className="search-btn-icon-wrapper">
+                    <div className="search-btn-icon-wrapper" onClick={handleGenerate} style={{cursor: 'pointer'}}>
                         <Search size={18} color="#f59e0b" />
                     </div>
                 </div>
@@ -233,8 +259,10 @@ const Home = () => {
                                 <Sparkles size={20} />
                             </div>
                             <div>
-                                <h4 className="plan-title">Based on your "Low Carb" plan</h4>
-                                <p className="plan-desc">We found 2 new recipes matching your preferences</p>
+                                <h4 className="plan-title">
+                                    {isAuthenticated ? `Based on ${user?.username || 'your'} preferences` : 'Based on popular trends'}
+                                </h4>
+                                <p className="plan-desc">We found 2 new recipes matching your taste</p>
                             </div>
                         </div>
 
@@ -279,8 +307,9 @@ const Home = () => {
                     </div>
 
                     {/* Today's Nutrition */}
-                    <div className="sidebar-card nutrition-card">
-                        <h3 className="sidebar-title">Today's Nutrition</h3>
+                    {isAuthenticated && (
+                        <div className="sidebar-card nutrition-card">
+                            <h3 className="sidebar-title">Today's Nutrition</h3>
 
                         <div className="nutrition-summary">
                             <div className="circle-chart">
@@ -330,6 +359,7 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
+                    )}
 
                     {/* Community Top Picks */}
                     <div className="sidebar-card">

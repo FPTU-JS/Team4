@@ -1,103 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Search, Bell, HelpCircle, ChevronDown,
     MessageSquare, Mail, Clock, Shield,
     User, CreditCard, Sparkles, BookOpen,
-    LayoutDashboard, CookingPot, Settings, Upload, LogOut
+    LayoutDashboard, CookingPot, Settings, Upload, LogOut,
+    Sun, Moon
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../pages/AuthContext';
+import toast, { Toaster } from 'react-hot-toast';
 import '../css/help-center.css';
 
 const HelpCenter = () => {
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
+    
+    // Form state
+    const [ticketData, setTicketData] = useState({
+        fullName: user?.username || '',
+        email: user?.email || '',
+        category: 'Technical Issue',
+        subject: '',
+        description: ''
+    });
 
-    // 3. Đưa hàm handleLogout vào trong Component
-    const handleLogout = () => {
-        logout();
-        console.log('User logged out');
-        navigate('/', { replace: true });
+
+
+    const handleTicketSubmit = (e) => {
+        e.preventDefault();
+        if (!ticketData.subject || !ticketData.description) {
+            toast.error("Please fill in all required fields.");
+            return;
+        }
+        toast.promise(
+            new Promise(resolve => setTimeout(resolve, 1500)),
+            {
+                loading: 'Submitting ticket...',
+                success: 'Ticket submitted successfully! We will contact you soon.',
+                error: 'Failed to submit ticket.',
+            }
+        ).then(() => {
+            setTicketData({ ...ticketData, subject: '', description: '' });
+        });
     };
 
+    const userName = user?.username || 'Chef';
+    const userRole = user?.role === 'ROLE_ADMIN' ? 'Admin' : 'Premium Member';
+    const avatarName = userName.replace(' ', '+');
+
     return (
-        <div className="help-center-layout">
-            {/* Sidebar */}
-            <aside className="hc-sidebar">
-                <div className="hc-brand">
-                    <div className="hc-logo-icon">
-                        <CookingPot size={24} />
-                    </div>
-                    <div className="hc-brand-text">
-                        <span className="hc-brand-title">CO-CHE Admin</span>
-                        <span className="hc-brand-subtitle">Premium Plan</span>
-                    </div>
-                </div>
-
-                <nav className="hc-nav">
-                    <Link to="/" className="hc-nav-item">
-                        <LayoutDashboard size={20} /> Dashboard
-                    </Link>
-                    <Link to="/recipes" className="hc-nav-item">
-                        <BookOpen size={20} /> Recipes
-                    </Link>
-                    <Link to="/ai-recommendations" className="hc-nav-item">
-                        <Sparkles size={20} /> AI Kitchen
-                    </Link>
-                    <Link to="/profile" className="hc-nav-item">
-                        <Settings size={20} /> Settings
-                    </Link>
-                    <div className="hc-nav-item active">
-                        <HelpCircle size={20} /> HelpCenter
-                    </div>
-                    <button
-                        className="hc-nav-item hc-logout-btn"
-                        onClick={handleLogout}
-                        style={{
-                            width: '100%',
-                            border: 'none',
-                            background: 'none',
-                            cursor: 'pointer',
-                            marginTop: 'auto',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px'
-                        }}
-                    >
-                        <LogOut size={20} /> Logout
-                    </button>
-                </nav>
-
-                <button className="hc-upgrade-btn">
-                    <Upload size={18} /> Upgrade Now
-                </button>
-            </aside>
-
-            {/* Main Wrapper */}
-            <div className="hc-main">
-                {/* Header */}
-                <header className="hc-topbar">
-                    <div className="hc-topbar-left">
-                        <HelpCircle size={20} color="#10b981" /> Help Center
-                    </div>
-
-                    <div className="hc-topbar-right">
-                        <div className="hc-search-mini">
-                            <Search size={16} color="#9ca3af" />
-                            <input type="text" placeholder="Search knowledge base" />
-                        </div>
-
-                        <Bell size={20} color="#6b7280" style={{ cursor: 'pointer' }} />
-
-                        <div className="hc-user-profile">
-                            <img src="https://ui-avatars.com/api/?name=Chef+Julian&background=fce7f3&color=db2777" alt="Chef Julian" className="hc-avatar" />
-                            <span style={{ fontSize: '0.9rem', fontWeight: '500', color: '#374151' }}>Chef Julian</span>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Content */}
-                <main className="hc-content">
+        <>
+            <Toaster position="top-right" />
+            <main className="hc-content">
 
                     <section className="hc-hero">
                         <h1>How can we help you, Chef?</h1>
@@ -105,7 +59,7 @@ const HelpCenter = () => {
 
                         <div className="hc-search-large">
                             <Search size={20} color="#9ca3af" />
-                            <input type="text" placeholder="What are you looking for? (e.g., 'AI spice matching')" />
+                            <input type="text" placeholder="Search for 'Recipe sync' or 'AI Matching'..." />
                         </div>
                     </section>
 
@@ -114,26 +68,32 @@ const HelpCenter = () => {
                         <div className="hc-column-left">
                             <h2 className="hc-subtitle">Browse by Category</h2>
                             <div className="hc-grid-categories">
-                                <div className="hc-category-card">
-                                    <User size={24} className="hc-category-icon" />
-                                    <h3>Account</h3>
-                                    <p>Profile management, security, and subscription settings.</p>
-                                </div>
+                                <Link to="/profile" style={{textDecoration: 'none'}}>
+                                    <div className="hc-category-card">
+                                        <User size={24} className="hc-category-icon" />
+                                        <h3>Account</h3>
+                                        <p>Profile management, security, and subscription settings.</p>
+                                    </div>
+                                </Link>
                                 <div className="hc-category-card">
                                     <CreditCard size={24} className="hc-category-icon" />
                                     <h3>Billing</h3>
                                     <p>Manage invoices, payment methods, and premium perks.</p>
                                 </div>
-                                <div className="hc-category-card">
-                                    <Sparkles size={24} className="hc-category-icon" />
-                                    <h3>AI Features</h3>
-                                    <p>Master AI recipe generation and flavor pairing logic.</p>
-                                </div>
-                                <div className="hc-category-card">
-                                    <CookingPot size={24} className="hc-category-icon" />
-                                    <h3>Recipes</h3>
-                                    <p>Importing recipes, organizing collections, and meal planning.</p>
-                                </div>
+                                <Link to="/ai-assistant" style={{textDecoration: 'none'}}>
+                                    <div className="hc-category-card">
+                                        <Sparkles size={24} className="hc-category-icon" />
+                                        <h3>AI Features</h3>
+                                        <p>Master AI recipe generation and flavor pairing logic.</p>
+                                    </div>
+                                </Link>
+                                <Link to="/recipes" style={{textDecoration: 'none'}}>
+                                    <div className="hc-category-card">
+                                        <CookingPot size={24} className="hc-category-icon" />
+                                        <h3>Recipes</h3>
+                                        <p>Importing recipes, organizing collections, and meal planning.</p>
+                                    </div>
+                                </Link>
                             </div>
 
                             <h2 className="hc-subtitle">Frequently Asked Questions</h2>
@@ -150,10 +110,6 @@ const HelpCenter = () => {
                                     <span>How does the AI handle ingredient substitutes?</span>
                                     <ChevronDown size={20} color="#9ca3af" />
                                 </div>
-                                <div className="hc-faq-item">
-                                    <span>Is my custom recipe data used for AI training?</span>
-                                    <ChevronDown size={20} color="#9ca3af" />
-                                </div>
                             </div>
                         </div>
 
@@ -162,7 +118,7 @@ const HelpCenter = () => {
                             <div className="hc-panel green">
                                 <h3>Need instant help?</h3>
                                 <p>Our AI Assistant is trained on all documentation and can help you in real-time.</p>
-                                <button className="hc-btn-primary">
+                                <button className="hc-btn-primary" onClick={() => navigate('/ai-assistant')}>
                                     <MessageSquare size={18} /> Chat with AI Assistant
                                 </button>
                             </div>
@@ -188,62 +144,86 @@ const HelpCenter = () => {
                     </div>
 
                     {/* Ticket Form */}
-                    <div className="hc-ticket-form">
+                    <form className="hc-ticket-form" onSubmit={handleTicketSubmit}>
                         <h2>Submit a Support Ticket</h2>
                         <p className="form-subtitle">Can't find what you're looking for? Let us know and we'll get back to you within 24 hours.</p>
 
                         <div className="hc-form-row">
                             <div className="hc-form-group">
                                 <label>Full Name</label>
-                                <input type="text" defaultValue="Julian Smith" />
+                                <input 
+                                    type="text" 
+                                    value={ticketData.fullName} 
+                                    onChange={(e) => setTicketData({...ticketData, fullName: e.target.value})} 
+                                    required 
+                                />
                             </div>
                             <div className="hc-form-group">
                                 <label>Email Address</label>
-                                <input type="email" defaultValue="julian@example.com" />
+                                <input 
+                                    type="email" 
+                                    value={ticketData.email} 
+                                    onChange={(e) => setTicketData({...ticketData, email: e.target.value})} 
+                                    required 
+                                />
                             </div>
                         </div>
 
                         <div className="hc-form-group" style={{ marginBottom: '1.5rem' }}>
                             <label>Category</label>
-                            <select>
+                            <select 
+                                value={ticketData.category}
+                                onChange={(e) => setTicketData({...ticketData, category: e.target.value})}
+                            >
                                 <option>Technical Issue</option>
                                 <option>Billing Issue</option>
                                 <option>Feature Request</option>
+                                <option>Account Management</option>
                             </select>
                         </div>
 
                         <div className="hc-form-group" style={{ marginBottom: '1.5rem' }}>
                             <label>Subject</label>
-                            <input type="text" placeholder="Briefly describe your request" />
+                            <input 
+                                type="text" 
+                                placeholder="Briefly describe your request" 
+                                value={ticketData.subject} 
+                                onChange={(e) => setTicketData({...ticketData, subject: e.target.value})} 
+                                required
+                            />
                         </div>
 
                         <div className="hc-form-group">
                             <label>Detailed Description</label>
-                            <textarea placeholder="Tell us more about how we can help..."></textarea>
+                            <textarea 
+                                placeholder="Tell us more about how we can help..." 
+                                value={ticketData.description} 
+                                onChange={(e) => setTicketData({...ticketData, description: e.target.value})} 
+                                required
+                            ></textarea>
                         </div>
 
                         <div className="hc-form-footer">
-                            <button className="hc-btn-primary" style={{ width: 'auto', padding: '0.8rem 2rem' }}>
+                            <button type="submit" className="hc-btn-primary" style={{ width: 'auto', padding: '0.8rem 2rem' }}>
                                 Submit Ticket
                             </button>
                             <span>By submitting, you agree to our privacy policy regarding support data.</span>
                         </div>
-                    </div>
+                    </form>
 
                     <footer className="hc-footer">
                         <div className="hc-footer-links">
-                            <Link to="#">Documentation</Link>
-                            <Link to="#">API Status</Link>
-                            <Link to="#">Community Forum</Link>
-                            <Link to="#">Privacy Policy</Link>
+                            <Link to="/recipes">Documentation</Link>
+                            <Link to="/healthy-plan">Nutrition Rules</Link>
+                            <Link to="/community">Community Forum</Link>
+                            <Link to="/">Terms of Service</Link>
                         </div>
                         <div className="hc-footer-copyright">
                             © 2024 CO-CHE Kitchen Intelligence. All rights reserved.
                         </div>
                     </footer>
                 </main>
-            </div>
-        </div>
+        </>
     );
 };
 

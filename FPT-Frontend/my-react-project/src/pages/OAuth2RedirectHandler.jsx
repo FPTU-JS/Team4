@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const OAuth2RedirectHandler = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { oauthLogin } = useAuth();
 
     useEffect(() => {
         // Lấy token từ URL query parameter (e.g. ?token=xxxxx)
@@ -11,11 +13,7 @@ const OAuth2RedirectHandler = () => {
         const token = params.get('token');
 
         if (token) {
-            // Lưu JWT token vào localStorage của trình duyệt
-            localStorage.setItem('jwtToken', token);
-            // Có thể Decode JWT để lấy tên/email lưu vào localStorage (tuỳ ý)
-
-            // Xoá thông tin token trên thanh địa chỉ URL và dọn dẹp chuyển sang trang chủ
+            oauthLogin(token);
             navigate('/', { replace: true });
         } else {
             // Nếu có lỗi, chuyển về trang login

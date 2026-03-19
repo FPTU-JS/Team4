@@ -3,20 +3,71 @@ import { useNavigate } from 'react-router-dom';
 import '../css/profile.css';
 import {
     User, Utensils, Bookmark, MessageSquare, Dumbbell,
-    Flame, ArrowRight, Eye, Heart, Plus, Trophy, Award
+    Flame, ArrowRight, Eye, Heart, Plus, Trophy, Award, HelpCircle, X
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import HelpCenter from './HelpCenter';
+import toast, { Toaster } from 'react-hot-toast';
 
 const Profile = () => {
 
-    const {isAuthenticated } = useAuth();
-    const [activeTab, setActiveTab] = useState('recipes');
+    const { isAuthenticated, user, updateUserAvatar } = useAuth();
+    const [activeMenu, setActiveMenu] = useState('overview');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        username: '',
+        bio: 'Enthusiastic chef ready to explore new flavors and share recipes.',
+        avatar: ''
+    });
     const navigate = useNavigate();
+    
     useEffect(() => {
         if (!isAuthenticated) {
             navigate('/login', { replace: true });
         }
-    }, [isAuthenticated, navigate])
+    }, [isAuthenticated, navigate]);
+
+    const userName = user?.username || 'Chef';
+    const userRole = user?.role === 'ROLE_ADMIN' ? 'Master Chef' : 'Premium Chef';
+    const avatarName = userName.replace(' ', '+');
+    const userEmail = user?.email || 'No email provided';
+    const displayAvatar = user?.avatar || `https://ui-avatars.com/api/?name=${avatarName}&background=10b981&color=fff&size=128`;
+
+    useEffect(() => {
+        if (user) {
+            setEditFormData(prev => ({ 
+                ...prev, 
+                username: user.username || 'Chef',
+                avatar: user.avatar || ''
+            }));
+        }
+    }, [user]);
+
+    const handleShare = () => {
+        navigator.clipboard.writeText(window.location.href);
+        toast.success('Profile link copied to clipboard!');
+    };
+
+    const handleEditSubmit = (e) => {
+        e.preventDefault();
+        if (editFormData.avatar) {
+            updateUserAvatar(editFormData.avatar);
+        }
+        // Additional API calls to save username/bio could go here
+        toast.success('Profile updated successfully!');
+        setIsEditModalOpen(false);
+    };
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEditFormData({...editFormData, avatar: reader.result});
+            };
+            reader.readAsDataURL(file);
+        }
+    };
     const myRecipes = [
         {
             id: 1,
@@ -40,6 +91,7 @@ const Profile = () => {
     if (!isAuthenticated) return null;
     return (
         <div className="profile-page-wrapper">
+            <Toaster position="top-right" />
             <div className="profile-page-container">
 
                 {/* --- Left Sidebar --- */}
@@ -47,17 +99,35 @@ const Profile = () => {
 
                     {/* Main Nav */}
                     <div className="sidebar-nav-menu">
-                        <div className="nav-menu-item active">
+                        <div 
+                            className={`nav-menu-item ${activeMenu === 'overview' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu('overview')}
+                        >
                             <User size={20} /> Profile Overview
                         </div>
-                        <div className="nav-menu-item">
+                        <div 
+                            className={`nav-menu-item ${activeMenu === 'recipes' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu('recipes')}
+                        >
                             <Utensils size={20} /> My Recipes
                         </div>
-                        <div className="nav-menu-item">
+                        <div 
+                            className={`nav-menu-item ${activeMenu === 'collections' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu('collections')}
+                        >
                             <Bookmark size={20} /> Collections
                         </div>
-                        <div className="nav-menu-item">
+                        <div 
+                            className={`nav-menu-item ${activeMenu === 'community' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu('community')}
+                        >
                             <MessageSquare size={20} /> Community Activity
+                        </div>
+                        <div 
+                            className={`nav-menu-item ${activeMenu === 'help' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu('help')}
+                        >
+                            <HelpCircle size={20} /> Support & Help
                         </div>
                     </div>
 
@@ -88,6 +158,7 @@ const Profile = () => {
                 </aside>
 
                 {/* --- Main Content --- */}
+                {activeMenu !== 'help' ? (
                 <main className="profile-main-content">
 
                     {/* Top Banner Card */}
@@ -96,26 +167,26 @@ const Profile = () => {
                         <div className="banner-body">
                             <div className="profile-avatar-container">
                                 <img
-                                    src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&q=80&w=400"
-                                    alt="Julian Rossi"
+                                    src={displayAvatar}
+                                    alt={userName}
                                     className="profile-avatar-img"
                                 />
                             </div>
 
                             <div className="banner-top-actions">
-                                <button className="btn-green-solid">Edit Profile</button>
-                                <button className="btn-white-outline">Share</button>
+                                <button className="btn-green-solid" onClick={() => setIsEditModalOpen(true)}>Edit Profile</button>
+                                <button className="btn-white-outline" onClick={handleShare}>Share</button>
                             </div>
 
                             <div className="banner-info">
                                 <div className="profile-name-row">
-                                    <h1>Julian Rossi</h1>
+                                    <h1>{editFormData.username}</h1>
                                     <span className="badge-gold">
-                                        <Award size={14} fill="currentColor" /> MASTER CHEF
+                                        <Award size={14} fill="currentColor" /> {userRole.toUpperCase()}
                                     </span>
                                 </div>
                                 <p className="profile-bio-text">
-                                    Mediterranean specialist & Pastry enthusiast. 15 years of culinary journey from Rome to London.
+                                    {userEmail} • {editFormData.bio}
                                 </p>
 
                                 <hr className="profile-stats-divider" />
@@ -146,171 +217,194 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/* Middle Two Columns */}
-                    <div className="middle-cards-grid">
+                    {/* dynamic content based on active menu */}
+                    {activeMenu === 'overview' && (
+                        <div className="middle-cards-grid">
+                            {/* Culinary Skills */}
+                            <div className="sidebar-card">
+                                <div className="card-header-row">
+                                    <h3 className="card-title">Culinary Skills</h3>
+                                    <span className="pill-light-green">Updated Weekly</span>
+                                </div>
 
-                        {/* Culinary Skills */}
-                        <div className="sidebar-card">
-                            <div className="card-header-row">
-                                <h3 className="card-title">Culinary Skills</h3>
-                                <span className="pill-light-green">Updated Weekly</span>
-                            </div>
-
-                            <div className="skills-list">
-                                {/* Skill 1 */}
-                                <div className="skill-row">
-                                    <div className="skill-row-top">
-                                        <span>Knife Skills</span>
-                                        <span>92%</span>
+                                <div className="skills-list">
+                                    <div className="skill-row">
+                                        <div className="skill-row-top">
+                                            <span>Knife Skills</span>
+                                            <span>92%</span>
+                                        </div>
+                                        <div className="skill-bar-bg"><div className="skill-bar-fill" style={{ width: '92%' }}></div></div>
                                     </div>
-                                    <div className="skill-bar-bg"><div className="skill-bar-fill" style={{ width: '92%' }}></div></div>
-                                </div>
-                                {/* Skill 2 */}
-                                <div className="skill-row">
-                                    <div className="skill-row-top">
-                                        <span>Flavor Profiling</span>
-                                        <span>88%</span>
-                                    </div>
-                                    <div className="skill-bar-bg"><div className="skill-bar-fill" style={{ width: '88%' }}></div></div>
-                                </div>
-                                {/* Skill 3 */}
-                                <div className="skill-row">
-                                    <div className="skill-row-top">
-                                        <span>Presentation</span>
-                                        <span>75%</span>
-                                    </div>
-                                    <div className="skill-bar-bg"><div className="skill-bar-fill" style={{ width: '75%' }}></div></div>
-                                </div>
-                                {/* Skill 4 */}
-                                <div className="skill-row">
-                                    <div className="skill-row-top">
-                                        <span>Culinary Speed</span>
-                                        <span>95%</span>
-                                    </div>
-                                    <div className="skill-bar-bg"><div className="skill-bar-fill" style={{ width: '95%' }}></div></div>
-                                </div>
-                            </div>
-
-                            {/* Iron Chef box */}
-                            <div className="iron-chef-box">
-                                <div className="iron-chef-icon">
-                                    <Trophy size={18} fill="currentColor" />
-                                </div>
-                                <div className="iron-chef-text">
-                                    <h5>Path to "Iron Chef"</h5>
-                                    <p>8 more recipes to unlock next rank</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Recent Achievements */}
-                        <div className="sidebar-card">
-                            <div className="card-header-row">
-                                <h3 className="card-title">Recent Achievements</h3>
-                            </div>
-
-                            <div className="achievements-list">
-                                <div className="achievement-row">
-                                    <div className="ach-icon green">
-                                        <Utensils size={18} />
-                                    </div>
-                                    <div className="ach-content">
-                                        <p className="ach-time">Today, 2:45 PM</p>
-                                        <h4 className="ach-desc">Published "Grilled Sea Bass with Lemon Gremolata"</h4>
-                                        <img src="https://images.unsplash.com/photo-1544025162-811114215b2e?auto=format&fit=crop&q=80&w=200" alt="achievement" className="ach-img" />
+                                    <div className="skill-row">
+                                        <div className="skill-row-top">
+                                            <span>Flavor Profiling</span>
+                                            <span>88%</span>
+                                        </div>
+                                        <div className="skill-bar-bg"><div className="skill-bar-fill" style={{ width: '88%' }}></div></div>
                                     </div>
                                 </div>
 
-                                <div className="achievement-row">
-                                    <div className="ach-icon">
-                                        <Award size={18} color="#9ca3af" />
+                                <div className="iron-chef-box">
+                                    <div className="iron-chef-icon">
+                                        <Trophy size={18} fill="currentColor" />
                                     </div>
-                                    <div className="ach-content">
-                                        <p className="ach-time">Yesterday</p>
-                                        <h4 className="ach-desc">Earned "Flavor Pioneer" badge</h4>
-                                    </div>
-                                </div>
-
-                                <div className="achievement-row">
-                                    <div className="ach-icon">
-                                        <Heart size={18} color="#9ca3af" fill="#9ca3af" />
-                                    </div>
-                                    <div className="ach-content">
-                                        <p className="ach-time">2 days ago</p>
-                                        <h4 className="ach-desc">Recipe "Classic Tiramisu" reached 500 likes</h4>
+                                    <div className="iron-chef-text">
+                                        <h5>Path to "Iron Chef"</h5>
+                                        <p>8 more recipes to unlock next rank</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
-
-                    {/* Bottom Tabs & Grid */}
-                    <div className="profile-tabs">
-                        <button
-                            className={`p-tab ${activeTab === 'recipes' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('recipes')}
-                        >
-                            My Recipes
-                        </button>
-                        <button
-                            className={`p-tab ${activeTab === 'saved' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('saved')}
-                        >
-                            Saved Collections
-                        </button>
-                        <button
-                            className={`p-tab ${activeTab === 'drafts' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('drafts')}
-                        >
-                            Drafts
-                        </button>
-                    </div>
-
-                    <div className="recipes-grid">
-                        {myRecipes.map((r) => (
-                            <div key={r.id} className="recipe-card-new">
-                                <div className="recipe-card-image">
-                                    <img src={r.image} alt={r.title} />
+                            {/* Recent Achievements */}
+                            <div className="sidebar-card">
+                                <div className="card-header-row">
+                                    <h3 className="card-title">Recent Achievements</h3>
                                 </div>
-                                <div className="recipe-card-body">
-                                    <div className="recipe-card-header">
-                                        <h4 className="recipe-card-title">{r.title}</h4>
-                                        <div className="time-pill">
-                                            <span>⏱</span> {r.time}
+
+                                <div className="achievements-list">
+                                    <div className="achievement-row">
+                                        <div className="ach-icon green">
+                                            <Utensils size={18} />
+                                        </div>
+                                        <div className="ach-content">
+                                            <p className="ach-time">Today, 2:45 PM</p>
+                                            <h4 className="ach-desc">Published "Grilled Sea Bass with Lemon Gremolata"</h4>
                                         </div>
                                     </div>
-                                    <p className="recipe-card-desc">{r.desc}</p>
-
-                                    <div className="recipe-card-footer">
-                                        <div className="recipe-metrics">
-                                            <div className="metric">
-                                                <Heart size={14} fill="currentColor" /> {r.likes}
-                                            </div>
-                                            <div className="metric">
-                                                <Eye size={14} /> {r.views}
-                                            </div>
+                                    <div className="achievement-row">
+                                        <div className="ach-icon">
+                                            <Award size={18} color="#9ca3af" />
                                         </div>
-                                        <button className="btn-arrow-circle">
-                                            <ArrowRight size={16} />
-                                        </button>
+                                        <div className="ach-content">
+                                            <p className="ach-time">Yesterday</p>
+                                            <h4 className="ach-desc">Earned "Flavor Pioneer" badge</h4>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-
-                        {/* Share a Recipe box */}
-                        <div className="create-recipe-card">
-                            <div className="create-icon-btn">
-                                <Plus size={24} />
-                            </div>
-                            <h4>Share a Recipe</h4>
-                            <p>Grow your influence in the CO-CHE community</p>
                         </div>
-                    </div>
+                    )}
+
+                    {activeMenu === 'recipes' && (
+                        <div className="recipes-section-wrapper" style={{ marginTop: '1rem' }}>
+                            <div className="card-header-row">
+                                <h2 className="card-title">My Recipes</h2>
+                            </div>
+                            <div className="recipes-grid">
+                                {myRecipes.map((r) => (
+                                    <div key={r.id} className="recipe-card-new">
+                                        <div className="recipe-card-image">
+                                            <img src={r.image} alt={r.title} />
+                                        </div>
+                                        <div className="recipe-card-body">
+                                            <div className="recipe-card-header">
+                                                <h4 className="recipe-card-title">{r.title}</h4>
+                                                <div className="time-pill">
+                                                    <span>⏱</span> {r.time}
+                                                </div>
+                                            </div>
+                                            <p className="recipe-card-desc">{r.desc}</p>
+
+                                            <div className="recipe-card-footer">
+                                                <div className="recipe-metrics">
+                                                    <div className="metric">
+                                                        <Heart size={14} fill="currentColor" /> {r.likes}
+                                                    </div>
+                                                    <div className="metric">
+                                                        <Eye size={14} /> {r.views}
+                                                    </div>
+                                                </div>
+                                                <button className="btn-arrow-circle">
+                                                    <ArrowRight size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div className="create-recipe-card">
+                                    <div className="create-icon-btn">
+                                        <Plus size={24} />
+                                    </div>
+                                    <h4>Share a Recipe</h4>
+                                    <p>Grow your influence in the CO-CHE community</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeMenu === 'collections' && (
+                        <div className="collections-section" style={{ marginTop: '1rem', padding: '2rem', textAlign: 'center', background: 'var(--bg-surface)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                            <Bookmark size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                            <h2 style={{color: 'var(--text-primary)', marginBottom: '0.5rem'}}>Saved Collections</h2>
+                            <p style={{color: 'var(--text-secondary)'}}>You haven't saved any collections yet. Browse the community to find recipes you love!</p>
+                            <button className="btn-green-solid" style={{marginTop: '1.5rem'}} onClick={() => navigate('/recipes')}>Explore Recipes</button>
+                        </div>
+                    )}
+
+                    {activeMenu === 'community' && (
+                        <div className="community-section" style={{ marginTop: '1rem', padding: '2rem', textAlign: 'center', background: 'var(--bg-surface)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                            <MessageSquare size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                            <h2 style={{color: 'var(--text-primary)', marginBottom: '0.5rem'}}>Community Activity</h2>
+                            <p style={{color: 'var(--text-secondary)'}}>No recent activity found. Join a discussion in the Community Forum!</p>
+                            <button className="btn-green-solid" style={{marginTop: '1.5rem'}} onClick={() => navigate('/community')}>Go to Forum</button>
+                        </div>
+                    )}
 
                 </main>
+                ) : (
+                    <HelpCenter />
+                )}
             </div>
+
+            {/* Edit Profile Modal */}
+            {isEditModalOpen && (
+                <div className="profile-modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+                    <div className="profile-modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="profile-modal-close" onClick={() => setIsEditModalOpen(false)}><X size={24} /></button>
+                        <h2>Edit Profile</h2>
+                        <form onSubmit={handleEditSubmit}>
+                            <div className="profile-form-group">
+                                <label>Profile Picture</label>
+                                <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                                    <img 
+                                        src={editFormData.avatar || displayAvatar} 
+                                        alt="Preview" 
+                                        style={{width: '64px', height: '64px', borderRadius: '12px', objectFit: 'cover'}} 
+                                    />
+                                    <input 
+                                        type="file" 
+                                        accept="image/*"
+                                        style={{ flex: 1, padding: '0.5rem' }}
+                                        onChange={handleAvatarChange}
+                                    />
+                                </div>
+                            </div>
+                            <div className="profile-form-group">
+                                <label>Display Name</label>
+                                <input 
+                                    type="text" 
+                                    value={editFormData.username} 
+                                    onChange={e => setEditFormData({...editFormData, username: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <div className="profile-form-group">
+                                <label>Bio</label>
+                                <textarea 
+                                    rows="3"
+                                    value={editFormData.bio}
+                                    onChange={e => setEditFormData({...editFormData, bio: e.target.value})}
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="profile-form-group" style={{marginTop: '1.5rem'}}>
+                                <button type="submit" className="btn-green-solid" style={{width: '100%'}}>Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

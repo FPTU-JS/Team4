@@ -1,19 +1,37 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Settings, HelpCircle, Utensils, MessageSquare, Clock, Flame, Image as ImageIcon, Mic, Send, Plus } from 'lucide-react';
-import api from '../../utils/axiosConfig';
+import axios from 'axios';
 import '../../css/ai-assistant.css';
 
 const AIAssistant = () => {
-    const [messages, setMessages] = useState([
-        { 
-            sender: 'bot', 
-            text: "Hello! I'm your CO-CHE AI Assistant. How can I help you cook something delicious today? I have some great ideas for seasonal vegetables if you're interested!",
-            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    const location = useLocation();
+    const defaultMessage = { 
+        sender: 'bot', 
+        text: "Hello! I'm your CO-CHE AI Assistant. How can I help you cook something delicious today? I have some great ideas for seasonal vegetables if you're interested!",
+        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    };
+
+    const [chats, setChats] = useState([
+        {
+            id: Date.now(),
+            title: 'Current Chat',
+            messages: [defaultMessage]
         }
     ]);
+    const [activeChatId, setActiveChatId] = useState(chats[0].id);
+
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+
+    const activeChatIdRef = useRef(activeChatId);
+    useEffect(() => {
+        activeChatIdRef.current = activeChatId;
+    }, [activeChatId]);
+
+    const activeChat = chats.find(c => c.id === activeChatId) || chats[0];
+    const messages = activeChat.messages;
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -23,40 +41,142 @@ const AIAssistant = () => {
         scrollToBottom();
     }, [messages, isLoading]);
 
-    const handleSend = async (e) => {
+    const handleNewChat = () => {
+        // Prevent creating multiple empty chats
+        if (activeChat.messages.length <= 1 && (activeChat.title === 'New Chat' || activeChat.title === 'Current Chat')) {
+            return;
+        }
+        const newChat = {
+            id: Date.now(),
+            title: 'New Chat',
+            messages: [defaultMessage]
+        };
+        setChats(prev => [newChat, ...prev]);
+        setActiveChatId(newChat.id);
+        setInput('');
+    };
+
+    const updateActiveChatMessages = (updaterFn, newTitle = null, targetChatId = null) => {
+        const idToUpdate = targetChatId || activeChatIdRef.current;
+        setChats(prevChats => prevChats.map(chat => {
+            if (chat.id === idToUpdate) {
+                return {
+                    ...chat,
+                    title: newTitle ? newTitle : chat.title,
+                    messages: updaterFn(chat.messages)
+                };
+            }
+            return chat;
+        }));
+    };
+
+    const handleSend = async (e, overrideText = null, overrideChat = null) => {
         e?.preventDefault();
-        if (!input.trim()) return;
+        
+        const messageText = overrideText || input;
+        
+        if (!messageText.trim()) return;
 
         const userMsg = {
             sender: 'user',
-            text: input,
+            text: messageText,
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         };
 
-        setMessages(prev => [...prev, userMsg]);
+        const currentActiveChat = overrideChat || activeChat;
+        const currentActiveChatId = currentActiveChat.id;
+
+        // If this is the first user message, change the chat title automatically
+        let newTitle = null;
+        if (currentActiveChat.messages.length === 1 && (currentActiveChat.title === 'New Chat' || currentActiveChat.title === 'Current Chat')) {
+            newTitle = messageText.length > 25 ? messageText.substring(0, 25) + '...' : messageText;
+        }
+
+        updateActiveChatMessages(prev => [...prev, userMsg], newTitle, currentActiveChatId);
         setInput('');
         setIsLoading(true);
 
         try {
-            const response = await api.post('/api/ai/chat', { message: userMsg.text });
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            if (!apiKey) {
+                throw new Error("Missing API Key");
+            }
+
+            const prompt = "You are an expert chef AI assistant named 'CO-CHE AI Chef Assistant' for a cooking website. You provide helpful, concise, and accurate culinary advice, recipes, and cooking tips. User's query: " + userMsg.text;
+
+            const response = await axios.post(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
+                {
+                    contents: [{ parts: [{ text: prompt }] }]
+                },
+                {
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
+
+            const replyText = response.data.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không thể tìm thấy câu trả lời phù hợp.";
+
             const botMsg = {
                 sender: 'bot',
-                text: response.data.reply,
+                text: replyText,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
-            setMessages(prev => [...prev, botMsg]);
+            
+            updateActiveChatMessages(prev => [...prev, botMsg], null, currentActiveChatId);
+
         } catch (error) {
             console.error("Chat error:", error);
+            
+            let errorMessage = "Chưa rõ nguyên nhân.";
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            
+            if (!apiKey) {
+                errorMessage = "Chưa nhận diện được VITE_GEMINI_API_KEY. Vui lòng chắc chắn bạn đã tắt terminal cũ (Ctrl+C) và gõ lại 'npm run dev' để Vite tải lại file .env!";
+            } else if (error.response) {
+                errorMessage = "Lỗi từ Google API: " + (error.response.data?.error?.message || error.response.statusText);
+            } else if (error.request) {
+                errorMessage = "Lỗi mạng (Network Error) hoặc bị chặn bởi Adblock/CORS. Không thể kết nối tới Google.";
+            } else {
+                errorMessage = error.message;
+            }
+
             const errorMsg = {
                 sender: 'bot',
-                text: "Xin lỗi, hiện tại tôi đang gặp chút sự cố kết nối. Vui lòng thử lại sau.",
+                text: "Lỗi kết nối: " + errorMessage,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
-            setMessages(prev => [...prev, errorMsg]);
+            updateActiveChatMessages(prev => [...prev, errorMsg], null, currentActiveChatId);
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Auto-send initial prompt if passed from another page (like Home)
+    useEffect(() => {
+        if (location.state?.initialPrompt || location.state?.capturedImage) {
+            const promptContent = location.state?.initialPrompt || "Please analyze the uploaded image of ingredients and give me a recipe idea.";
+            
+            // Consume the state so it doesn't trigger again on refresh
+            window.history.replaceState({}, document.title);
+            
+            // Check if active chat is fresh. If not, create a new one.
+            let chatToUse = activeChat;
+            if (activeChat.messages.length > 1) {
+                chatToUse = {
+                    id: Date.now(),
+                    title: 'New Chat',
+                    messages: [defaultMessage]
+                };
+                setChats(prev => [chatToUse, ...prev]);
+                setActiveChatId(chatToUse.id);
+            }
+            
+            // Delay slightly to ensure UI is ready, then send
+            setTimeout(() => {
+                handleSend(null, promptContent, chatToUse);
+            }, 300);
+        }
+    }, [location.state]);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -65,13 +185,11 @@ const AIAssistant = () => {
     };
 
     const formatTextBody = (text) => {
-        // Basic markdown formatting for bold text (Gemini uses **bold**)
         const parts = text.split(/(\*\*.*?\*\*)/g);
         return parts.map((part, index) => {
             if (part.startsWith('**') && part.endsWith('**')) {
                 return <strong key={index}>{part.slice(2, -2)}</strong>;
             }
-            // Parse line breaks from Gemini API response
             if (part.includes('\n')) {
                 return <span key={index}>{
                     part.split('\n').map((line, i) => (
@@ -113,23 +231,29 @@ const AIAssistant = () => {
                 <div className="ai-sidebar-section">
                     <h4><Clock size={14} /> CHAT HISTORY</h4>
                     <div className="ai-history-list">
-                        <button className="ai-history-item active">
-                            <MessageSquare size={16} /> Current Chat
-                        </button>
+                        {chats.map(chat => (
+                            <button 
+                                key={chat.id} 
+                                className={`ai-history-item ${chat.id === activeChatId ? 'active' : ''}`}
+                                onClick={() => setActiveChatId(chat.id)}
+                            >
+                                <MessageSquare size={16} /> {chat.title}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
                 <div className="ai-sidebar-section">
                     <h4><Utensils size={14} /> SUGGESTED</h4>
                     <div className="ai-suggested-list">
-                        <button className="ai-suggested-item" onClick={() => setInput("How to replace eggs in baking?")}>How to replace eggs?</button>
-                        <button className="ai-suggested-item" onClick={() => setInput("Healthy dessert recipes")}>Healthy dessert recipes</button>
-                        <button className="ai-suggested-item" onClick={() => setInput("Best cast iron care tips")}>Best cast iron care</button>
+                        <button className="ai-suggested-item" onClick={(e) => handleSend(e, "How to replace eggs in baking?")}>How to replace eggs?</button>
+                        <button className="ai-suggested-item" onClick={(e) => handleSend(e, "Healthy dessert recipes")}>Healthy dessert recipes</button>
+                        <button className="ai-suggested-item" onClick={(e) => handleSend(e, "Best cast iron care tips")}>Best cast iron care</button>
                     </div>
                 </div>
 
                 <div className="ai-sidebar-footer">
-                    <button className="ai-btn-new-chat" onClick={() => setMessages([{ sender: 'bot', text: 'Hello! I\'m your CO-CHE AI Assistant. How can I help you cook something delicious today?', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }])}>
+                    <button className="ai-btn-new-chat" onClick={handleNewChat}>
                         <Plus size={18} /> New Chat
                     </button>
                 </div>

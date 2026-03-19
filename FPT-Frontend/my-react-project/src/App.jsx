@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 
 // Layouts & Main Handlers
@@ -22,7 +22,6 @@ const CameraCapture = lazy(() => import('./pages/CameraCapture.jsx'))
 const Community = lazy(() => import('./pages/Community.jsx'))
 const Profile = lazy(() => import('./pages/Profile.jsx'))
 const AIAssistant = lazy(() => import('./pages/ai/AIAssistant.jsx'))
-const HelpCenter = lazy(() => import('./pages/HelpCenter.jsx'))
 
 // Fallback Loader
 const FallbackLoader = () => (
@@ -56,8 +55,8 @@ const AnimatedRoutes = () => {
           <Route path="plan-setup" element={<AnimatedPage><HealthyPlanSetup /></AnimatedPage>} />
           <Route path="healthy-plan" element={<AnimatedPage><HealthyPlanDashboard /></AnimatedPage>} />
           <Route path="ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
+          <Route path="help-center" element={<Navigate to="/profile" replace />} />
         </Route>
-        <Route path="/help-center" element={<AnimatedPage><HelpCenter /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
   );

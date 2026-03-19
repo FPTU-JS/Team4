@@ -16,12 +16,6 @@ const authService = {
             // E.g: return await api.post('/api/auth/login', { username, password });
 
             const response = await api.post('/api/auth/login', { emailOrUsername, password });
-
-            // Save token to localStorage if the backend responds with it
-            if (response.data && response.data.token) {
-                localStorage.setItem('token', response.data.token);
-            }
-
             return response.data;
         } catch (error) {
             console.error('Login error:', error);
@@ -47,7 +41,6 @@ const authService = {
      * Logout user by removing the token
      */
     logout: () => {
-        localStorage.removeItem('token');
     }
 };
 
