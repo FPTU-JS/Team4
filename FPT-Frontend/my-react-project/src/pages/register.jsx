@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Lock, Eye, EyeOff, Mail, Phone } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Mail, Phone, MoveLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -95,7 +95,12 @@ const Register = () => {
 
             <div className="register-right">
 
-                <div className="register-form-container">
+                <Link to="/" className="back-to-home">
+                    <MoveLeft size={16} />
+                    Back to Home
+                </Link>
+
+            <div className="register-form-container">
 
                     <div className="register-header">
                         <h2>Create Your Account</h2>
@@ -221,7 +226,7 @@ const Register = () => {
                             className="register-btn"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Creating..." : "Sign Up →"}
+                            {isLoading ? "Creating..." : " →"}
                         </button>
 
                     </form>

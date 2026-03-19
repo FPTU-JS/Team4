@@ -13,7 +13,6 @@ const Register = lazy(() => import('./pages/register.jsx'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'))
 const Home = lazy(() => import('./pages/Home.jsx'))
 const Preferences = lazy(() => import('./pages/onboarding/Preferences.jsx'))
-const Recommendations = lazy(() => import('./pages/ai/Recommendations.jsx'))
 const RecipeDetail = lazy(() => import('./pages/ai/RecipeDetail.jsx'))
 const Recipes = lazy(() => import('./pages/Recipes.jsx'))
 const HealthyPlanSetup = lazy(() => import('./pages/HealthyPlanSetup.jsx'))
@@ -50,7 +49,6 @@ const AnimatedRoutes = () => {
           <Route path="onboarding" element={<AnimatedPage><Preferences /></AnimatedPage>} />
 
           <Route path="recipes" element={<AnimatedPage><Recipes /></AnimatedPage>} />
-          <Route path="ai-recommendations" element={<AnimatedPage><Recommendations /></AnimatedPage>} />
           <Route path="recipe/:id" element={<AnimatedPage><RecipeDetail /></AnimatedPage>} />
           <Route path="map" element={<AnimatedPage><Map /></AnimatedPage>} />
           <Route path="community" element={<AnimatedPage><Community /></AnimatedPage>} />

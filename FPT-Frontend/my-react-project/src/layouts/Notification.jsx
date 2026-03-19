@@ -16,10 +16,10 @@ export default function Notification() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Dữ liệu mẫu
+  // Dữ liệu mẫu (Mock data) đã được dịch sang tiếng Anh
   const [notifications] = useState([
-    { id: 1, title: "Đã đến giờ uống nước!", time: "10 phút trước" },
-    { id: 2, title: "Bạn đã đạt mục tiêu Calo hôm nay 🥗", time: "2 giờ trước" }
+    { id: 1, title: "Time to drink water!", time: "10 mins ago" },
+    { id: 2, title: "You hit your daily calorie goal 🥗", time: "2 hours ago" }
   ]);
 
   return (
@@ -39,12 +39,12 @@ export default function Notification() {
       {/* Bảng Dropdown Thông Báo */}
       {isOpen && (
         <div className="dropdown-menu">
-          <div className="dropdown-header">Thông báo</div>
+          <div className="dropdown-header">Notifications</div>
 
           <div>
             {notifications.length === 0 ? (
               <div className="dropdown-empty">
-                Không có thông báo nào.
+                No notifications.
               </div>
             ) : (
               <ul className="dropdown-list">
