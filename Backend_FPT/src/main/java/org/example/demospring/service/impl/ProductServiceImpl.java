@@ -164,6 +164,7 @@ public class ProductServiceImpl implements ProductService {
                 .rating(product.getRating())
                 .isAiRecommended(product.getIsAiRecommended())
                 .tags(tagsList)
+                .dietaryPreferences(product.getDietaryPreferences())
                 .recipes(recipeDetails)
                 .latitude(product.getRestaurant() != null ? product.getRestaurant().getLatitude() : null)
                 .longitude(product.getRestaurant() != null ? product.getRestaurant().getLongitude() : null)

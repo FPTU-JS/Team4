@@ -54,4 +54,7 @@ public class Product {
 
     @Column(name = "tags")
     private String tags;
+
+    @Column(name = "dietary_preferences")
+    private String dietaryPreferences;
 }

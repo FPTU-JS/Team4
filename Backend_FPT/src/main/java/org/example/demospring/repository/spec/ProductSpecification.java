@@ -29,7 +29,7 @@ public class ProductSpecification {
             }
             if (tags != null && !tags.isEmpty()) {
                 for (String tag : tags) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("tags")),
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("dietaryPreferences")),
                             "%" + tag.toLowerCase() + "%"));
                 }
             }

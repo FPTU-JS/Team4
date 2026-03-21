@@ -24,6 +24,7 @@ public class ProductDetailResponse {
     private Double rating;
     private Boolean isAiRecommended;
     private List<String> tags;
+    private String dietaryPreferences;
     private List<RecipeDetail> recipes;
     private Double latitude;
     private Double longitude;
