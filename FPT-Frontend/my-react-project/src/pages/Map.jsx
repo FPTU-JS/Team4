@@ -7,6 +7,7 @@ import { restaurantService } from '../services/rmapService';
 import 'leaflet/dist/leaflet.css';
 import '../css/map.css';
 
+// Fix lỗi hiển thị icon mặc định của Leaflet trong React
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -142,7 +143,7 @@ const Map = () => {
                         <Search size={20} color="#9ca3af" />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm nhà hàng từ Database..."
+                            placeholder="Search for restaurants..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={handleKeyDown}
@@ -192,7 +193,7 @@ const Map = () => {
             {/* Sidebar danh sách */}
             <div className="map-sidebar">
                 <div className="sidebar-header">
-                    <h2>{loading ? "Đang tải dữ liệu..." : "Nhà hàng lân cận"}</h2>
+                    <h2>{loading ? "Đang tải dữ liệu..." : "Nearby Restaurants"}</h2>
                 </div>
 
                 <div className="recommendations-list">

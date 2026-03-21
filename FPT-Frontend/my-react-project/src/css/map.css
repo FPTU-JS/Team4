@@ -295,7 +295,14 @@
     border: none;
     box-shadow: none;
     padding: 8px 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+}
+
+.restaurant-card:hover {
+    background-color: #f8fafc;
+    border-color: var(--border-color);
+    transform: translateX(4px);
 }
 
 .card-image {
@@ -356,6 +363,11 @@
 
 .tag-fine-dining {
     background-color: #f97316;
+}
+
+.card-content {
+    flex: 1;
+    padding: 0;
 }
 
 .card-content {

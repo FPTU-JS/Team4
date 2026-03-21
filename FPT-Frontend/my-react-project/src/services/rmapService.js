@@ -25,14 +25,22 @@ export const restaurantService = {
 
     // Trong rmapService.js
     searchGlobal: async (query) => {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
-        const data = await response.json();
-        return data.map(item => ({
-            id: `osm-${item.place_id}`,
-            name: item.display_name.split(',')[0],
-            address: item.display_name,
-            latitude: item.lat, 
-            longitude: item.lon 
-        }));
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+            );
+            const data = await response.json();
+            return data.map(item => ({
+                id: `global-${item.place_id}`,
+                name: item.display_name.split(',')[0], 
+                address: item.display_name,
+                latitude: parseFloat(item.lat),
+                longitude: parseFloat(item.lon),
+                isGlobal: true // Đánh dấu để phân biệt với hàng trong DB
+            }));
+        } catch (error) {
+            console.error("Global search error:", error);
+            return [];
+        }
     }
 };
