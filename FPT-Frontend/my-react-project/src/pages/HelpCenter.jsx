@@ -3,7 +3,7 @@ import {
     Search, Bell, HelpCircle, ChevronDown,
     MessageSquare, Mail, Clock, Shield,
     User, CreditCard, Sparkles, BookOpen,
-    LayoutDashboard, CookingPot, Settings, Upload, LogOut,
+    LayoutDashboard, CookingPot, Settings, Upload,
     Sun, Moon
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import '../css/help-center.css';
 
 const HelpCenter = () => {
     const navigate = useNavigate();
-    const { logout, user } = useAuth();
+    const {  user } = useAuth();
     
     // Form state
     const [ticketData, setTicketData] = useState({

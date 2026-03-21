@@ -17,6 +17,7 @@ const Recipes = () => {
         difficulty: null
     })
 
+
     const [activeCategory, setActiveCategory] = useState('All Recipes');
     const [recipes, setRecipes] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -25,6 +26,29 @@ const Recipes = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
     const itemsPerPage = 6;
+    const [savedRecipes, setSavedRecipes] = useState(() => {
+        const localData = localStorage.getItem('myFavoriteRecipes');
+        return localData ? JSON.parse(localData) : [];
+    });
+
+    // 2. Hàm lưu/xóa
+    const handleToggleSave = (e, recipe) => {
+        e.stopPropagation();
+
+        let updatedRecipes;
+        const isExisted = savedRecipes.find(r => r.productId === recipe.productId);
+
+        if (isExisted) {
+            // Nếu có rồi thì xóa đi (Unsave)
+            updatedRecipes = savedRecipes.filter(r => r.productId !== recipe.productId);
+        } else {
+            // Nếu chưa có thì thêm vào (Save)
+            updatedRecipes = [...savedRecipes, recipe];
+        }
+
+        setSavedRecipes(updatedRecipes);
+        localStorage.setItem('myFavoriteRecipes', JSON.stringify(updatedRecipes));
+    };
 
     // Hàm quy ước độ khó dựa trên thời gian
     const getDifficulty = (time) => {
@@ -228,56 +252,77 @@ const Recipes = () => {
                             ) : filteredRecipes.length === 0 ? (
                                 <div className="empty-state">No recipes found matching your criteria.</div>
                             ) : (
-                                filteredRecipes.map(recipe => (
-                                    <div
-                                        key={recipe.productId}
-                                        className="recipe-card-hub"
-                                        onClick={() => navigate(`/recipe/${recipe.productId}`, { state: { recipe } })}
-                                    >
-                                        <div className="card-image-wrapper">
-                                            <img src={recipe.imageUrl || 'https://via.placeholder.com/300'} alt={recipe.name} />
-                                            <div className="card-badges">
-                                                <span className="badge ai"><Sparkles size={12} /> AI Match</span>
-                                                <button className="heart-btn" onClick={(e) => { e.stopPropagation(); }}>
-                                                    <Heart size={20} fill="#fff" stroke="#d1d5db" />
-                                                </button>
-                                            </div>
-                                            <div className="time-badge">
-                                                <Clock size={14} /> {recipe.cookingTime ? `${recipe.cookingTime}m` : '20m'}
-                                            </div>
-                                        </div>
-                                        <div className="hub-card-content">
-                                            <div className="hub-card-header">
-                                                <h3 className="hub-card-title">{recipe.name}</h3>
-                                                <div className="rating">
-                                                    <Star size={14} fill="#f59e0b" color="#f59e0b" />
-                                                    <span>4.9</span>
+                                filteredRecipes.map(recipe => {
+                                    const isSaved = savedRecipes.some(r => r.productId === recipe.productId);
+
+                                    return (
+                                        <div
+                                            key={recipe.productId}
+                                            className="recipe-card-hub"
+                                            onClick={() => navigate(`/recipe/${recipe.productId}`, { state: { recipe } })}
+                                        >
+                                            <div className="card-image-wrapper">
+                                                <img src={recipe.imageUrl || 'https://via.placeholder.com/300'} alt={recipe.name} />
+
+                                                <div className="card-badges">
+                                                    <span className="badge ai"><Sparkles size={12} /> AI Match</span>
+
+                                                    <button
+                                                        className="heart-btn"
+                                                        onClick={(e) => handleToggleSave(e, recipe)}
+                                                    >
+                                                        <Heart
+                                                            size={20}
+                                                            fill={isSaved ? "#ef4444" : "none"}
+                                                            stroke={isSaved ? "#ef4444" : "#d1d5db"}
+                                                        />
+                                                    </button>
+                                                </div>
+
+                                                <div className="time-badge">
+                                                    <Clock size={14} /> {recipe.cookingTime ? `${recipe.cookingTime}m` : '20m'}
                                                 </div>
                                             </div>
-                                            <p className="hub-card-desc">{recipe.description || 'Sườn nướng than hoa thơm lừng, ăn kèm mỡ hành.'}</p>
 
-                                            <div className="hub-card-tags">
-                                                {recipe.tags && recipe.tags.length > 0 ? (
-                                                    recipe.tags.slice(0, 2).map((tag, idx) => (
-                                                        <span key={idx} className="hub-tag">{tag}</span>
-                                                    ))
-                                                ) : (
-                                                    <>
-                                                        <span className="hub-tag">Vietnamese</span>
-                                                        <span className="hub-tag">Tasty</span>
-                                                    </>
-                                                )}
-                                            </div>
+                                            <div className="hub-card-content">
+                                                <div className="hub-card-header">
+                                                    <h3 className="hub-card-title">{recipe.name}</h3>
+                                                    <div className="rating">
+                                                        <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                                                        <span>4.9</span>
+                                                    </div>
+                                                </div>
 
-                                            <div className="hub-card-meta" style={{ marginTop: '1rem' }}>
-                                                <span className="hub-meta-item"><Flame size={14} /> {recipe.calories || '650'} kcal</span>
-                                                <span className="hub-meta-item bar">|</span>
-                                                {/* Hiển thị độ khó dựa trên hàm tính toán */}
-                                                <span className="hub-meta-item">{getDifficulty(recipe.cookingTime)}</span>
+                                                <p className="hub-card-desc">
+                                                    {recipe.description || 'Sườn nướng than hoa thơm lừng, ăn kèm mỡ hành.'}
+                                                </p>
+
+                                                <div className="hub-card-tags">
+                                                    {recipe.tags && recipe.tags.length > 0 ? (
+                                                        recipe.tags.slice(0, 2).map((tag, idx) => (
+                                                            <span key={idx} className="hub-tag">{tag}</span>
+                                                        ))
+                                                    ) : (
+                                                        <>
+                                                            <span className="hub-tag">Vietnamese</span>
+                                                            <span className="hub-tag">Tasty</span>
+                                                        </>
+                                                    )}
+                                                </div>
+
+                                                <div className="hub-card-meta" style={{ marginTop: '1rem' }}>
+                                                    <span className="hub-meta-item">
+                                                        <Flame size={14} /> {recipe.calories || '650'} kcal
+                                                    </span>
+                                                    <span className="hub-meta-item bar">|</span>
+                                                    <span className="hub-meta-item">
+                                                        {getDifficulty(recipe.cookingTime)}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
 
