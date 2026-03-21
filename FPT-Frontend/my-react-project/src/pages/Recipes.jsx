@@ -63,6 +63,8 @@ const Recipes = () => {
         try {
             setIsLoading(true);
             const productsData = await productService.searchProducts(searchTerm, currentPage - 1, itemsPerPage, filters);
+            console.log("👉 Field check:", productsData.content?.[0]); // ← thêm dòng này
+            
             setRecipes(productsData.content || []);
             setTotalPages(productsData.totalPages || 0);
             setTotalElements(productsData.totalElements || 0);
@@ -90,13 +92,26 @@ const Recipes = () => {
         fetchRecipesData();
     }, [currentPage, searchTerm, activeCategory, JSON.stringify(filters)]);
 
-    // Logic lọc Client-side cho Difficulty
-    const filteredRecipes = useMemo(() => {
-        return recipes.filter(recipe => {
-            if (!filters.difficulty) return true;
-            return getDifficulty(recipe.cookingTime) === filters.difficulty;
-        });
-    }, [recipes, filters.difficulty]);
+    // Logic lọc Client-side cho Difficulty + Dietary Preferences
+const filteredRecipes = useMemo(() => {
+    return recipes.filter(recipe => {
+        // Filter Difficulty
+        if (filters.difficulty && getDifficulty(recipe.cookingTime) !== filters.difficulty) {
+            return false;
+        }
+
+        // Filter Dietary Preferences
+        if (filters.tags.length > 0) {
+            const recipePref = recipe.dietaryPreferences || '';
+            const allMatch = filters.tags.every(tag =>
+                recipePref.includes(tag)
+            );
+            if (!allMatch) return false;
+        }
+
+        return true;
+    });
+}, [recipes, filters.difficulty, filters.tags]);
 
     return (
         <div className="recipes-hub-page">
