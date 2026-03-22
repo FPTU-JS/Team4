@@ -21,6 +21,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.security.authentication.LockedException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,12 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final JavaMailSender javaMailSender;
+
+    // In-memory Brute Force Protection Cache
+    private final ConcurrentHashMap<String, Integer> failedAttempts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, LocalDateTime> lockoutTime = new ConcurrentHashMap<>();
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int LOCKOUT_MINUTES = 15;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -120,22 +128,47 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse authenticate(AuthRequest request) {
-        // Attempt to find user by email or username
-        User user = userRepository.findByEmail(request.getEmailOrUsername())
-                .orElseGet(() -> userRepository.findByUsername(request.getEmailOrUsername())
-                        .orElseThrow(() -> new BadCredentialsException("Invalid username or password")));
+        String key = request.getEmailOrUsername();
 
-        // Ensure user is active
-        if (!"Active".equalsIgnoreCase(user.getStatus())) {
-            throw new RuntimeException("User is not active. Current status: " + user.getStatus());
+        // 1. Check if user is currently locked out
+        if (lockoutTime.containsKey(key)) {
+            if (LocalDateTime.now().isBefore(lockoutTime.get(key))) {
+                throw new LockedException("Tài khoản đã bị khóa tạm thời do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.");
+            } else {
+                // Lockout period has expired, reset counters
+                lockoutTime.remove(key);
+                failedAttempts.remove(key);
+            }
         }
 
-        // We use UsernamePasswordAuthenticationToken. We will pass either email or
-        // username,
-        // whatever Spring Security uses as principle context.
-        // It relies on UserDetailsService in config.
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
+        // 2. Attempt to find user
+        User user = userRepository.findByEmail(key)
+                .orElseGet(() -> userRepository.findByUsername(key)
+                        .orElseThrow(() -> new BadCredentialsException("Invalid username or password.")));
+
+        // 3. Ensure user is active
+        if (!"Active".equalsIgnoreCase(user.getStatus())) {
+            throw new RuntimeException("Tài khoản chưa được kích hoạt hoặc đã bị Ban.");
+        }
+
+        // 4. Authenticate credentials
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
+            
+            // Login successful: reset attempts
+            failedAttempts.remove(key);
+        } catch (BadCredentialsException ex) {
+            // Login failed: increment attempts
+            int attempts = failedAttempts.getOrDefault(key, 0) + 1;
+            failedAttempts.put(key, attempts);
+            
+            if (attempts >= MAX_ATTEMPTS) {
+                lockoutTime.put(key, LocalDateTime.now().plusMinutes(LOCKOUT_MINUTES));
+                throw new LockedException("Tài khoản đã bị khóa tạm thời do nhập sai 5 lần liên tiếp. Vui lòng thử lại sau 15 phút.");
+            }
+            throw new BadCredentialsException("Sai mật khẩu. Bạn còn " + (MAX_ATTEMPTS - attempts) + " lần thử.");
+        }
 
         String jwtToken = jwtUtil.generateToken(user);
         return AuthResponse.builder()
