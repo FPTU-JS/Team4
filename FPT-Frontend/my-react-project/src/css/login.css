@@ -183,7 +183,6 @@
 .input-wrapper input {
   width: 100%;
   padding: 14px 16px;
-  padding-left: 40px; 
   padding-right: 40px;
   font-size: 15px;
   color: var(--text-primary);

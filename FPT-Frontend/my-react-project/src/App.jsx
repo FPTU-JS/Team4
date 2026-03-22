@@ -55,7 +55,7 @@ const AnimatedRoutes = () => {
           <Route path="plan-setup" element={<AnimatedPage><HealthyPlanSetup /></AnimatedPage>} />
           <Route path="healthy-plan" element={<AnimatedPage><HealthyPlanDashboard /></AnimatedPage>} />
           <Route path="ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
-          <Route path="help-center" element={<Navigate to="/profile" replace />} />
+          <Route path="help-center" element={<Navigate to="/profile?tab=help" replace />} />
         </Route>
       </Routes>
     </AnimatePresence>

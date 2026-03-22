@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/profile.css';
 import {
     User, Utensils, Bookmark, MessageSquare, Dumbbell,
@@ -21,6 +21,15 @@ const Profile = () => {
         avatar: ''
     });
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const tab = queryParams.get('tab');
+        if (tab) {
+            setActiveMenu(tab);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         if (!isAuthenticated) {

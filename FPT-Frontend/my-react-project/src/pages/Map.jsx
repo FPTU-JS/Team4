@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Search, Star, Clock, Truck, Footprints, Plus, Minus, Crosshair, SlidersHorizontal } from 'lucide-react';
+import { Search, Star, Clock, Truck, Footprints, Plus, Minus, Crosshair, SlidersHorizontal, Leaf, Fish } from 'lucide-react';
 import { restaurantService } from '../services/rmapService';
 
 import 'leaflet/dist/leaflet.css';
@@ -50,6 +50,22 @@ const Map = () => {
     const [restaurants, setRestaurants] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
+    const [activeFilter, setActiveFilter] = useState('All');
+
+    const getCustomIcon = (type) => {
+        let pinClass = 'pin-dining';
+        let iconClass = 'dining-icon';
+        if (type === 'Vegan') { pinClass = 'pin-vegan'; iconClass = 'vegan-icon'; }
+        else if (type === 'Seafood') { pinClass = 'pin-seafood'; iconClass = 'seafood-icon'; }
+
+        return L.divIcon({
+            className: 'custom-leaflet-icon-wrapper',
+            html: `<div class="map-pin-custom ${pinClass}"><div class="${iconClass}"></div></div>`,
+            iconSize: [44, 44],
+            iconAnchor: [22, 44],
+            popupAnchor: [0, -44]
+        });
+    };
 
     // 1. Hàm lấy dữ liệu từ API (Spring Boot qua Axios)
     const fetchRestaurants = useCallback(async (name = "") => {
@@ -72,7 +88,8 @@ const Map = () => {
                 lat: parseFloat(res.latitude) || 10.7769,
                 lng: parseFloat(res.longitude) || 106.7009,
                 displayImage: res.logoUrl || 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800',
-                source: 'database'
+                source: 'database',
+                type: index % 3 === 0 ? 'Vegan' : (index % 3 === 1 ? 'Seafood' : 'Dining')
             }));
 
             // 2. Lấy dữ liệu từ Global (OSM)
@@ -90,7 +107,8 @@ const Map = () => {
                 lat: parseFloat(res.latitude),
                 lng: parseFloat(res.longitude),
                 displayImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800', // Ảnh mặc định cho OSM
-                source: 'osm'
+                source: 'osm',
+                type: 'Dining'
             }));
 
             // 3. Gộp dữ liệu
@@ -134,6 +152,11 @@ const Map = () => {
         }
     };
 
+    const filteredRestaurants = restaurants.filter(res => {
+        if (activeFilter === 'All') return true;
+        return res.type === activeFilter;
+    });
+
     return (
         <div className="map-page-container">
             <div className="map-view-container">
@@ -150,6 +173,14 @@ const Map = () => {
                         />
                         <SlidersHorizontal size={20} color="#10b981" />
                     </div>
+                </div>
+
+                {/* Floating Filters on Map */}
+                <div className="map-top-filters">
+                    <div className={`map-filter-chip ${activeFilter === 'All' ? 'active-green' : ''}`} onClick={() => setActiveFilter('All')}><Footprints size={14} /> All</div>
+                    <div className={`map-filter-chip ${activeFilter === 'Vegan' ? 'active-green' : ''}`} onClick={() => setActiveFilter('Vegan')}><Leaf size={14} /> Vegan</div>
+                    <div className={`map-filter-chip ${activeFilter === 'Seafood' ? 'active-green' : ''}`} onClick={() => setActiveFilter('Seafood')}><Fish size={14} /> Seafood</div>
+                    <div className={`map-filter-chip ${activeFilter === 'Dining' ? 'active-green' : ''}`} onClick={() => setActiveFilter('Dining')}><Star size={14} /> Fine Dining</div>
                 </div>
 
                 {/* Map Pins */}
@@ -174,8 +205,8 @@ const Map = () => {
                     )}
 
                     {/* Markers cho nhà hàng từ Database */}
-                    {restaurants.map(place => (
-                        <Marker key={place.id} position={[place.lat, place.lng]}>
+                    {filteredRestaurants.map(place => (
+                        <Marker key={place.id} position={[place.lat, place.lng]} icon={getCustomIcon(place.type)}>
                             <Popup>
                                 <div style={{ textAlign: 'center' }}>
                                     <h4 style={{ margin: '0' }}>{place.name}</h4>
@@ -192,14 +223,15 @@ const Map = () => {
 
             {/* Sidebar danh sách */}
             <div className="map-sidebar">
+                <div className="bottom-sheet-drag-handle"></div>
                 <div className="sidebar-header">
                     <h2>{loading ? "Đang tải dữ liệu..." : "Nearby Restaurants"}</h2>
                 </div>
 
                 <div className="recommendations-list">
-                    {restaurants.length === 0 && !loading && <p style={{ padding: '20px' }}>Không tìm thấy kết quả.</p>}
+                    {filteredRestaurants.length === 0 && !loading && <p style={{ padding: '20px' }}>Không tìm thấy kết quả.</p>}
 
-                    {restaurants.map(place => (
+                    {filteredRestaurants.map(place => (
                         <div
                             key={place.id}
                             className="restaurant-card"
@@ -213,6 +245,11 @@ const Map = () => {
                                     <span>{place.rating || 0}</span>
                                 </div>
                                 <p className="card-subtitle">{place.address}</p>
+                                <div className="card-tags" style={{ position: 'relative', bottom: '0', left: '0', display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                                    {place.type === 'Vegan' && <span className="card-tag tag-vegan">Vegan</span>}
+                                    {place.type === 'Seafood' && <span className="card-tag tag-seafood">Seafood</span>}
+                                    {place.type === 'Dining' && <span className="card-tag tag-fine-dining">Fine Dining</span>}
+                                </div>
                                 <div className="card-meta">
                                     <div className="meta-item"><Clock size={14} /> 15-20 min</div>
                                     <div className="meta-item" style={{ color: '#10b981' }}><Truck size={14} /> Free</div>

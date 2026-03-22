@@ -15,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -28,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final JavaMailSender javaMailSender;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -59,8 +62,20 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         tokenRepository.save(token);
 
-        // TODO: integrate Email sending logic here. For now, print to console.
-        System.out.println("OTP CODE FOR " + request.getEmail() + ": " + tokenStr);
+        // Gửi thư điện tử thật sự
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(request.getEmail());
+            mailMessage.setSubject("Your Verification Code - CO-CHE");
+            mailMessage.setText("Chào " + (request.getFullName() != null ? request.getFullName() : request.getUsername()) + ",\n\n" +
+                                "Mã OTP xác thực tài khoản của bạn là: " + tokenStr + "\n" +
+                                "Mã này sẽ hết hạn trong vòng 15 phút.\n\n" +
+                                "Trân trọng,\nĐội ngũ CO-CHE");
+            javaMailSender.send(mailMessage);
+            System.out.println("OTP sent to " + request.getEmail() + " successfully.");
+        } catch (Exception e) {
+            System.err.println("Failed to send OTP email to " + request.getEmail() + ": " + e.getMessage());
+        }
 
         return AuthResponse.builder()
                 .message("Registration successful. OTP has been sent to your email.")

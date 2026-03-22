@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/axiosConfig';
+import { useAuth } from './AuthContext';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import '../css/community.css';
@@ -10,11 +11,12 @@ import {
     Image as ImageIcon, Video, Tag, Send, MoreHorizontal,
     Heart, MessageCircle, Share2, Bookmark, Flame, Calendar
 } from 'lucide-react';
-import { useAuth } from './AuthContext';
 
 const Community = () => {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
+    const displayName = user?.fullName || user?.username || "Guest";
+    const displayAvatar = user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=3b82f6&color=fff`;
     const [newPost, setNewPost] = useState('');
     const [activeFilter, setActiveFilter] = useState('All Posts');
     const [posts, setPosts] = useState([]);
@@ -61,7 +63,15 @@ const Community = () => {
     };
 
     useEffect(() => {
-        fetchPosts();
+        const loadInitialPosts = async () => {
+            try {
+                const response = await api.get('/api/community/posts');
+                setPosts(response.data);
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        };
+        loadInitialPosts();
 
         const socket = new SockJS('http://localhost:8081/ws');
         const stompClient = new Client({
@@ -111,8 +121,6 @@ const Community = () => {
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
-
-
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
 
 
@@ -121,9 +129,9 @@ const Community = () => {
         if (!newPost.trim() && !imageBase64 && !videoUrlInput) return;
 
         const postObj = {
-            authorName: user?.username ? `Chef ${user.username}` : "Guest",
+            authorName: displayName,
             role: user?.role === 'ROLE_ADMIN' ? "ADMIN" : "MEMBER",
-            avatarUrl: user?.avatar || `https://ui-avatars.com/api/?name=${user?.username || 'Guest'}&background=3b82f6&color=fff`,
+            avatarUrl: displayAvatar,
             content: newPost,
             tags: tagInput.trim() ? tagInput : (activeFilter !== 'All Posts' ? activeFilter : "#NewRecipe"),
             imageUrl: imageBase64 || null,
@@ -243,13 +251,13 @@ const Community = () => {
                         {/* Chặn mở Modal nếu chưa login */}
                         <div className="create-post-top" onClick={() => handleActionWithAuth(() => setIsPostModalOpen(true))}>
                             <img
-                                src={isAuthenticated ? (user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}`) : "https://www.gravatar.com/avatar/000?d=mp"}
+                                src={isAuthenticated ? displayAvatar : "https://www.gravatar.com/avatar/000?d=mp"}
                                 alt="Me"
                                 className="avatar-img"
                             />
                             <div className="fake-input-placeholder">
                                 {isAuthenticated
-                                    ? `Chia sẻ công thức mới của bạn chứ, ${user?.username}?`
+                                    ? `Chia sẻ công thức mới của bạn chứ, ${displayName}?`
                                     : "Đăng nhập để chia sẻ cảm hứng nấu ăn của bạn..."
                                 }
                             </div>
@@ -272,19 +280,19 @@ const Community = () => {
                                 </div>
                                 <div className="post-modal-body">
                                     <div className="modal-user-info">
-                                        <img src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}`} alt="User" className="avatar-img" />
+                                        <img src={displayAvatar} alt="User" className="avatar-img" />
                                         <div>
-                                            <h4>{user?.username}</h4>
+                                            <h4>{displayName}</h4>
                                             <span className="privacy-badge">🌍 Công khai</span>
                                         </div>
                                     </div>
-                                    <textarea
+                                    <textarea 
                                         autoFocus
-                                        placeholder={`${user?.username} ơi, bạn đang nghĩ gì thế?`}
+                                        placeholder={`Chia sẻ món ngon của bạn đi, ${displayName}?`}
                                         value={newPost}
                                         onChange={(e) => setNewPost(e.target.value)}
                                     />
-                                    {/* ... (phần upload image/video giữ nguyên) */}
+                                    
                                     {imageBase64 && (
                                         <div className="attachment-preview" style={{ marginTop: '10px' }}>
                                             <img src={imageBase64} alt="Preview" style={{ maxHeight: '150px', borderRadius: '8px' }} />
@@ -311,8 +319,9 @@ const Community = () => {
                                             style={{ width: '100%', padding: '10px', marginTop: '10px', borderRadius: '8px', border: '1px solid #333', background: '#222', color: 'white' }}
                                         />
                                     )}
+                                    
                                     <div className="add-to-post">
-                                        <span>Thêm vào bài viết</span>
+                                        <span>Thêm vào bài viết của bạn</span>
                                         <div className="add-to-actions">
                                             <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleImageUpload} />
                                             <button onClick={() => fileInputRef.current.click()}><ImageIcon color="#10b981" size={24} /></button>
@@ -320,7 +329,14 @@ const Community = () => {
                                             <button onClick={() => setShowTagInput(!showTagInput)}><Tag color="#f59e0b" size={24} /></button>
                                         </div>
                                     </div>
-                                    <button className="btn-post-submit-full" disabled={!newPost.trim() && !imageBase64 && !videoUrlInput} onClick={handleAddPost}>Đăng</button>
+
+                                    <button 
+                                        className="btn-post-submit-full" 
+                                        disabled={!newPost.trim() && !imageBase64 && !videoUrlInput}
+                                        onClick={handleAddPost}
+                                    >
+                                        Đăng
+                                    </button>
                                 </div>
                             </div>
                         </div>
