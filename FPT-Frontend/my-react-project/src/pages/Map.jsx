@@ -225,7 +225,7 @@ const Map = () => {
             <div className="map-sidebar">
                 <div className="bottom-sheet-drag-handle"></div>
                 <div className="sidebar-header">
-                    <h2>{loading ? "Đang tải dữ liệu..." : "Nearby Restaurants"}</h2>
+                    <h2>{loading ? "Data loading..." : "Nearby Restaurants"}</h2>
                 </div>
 
                 <div className="recommendations-list">

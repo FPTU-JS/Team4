@@ -300,7 +300,7 @@
 }
 
 .restaurant-card:hover {
-    background-color: #f8fafc;
+    background-color: #24330a;
     border-color: var(--border-color);
     transform: translateX(4px);
 }
