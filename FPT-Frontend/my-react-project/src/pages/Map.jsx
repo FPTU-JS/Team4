@@ -229,7 +229,7 @@ const Map = () => {
                 </div>
 
                 <div className="recommendations-list">
-                    {filteredRestaurants.length === 0 && !loading && <p style={{ padding: '20px' }}>Không tìm thấy kết quả.</p>}
+                    {filteredRestaurants.length === 0 && !loading && <p style={{ padding: '20px' }}>No data for searching...</p>}
 
                     {filteredRestaurants.map(place => (
                         <div
