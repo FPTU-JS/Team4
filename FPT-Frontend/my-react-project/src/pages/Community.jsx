@@ -127,6 +127,7 @@ const Community = () => {
                 stompClient.deactivate();
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
 
