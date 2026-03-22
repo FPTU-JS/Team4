@@ -193,7 +193,7 @@ const Map = () => {
             {/* Sidebar danh sách */}
             <div className="map-sidebar">
                 <div className="sidebar-header">
-                    <h2>{loading ? "Đang tải dữ liệu..." : "Nearby Restaurants"}</h2>
+                    <h2>{loading ? "Data loading..." : "Nearby Restaurants"}</h2>
                 </div>
 
                 <div className="recommendations-list">
