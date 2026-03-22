@@ -81,7 +81,8 @@ const Community = () => {
         };
         loadTrending();
 
-        const socket = new SockJS('http://localhost:8081/ws');
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
+        const socket = new SockJS(`${baseUrl}/ws`);
         const stompClient = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -127,6 +128,7 @@ const Community = () => {
                 stompClient.deactivate();
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
 
