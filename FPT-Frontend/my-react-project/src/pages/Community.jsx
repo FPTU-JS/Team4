@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/axiosConfig';
-import { useAuth } from './AuthContext';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import '../css/community.css';
@@ -62,7 +61,6 @@ const Community = () => {
     };
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchPosts();
 
         const socket = new SockJS('http://localhost:8081/ws');
@@ -111,6 +109,7 @@ const Community = () => {
                 stompClient.deactivate();
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
 
 
@@ -204,6 +203,7 @@ const Community = () => {
             try {
                 await api.put(`/api/community/posts/${id}/like?userId=${currentUserId}`);
             } catch (error) {
+                console.error("Like error:", error);
                 toast.error('Failed to like post', {
                     id: 'like-error'
                 });
