@@ -1,3 +1,6 @@
 Backend_FPT/jdk-17/
 
 node_modules
+# Hidden Secrets and Logs
+.env
+*.log

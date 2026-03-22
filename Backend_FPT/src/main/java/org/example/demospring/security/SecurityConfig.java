@@ -31,6 +31,10 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(AbstractHttpConfigurer::disable)
+                                .headers(headers -> headers
+                                        .frameOptions(frameOptions -> frameOptions.deny())
+                                        .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                                )
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/**", "/oauth2/**", "/api/products/**", "/api/restaurants/**", "/api/categories/**", "/api/ai/**", "/api/community/**", "/ws/**", "/error")

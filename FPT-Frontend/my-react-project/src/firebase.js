@@ -8,7 +8,7 @@ import {
 
 // Cấu hình kết nối Firebase của Anh (Your Firebase Configuration)
 const firebaseConfig = {
-  apiKey: "AIzaSyC5mqx0tUP4KUIC9ST1MVf-SlkHOL5vb1M",
+  apiKey: "AIzaSyC5mqx0tUP4KUtC9ST1MVf-S1KH0L5vb1M",
   authDomain: "fpt-frontend-auth.firebaseapp.com",
   projectId: "fpt-frontend-auth",
   storageBucket: "fpt-frontend-auth.firebasestorage.app",
