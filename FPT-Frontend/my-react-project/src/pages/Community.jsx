@@ -20,6 +20,7 @@ const Community = () => {
     const [newPost, setNewPost] = useState('');
     const [activeFilter, setActiveFilter] = useState('All Posts');
     const [posts, setPosts] = useState([]);
+    const [trendingTopics, setTrendingTopics] = useState([]);
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
     const [showVideoInput, setShowVideoInput] = useState(false);
@@ -75,6 +76,16 @@ const Community = () => {
             }
         };
         loadInitialPosts();
+
+        const loadTrending = async () => {
+            try {
+                const response = await api.get('/api/community/trending');
+                setTrendingTopics(response.data);
+            } catch (error) {
+                console.error('Failed to fetch trending:', error);
+            }
+        };
+        loadTrending();
 
         const socket = new SockJS('http://localhost:8081/ws');
         const stompClient = new Client({
@@ -132,6 +143,7 @@ const Community = () => {
 
         const postObj = {
             authorName: displayName,
+            authorId: user?.id,
             role: user?.role === 'ROLE_ADMIN' ? "ADMIN" : "MEMBER",
             avatarUrl: displayAvatar,
             content: newPost,
@@ -471,21 +483,17 @@ const Community = () => {
                 <aside className="community-sidebar-right">
                     <div className="sidebar-card">
                         <h3 className="sidebar-title"><Flame size={20} color="#ea580c" /> Trending Topics</h3>
-                        <div className="topic-item">
-                            <div className="topic-tag">#TRENDING</div>
-                            <div className="topic-title">30-Minute Dinners</div>
-                            <div className="topic-stats">2.5k posts this week</div>
-                        </div>
-                        <div className="topic-item">
-                            <div className="topic-tag">#SEASONALITY</div>
-                            <div className="topic-title">Summer BBQ Masterclass</div>
-                            <div className="topic-stats">1.8k people interested</div>
-                        </div>
-                        <div className="topic-item">
-                            <div className="topic-tag">#CHALLENGE</div>
-                            <div className="topic-title">Meatless Monday Challenge</div>
-                            <div className="topic-stats">12k participants</div>
-                        </div>
+                        {trendingTopics.length > 0 ? (
+                            trendingTopics.map((topic, idx) => (
+                                <div key={idx} className="topic-item">
+                                    <div className="topic-tag">{topic.tag}</div>
+                                    <div className="topic-title">Chủ đề được quan tâm</div>
+                                    <div className="topic-stats">{topic.count} bài viết</div>
+                                </div>
+                            ))
+                        ) : (
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>Chưa có xu hướng nào nổi bật.</p>
+                        )}
                     </div>
 
                     <div className="sidebar-card">
