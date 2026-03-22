@@ -92,12 +92,16 @@ const Community = () => {
         };
     }, [user?.id]);
 
-    // Community.js
     const fetchPosts = async () => {
         try {
-            const currentId = user?.id;
-            // Truyền thêm userId để Backend check Like
-            const response = await api.get(`/api/community/posts?currentUserId=${currentId}`);
+            const params = new URLSearchParams();
+            if (user?.id) {
+                params.append('currentUserId', user.id);
+            }
+
+            // URL sẽ là /api/community/posts (nếu chưa login) 
+            // hoặc /api/community/posts?currentUserId=1 (nếu đã login)
+            const response = await api.get(`/api/community/posts?${params.toString()}`);
 
             const formattedPosts = response.data.map(item => ({
                 ...item.post,

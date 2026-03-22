@@ -25,17 +25,18 @@ public class CommunityController {
     private final CommunityPostRepository communityPostRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final PostLikeRepository postLikeRepository;
+
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponse>> getAllPosts(@RequestParam(required = false) Long currentUserId) {
-        // 1. Lấy tất cả bài post (Sắp xếp mới nhất)
+    public ResponseEntity<List<PostResponse>> getAllPosts(
+            // CHỖ NÀY: Thêm ("currentUserId")
+            @RequestParam(value = "currentUserId", required = false) Long currentUserId) {
+
         List<CommunityPost> posts = communityPostRepository.findAllByOrderByCreatedAtDesc();
 
-        // 2. Lấy danh sách ID bài đã like của User này (nếu đã login)
         List<Long> likedPostIds = (currentUserId != null)
                 ? postLikeRepository.findPostIdsByUserId(currentUserId)
                 : new ArrayList<>();
 
-        // 3. Map sang DTO
         List<PostResponse> response = posts.stream().map(post -> {
             boolean isLiked = likedPostIds.contains(post.getId());
             return new PostResponse(post, isLiked);
@@ -46,9 +47,11 @@ public class CommunityController {
 
     @PostMapping("/posts")
     public ResponseEntity<CommunityPost> createPost(@RequestBody CommunityPost post) {
-        if (post.getLikesCount() == null) post.setLikesCount(0);
-        if (post.getCommentsCount() == null) post.setCommentsCount(0);
-        if (post.getSharesCount() == null) post.setSharesCount(0);
+        // Tối ưu: Dùng Optional hoặc check null gọn hơn
+        post.setLikesCount(post.getLikesCount() == null ? 0 : post.getLikesCount());
+        post.setCommentsCount(post.getCommentsCount() == null ? 0 : post.getCommentsCount());
+        post.setSharesCount(post.getSharesCount() == null ? 0 : post.getSharesCount());
+
         CommunityPost savedPost = communityPostRepository.save(post);
         messagingTemplate.convertAndSend("/topic/posts", new PostEvent("CREATED", savedPost));
         return ResponseEntity.ok(savedPost);
@@ -56,7 +59,12 @@ public class CommunityController {
 
     @PutMapping("/posts/{id}/like")
     @Transactional
-    public ResponseEntity<?> likePost(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<?> likePost(
+            // CHỖ NÀY: Thêm ("id")
+            @PathVariable("id") Long id,
+            // CHỖ NÀY: Thêm ("userId")
+            @RequestParam("userId") Long userId) {
+
         CommunityPost post = communityPostRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -64,15 +72,15 @@ public class CommunityController {
 
         if (existingLike.isPresent()) {
             postLikeRepository.delete(existingLike.get());
-            post.setLikesCount(Math.max(0, post.getLikesCount() - 1));
+            post.setLikesCount(Math.max(0, (post.getLikesCount() == null ? 1 : post.getLikesCount()) - 1));
         } else {
-            // Nếu chưa like thì thêm mới
             postLikeRepository.save(new PostLike(userId, id));
             post.setLikesCount((post.getLikesCount() == null ? 0 : post.getLikesCount()) + 1);
         }
 
         CommunityPost savedPost = communityPostRepository.save(post);
 
+        // Bắn tin nhắn qua WebSocket để mọi người cùng cập nhật số Like real-time
         messagingTemplate.convertAndSend("/topic/posts", new PostEvent("UPDATED", savedPost));
 
         return ResponseEntity.ok(savedPost);
