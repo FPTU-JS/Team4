@@ -32,9 +32,13 @@ export default function Notification() {
         const fetchNotifications = async () => {
             try {
                 const res = await api.get(`/api/notifications?userId=${user.id}`);
-                setNotifications(res.data);
+                const data = res.data;
+                // Nếu res.data là pageable object (data.content) thì lấy content, nếu không ép về mảng
+                const fetchedNotifs = Array.isArray(data) ? data : (data?.content || []);
+                setNotifications(fetchedNotifs);
             } catch (err) {
                 console.error("Failed to fetch notifications", err);
+                setNotifications([]); // Rơi về mảng rỗng nếu lỗi
             }
         };
         fetchNotifications();
@@ -50,7 +54,7 @@ export default function Notification() {
                 stompClient.subscribe(`/topic/notifications/${user.id}`, (message) => {
                     if (message.body) {
                         const notif = JSON.parse(message.body);
-                        setNotifications(prev => [notif, ...prev]);
+                        setNotifications(prev => [notif, ...(Array.isArray(prev) ? prev : [])]);
                         toast(notif.message, {
                             icon: '🔔',
                             id: `notif-${notif.id}`
@@ -65,7 +69,8 @@ export default function Notification() {
         }
     }, [isAuthenticated, user]);
 
-    const unreadCount = notifications.filter(n => !n.read).length;
+    const safeNotifications = Array.isArray(notifications) ? notifications : [];
+    const unreadCount = safeNotifications.filter(n => !n.read).length;
 
     const handleNotificationClick = async (notif) => {
         if (!notif.read) {
