@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import HelpCenter from './HelpCenter';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
 
@@ -117,7 +117,6 @@ const Profile = () => {
     if (!isAuthenticated) return null;
     return (
         <div className="profile-page-wrapper">
-            <Toaster position="top-right" />
             <div className="profile-page-container">
 
                 {/* --- Left Sidebar --- */}

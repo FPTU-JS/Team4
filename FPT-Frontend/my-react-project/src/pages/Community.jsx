@@ -55,10 +55,12 @@ const Community = () => {
 
             const response = await api.get(`/api/community/posts?${params.toString()}`);
 
-            const formattedPosts = response.data.map(item => ({
-                ...item.post,
-                isLiked: item.isLiked
-            }));
+            const formattedPosts = response.data.map(item => {
+                if (item.post) {
+                    return { ...item.post, isLiked: item.isLiked };
+                }
+                return { ...item, isLiked: false };
+            });
 
             setPosts(formattedPosts);
         } catch (error) {
@@ -67,15 +69,7 @@ const Community = () => {
     };
 
     useEffect(() => {
-        const loadInitialPosts = async () => {
-            try {
-                const response = await api.get('/api/community/posts');
-                setPosts(response.data);
-            } catch (error) {
-                console.error('Failed to fetch posts:', error);
-            }
-        };
-        loadInitialPosts();
+        fetchPosts();
 
         const loadTrending = async () => {
             try {
