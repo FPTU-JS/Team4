@@ -1,33 +1,47 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Mic, MicOff, Camera } from 'lucide-react';
 
 const AIInput = () => {
     const [ingredients, setIngredients] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
     const fileInputRef = useRef(null);
+    const recognitionRef = useRef(null);
     const navigate = useNavigate();
 
     const handleVoiceInput = () => {
-        // Simple mock or basic implementation of Web Speech API
-        if (window.SpeechRecognition || window.webkitSpeechRecognition) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'vi-VN';
-
-            recognition.onstart = () => setIsListening(true);
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setIngredients(prev => prev ? prev + ', ' + transcript : transcript);
-                setIsListening(false);
-            };
-            recognition.onerror = () => setIsListening(false);
-            recognition.onend = () => setIsListening(false);
-
-            recognition.start();
-        } else {
-            alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.");
+        if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+            alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói. Vui lòng dùng Google Chrome hoặc Edge.");
+            return;
         }
+
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+
+        recognition.lang = 'vi-VN';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setIngredients(prev => prev ? prev + ', ' + transcript : transcript);
+        };
+        recognition.onerror = (e) => {
+            console.error("Speech recognition error:", e.error);
+            setIsListening(false);
+        };
+        recognition.onend = () => setIsListening(false);
+
+        recognition.start();
     };
 
     const handleImageUpload = (e) => {
@@ -85,11 +99,14 @@ const AIInput = () => {
                             style={{
                                 borderRadius: 'var(--radius-full)',
                                 padding: '0 1.5rem',
-                                background: isListening ? 'var(--primary-light)' : 'var(--bg-surface)'
+                                background: isListening ? '#fecaca' : 'var(--bg-surface)',
+                                color: isListening ? '#ef4444' : 'inherit',
+                                border: isListening ? '2px solid #ef4444' : '2px solid transparent',
+                                transition: 'all 0.3s ease'
                             }}
                             title="Nhập bằng giọng nói"
                         >
-                            🎤 {isListening ? '...' : ''}
+                            {isListening ? <MicOff size={20} className="animate-pulse" /> : <Mic size={20} />}
                         </button>
                         <button
                             type="button"
@@ -98,7 +115,7 @@ const AIInput = () => {
                             style={{ borderRadius: 'var(--radius-full)', padding: '0 1.5rem' }}
                             title="Tải ảnh nguyên liệu"
                         >
-                            📷
+                            <Camera size={20} />
                         </button>
                         <input
                             type="file"

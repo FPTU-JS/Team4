@@ -1,18 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Bell, Settings, Target, ShoppingBag, Droplet, Wand2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import api from '../utils/axiosConfig';
 import '../css/healthy-plan-dashboard.css';
 
 const HealthyPlanDashboard = () => {
-    const [nutrition] = useState({
-        targetCals: 2400,
-        leftCals: 1610,
-        protein: { current: 108, target: 180 },
-        carbs: { current: 117, target: 250 },
-        fats: { current: 64, target: 80 }
+    const { user, isAuthenticated } = useAuth();
+    const [nutrition, setNutrition] = useState({
+        targetCals: 2400, leftCals: 2400,
+        currentProtein: 0, targetProtein: 180,
+        currentCarbs: 0, targetCarbs: 250,
+        currentFats: 0, targetFats: 80
     });
+    const [activeTab, setActiveTab] = useState('Monday');
+    const [meals, setMeals] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const calPercent = Math.round(((nutrition.targetCals - nutrition.leftCals) / nutrition.targetCals) * 100);
+    useEffect(() => {
+        if (!isAuthenticated || !user?.id) return;
+        
+        const fetchMacros = async () => {
+            try {
+                const res = await api.get(`/api/plan/macros?userId=${user.id}`);
+                setNutrition(res.data);
+            } catch (err) {
+                console.error("Failed to fetch macros", err);
+            }
+        };
+        fetchMacros();
+    }, [isAuthenticated, user]);
+
+    useEffect(() => {
+        if (!isAuthenticated || !user?.id) return;
+
+        const fetchMeals = async () => {
+            setLoading(true);
+            try {
+                const res = await api.get(`/api/plan/meals?userId=${user.id}&dayOfWeek=${activeTab}`);
+                setMeals(res.data);
+            } catch (err) {
+                console.error("Failed to fetch meals", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMeals();
+    }, [activeTab, isAuthenticated, user]);
+
+    const targetCals = nutrition.targetCals || 2400;
+    const consumed = targetCals - (nutrition.leftCals || targetCals);
+    const calPercent = Math.round((consumed / targetCals) * 100);
+
+    const tabs = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    const renderMealCard = (mealType, emoji) => {
+        const meal = meals.find(m => m.mealType === mealType);
+        if (!meal) {
+            return (
+                <div className="hp-meal-col">
+                    <div className="meal-col-header">
+                        <span className="meal-col-icon">{emoji}</span> {mealType.toUpperCase()}
+                    </div>
+                    <div className="new-meal-card" style={{opacity: 0.5}}>
+                        <p style={{padding: '20px', textAlign: 'center'}}>Chưa lên thực đơn</p>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <div className="hp-meal-col">
+                <div className="meal-col-header">
+                    <span className="meal-col-icon">{emoji}</span> {mealType.toUpperCase()}
+                </div>
+                <div className="new-meal-card">
+                    <img src={meal.imageUrl} alt={meal.title} className="new-meal-img" />
+                    <h3 className="new-meal-title">{meal.title}</h3>
+                    <p className="new-meal-desc">{meal.description}</p>
+                    <div className="new-meal-footer">
+                        <span className="nm-cals">{meal.cals} kcal</span>
+                        <div className="nm-macros">
+                            <span className="nm-macro-tag tag-p">P: {meal.protein}g</span>
+                            <span className="nm-macro-tag tag-c">C: {meal.carbs}g</span>
+                            <span className="nm-macro-tag tag-f">F: {meal.fats}g</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="hp-new-layout">
@@ -41,75 +117,17 @@ const HealthyPlanDashboard = () => {
                     <div className="hp-new-left">
                         
                         <div className="hp-tabs-row">
-                            <button className="hp-tab active">Monday</button>
-                            <button className="hp-tab">Tuesday</button>
-                            <button className="hp-tab">Wednesday</button>
-                            <button className="hp-tab">Thursday</button>
-                            <button className="hp-tab">Friday</button>
-                            <button className="hp-tab">Saturday</button>
-                            <button className="hp-tab">Sunday</button>
+                            {tabs.map(t => (
+                                <button key={t} className={`hp-tab ${activeTab === t ? 'active' : ''}`} onClick={() => setActiveTab(t)}>
+                                    {t}
+                                </button>
+                            ))}
                         </div>
 
-                        <div className="hp-meals-row">
-                            {/* Breakfast */}
-                            <div className="hp-meal-col">
-                                <div className="meal-col-header">
-                                    <span className="meal-col-icon">☀️</span> BREAKFAST
-                                </div>
-                                <div className="new-meal-card">
-                                    <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800&q=80" alt="Avocado" className="new-meal-img" />
-                                    <h3 className="new-meal-title">Avocado & Poached Egg</h3>
-                                    <p className="new-meal-desc">Sourdough, microgreens, chili flakes</p>
-                                    <div className="new-meal-footer">
-                                        <span className="nm-cals">420 kcal</span>
-                                        <div className="nm-macros">
-                                            <span className="nm-macro-tag tag-p">P: 18g</span>
-                                            <span className="nm-macro-tag tag-c">C: 32g</span>
-                                            <span className="nm-macro-tag tag-f">F: 24g</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Lunch */}
-                            <div className="hp-meal-col">
-                                <div className="meal-col-header">
-                                    <span className="meal-col-icon">🍲</span> LUNCH
-                                </div>
-                                <div className="new-meal-card">
-                                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80" alt="Salmon Bowl" className="new-meal-img" />
-                                    <h3 className="new-meal-title">Grilled Salmon Bowl</h3>
-                                    <p className="new-meal-desc">Quinoa, kale, roasted sweet potato</p>
-                                    <div className="new-meal-footer">
-                                        <span className="nm-cals">580 kcal</span>
-                                        <div className="nm-macros">
-                                            <span className="nm-macro-tag tag-p">P: 42g</span>
-                                            <span className="nm-macro-tag tag-c">C: 45g</span>
-                                            <span className="nm-macro-tag tag-f">F: 18g</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Dinner */}
-                            <div className="hp-meal-col">
-                                <div className="meal-col-header">
-                                    <span className="meal-col-icon">🌙</span> DINNER
-                                </div>
-                                <div className="new-meal-card">
-                                    <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80" alt="Beef Asparagus" className="new-meal-img" />
-                                    <h3 className="new-meal-title">Lean Beef & Asparagus</h3>
-                                    <p className="new-meal-desc">Garlic butter, brown rice, herbs</p>
-                                    <div className="new-meal-footer">
-                                        <span className="nm-cals">610 kcal</span>
-                                        <div className="nm-macros">
-                                            <span className="nm-macro-tag tag-p">P: 48g</span>
-                                            <span className="nm-macro-tag tag-c">C: 40g</span>
-                                            <span className="nm-macro-tag tag-f">F: 22g</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="hp-meals-row" style={{ opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
+                            {renderMealCard('Breakfast', '☀️')}
+                            {renderMealCard('Lunch', '🍲')}
+                            {renderMealCard('Dinner', '🌙')}
                         </div>
 
                     </div>
@@ -129,23 +147,23 @@ const HealthyPlanDashboard = () => {
 
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Protein</span><span>{nutrition.protein.current}/{nutrition.protein.target}g</span>
+                                    <span>Protein</span><span>{nutrition.currentProtein}/{nutrition.targetProtein}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-p" style={{ width: `${(nutrition.protein.current/nutrition.protein.target)*100}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-p" style={{ width: `${Math.min(100, (nutrition.currentProtein/nutrition.targetProtein)*100)}%` }}></div></div>
                             </div>
                             
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Carbs</span><span>{nutrition.carbs.current}/{nutrition.carbs.target}g</span>
+                                    <span>Carbs</span><span>{nutrition.currentCarbs}/{nutrition.targetCarbs}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-c" style={{ width: `${(nutrition.carbs.current/nutrition.carbs.target)*100}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-c" style={{ width: `${Math.min(100, (nutrition.currentCarbs/nutrition.targetCarbs)*100)}%` }}></div></div>
                             </div>
 
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Fats</span><span>{nutrition.fats.current}/{nutrition.fats.target}g</span>
+                                    <span>Fats</span><span>{nutrition.currentFats}/{nutrition.targetFats}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-f" style={{ width: `${(nutrition.fats.current/nutrition.fats.target)*100}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-f" style={{ width: `${Math.min(100, (nutrition.currentFats/nutrition.targetFats)*100)}%` }}></div></div>
                             </div>
                         </div>
 
