@@ -51,10 +51,21 @@ const MainLayout = () => {
                     style: {
                         background: 'var(--bg-surface)',
                         color: 'var(--text-primary)',
-                        border: '1px solid var(--border-color)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        borderRadius: '16px',
+                        boxShadow: '0 10px 40px -10px rgba(0,0,0,0.2)',
+                        padding: '16px 24px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        letterSpacing: '0.2px'
                     },
                     success: {
                         iconTheme: { primary: '#10b981', secondary: '#fff' }
+                    },
+                    error: {
+                        iconTheme: { primary: '#ef4444', secondary: '#fff' }
                     }
                 }}
             />

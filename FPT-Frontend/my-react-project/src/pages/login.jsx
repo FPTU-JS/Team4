@@ -96,31 +96,33 @@ function Login() {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input-group">
-              <label>Email or Username</label>
-              <div className={`input-wrapper ${errors.emailOrUsername ? 'has-error' : ''}`}>
+              <div className="floating-label-group">
+                <input 
+                  type="text" 
+                  className={errors.emailOrUsername ? 'has-error' : ''}
+                  {...register('emailOrUsername')}
+                  placeholder=" " 
+                />
                 <span className="input-icon-left">
                   <User size={18} strokeWidth={1.5} />
                 </span>
-                <input 
-                  type="text" 
-                  {...register('emailOrUsername')}
-                  placeholder="chef@example.com" 
-                />
+                <label>Email or Username</label>
               </div>
-              {errors.emailOrUsername && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.emailOrUsername.message}</span>}
+              {errors.emailOrUsername && <span className="error-text">{errors.emailOrUsername.message}</span>}
             </div>
 
             <div className="input-group">
-              <label>Password</label>
-              <div className={`input-wrapper ${errors.password ? 'has-error' : ''}`}>
+              <div className="floating-label-group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className={errors.password ? 'has-error' : ''}
+                  {...register('password')}
+                  placeholder=" "
+                />
                 <span className="input-icon-left">
                   <Lock size={18} strokeWidth={1.5} />
                 </span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  {...register('password')}
-                  placeholder="Enter your password"
-                />
+                <label>Password</label>
                 <span
                   className="input-icon-right"
                   onClick={() => setShowPassword(!showPassword)}
@@ -132,7 +134,7 @@ function Login() {
                   )}
                 </span>
               </div>
-              {errors.password && <span className="error-text" style={{color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', display: 'block'}}>{errors.password.message}</span>}
+              {errors.password && <span className="error-text">{errors.password.message}</span>}
             </div>
 
             <div className="forgot-password-container">
