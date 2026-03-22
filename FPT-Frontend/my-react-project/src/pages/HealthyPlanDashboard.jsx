@@ -141,30 +141,30 @@ const HealthyPlanDashboard = () => {
                             
                             <div className="custom-nutrition-circle" style={{ background: `conic-gradient(#10b981 ${calPercent}%, #e5e7eb 0)` }}>
                                 <div className="cnc-inner">
-                                    <div className="cnc-val">{nutrition.leftCals.toLocaleString()}</div>
-                                    <div className="cnc-lbl">LEFT OF {nutrition.targetCals.toLocaleString()}</div>
+                                    <div className="cnc-val">{(nutrition?.leftCals ?? 0).toLocaleString()}</div>
+                                    <div className="cnc-lbl">LEFT OF {targetCals.toLocaleString()}</div>
                                 </div>
                             </div>
 
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Protein</span><span>{nutrition.currentProtein}/{nutrition.targetProtein}g</span>
+                                    <span>Protein</span><span>{nutrition?.currentProtein ?? 0}/{nutrition?.targetProtein ?? 180}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-p" style={{ width: `${Math.min(100, (nutrition.currentProtein/nutrition.targetProtein)*100)}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-p" style={{ width: `${Math.min(100, ((nutrition?.currentProtein ?? 0)/(nutrition?.targetProtein ?? 180))*100)}%` }}></div></div>
                             </div>
                             
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Carbs</span><span>{nutrition.currentCarbs}/{nutrition.targetCarbs}g</span>
+                                    <span>Carbs</span><span>{nutrition?.currentCarbs ?? 0}/{nutrition?.targetCarbs ?? 250}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-c" style={{ width: `${Math.min(100, (nutrition.currentCarbs/nutrition.targetCarbs)*100)}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-c" style={{ width: `${Math.min(100, ((nutrition?.currentCarbs ?? 0)/(nutrition?.targetCarbs ?? 250))*100)}%` }}></div></div>
                             </div>
 
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Fats</span><span>{nutrition.currentFats}/{nutrition.targetFats}g</span>
+                                    <span>Fats</span><span>{nutrition?.currentFats ?? 0}/{nutrition?.targetFats ?? 80}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-f" style={{ width: `${Math.min(100, (nutrition.currentFats/nutrition.targetFats)*100)}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-f" style={{ width: `${Math.min(100, ((nutrition?.currentFats ?? 0)/(nutrition?.targetFats ?? 80))*100)}%` }}></div></div>
                             </div>
                         </div>
 
