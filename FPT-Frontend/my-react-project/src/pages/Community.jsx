@@ -29,6 +29,9 @@ const Community = () => {
     const [imageBase64, setImageBase64] = useState('');
     const fileInputRef = React.useRef(null);
     const [loadingLikes, setLoadingLikes] = useState({});
+    const [activeCommentPostId, setActiveCommentPostId] = useState(null);
+    const [comments, setComments] = useState({});
+    const [newComment, setNewComment] = useState("");
     // // test 
     // const testUser = { username: "Guest_Tester", id: 999, role: "ROLE_ADMIN", avatar: "" };
     // const isTestAuthenticated = true;
@@ -119,7 +122,6 @@ const Community = () => {
                 stompClient.deactivate();
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
 
@@ -220,6 +222,61 @@ const Community = () => {
                 setLoadingLikes(prev => ({ ...prev, [id]: false }));
             }
         });
+    };
+
+    const handleToggleComments = async (postId) => {
+        if (activeCommentPostId === postId) {
+            setActiveCommentPostId(null);
+        } else {
+            setActiveCommentPostId(postId);
+            try {
+                const res = await api.get(`/api/community/posts/${postId}/comments`);
+                setComments(prev => ({ ...prev, [postId]: res.data }));
+            } catch (error) {
+                console.error('Failed to load comments', error);
+            }
+        }
+    };
+
+    const handlePostComment = async (postId) => {
+        if (!newComment.trim()) return;
+        try {
+            const commentObj = {
+                userId: user?.id || 0,
+                content: newComment,
+                authorName: displayName,
+                avatarUrl: displayAvatar
+            };
+            const res = await api.post(`/api/community/posts/${postId}/comments`, commentObj);
+            setComments(prev => ({
+                ...prev,
+                [postId]: [res.data, ...(prev[postId] || [])]
+            }));
+            setNewComment("");
+            toast.success("Đã gửi bình luận!");
+        } catch (error) {
+            console.error('Failed to post comment', error);
+            toast.error("Lỗi khi gửi bình luận");
+        }
+    };
+
+    const handleShare = async (postId) => {
+        try {
+            await api.put(`/api/community/posts/${postId}/share`);
+            const shareUrl = `${window.location.origin}/community?post=${postId}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Xem bài viết này trên CO-CHE',
+                    url: shareUrl
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                toast.success('Đã chép liên kết bài viết!');
+            }
+        } catch (error) {
+            console.error("Share error:", error);
+            toast.error("Failed to share post");
+        }
     };
     return (
         <div className="community-container">
@@ -371,13 +428,40 @@ const Community = () => {
                                         <Heart size={18} fill={post.isLiked ? "#ea580c" : "none"} color={post.isLiked ? "#ea580c" : "currentColor"} />
                                         {post.likesCount}
                                     </button>
-                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => {/* Logic bình luận */ })}>
+                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => handleToggleComments(post.id))}>
                                         <MessageCircle size={18} /> {post.commentsCount}
                                     </button>
-                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => {/* Logic share */ })}>
+                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => handleShare(post.id))}>
                                         <Share2 size={18} /> {post.sharesCount}
                                     </button>
                                 </div>
+                                {activeCommentPostId === post.id && (
+                                    <div className="comments-section" style={{ borderTop: '1px solid var(--border-color)', padding: '15px' }}>
+                                        <div className="comment-input-row" style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                            <input 
+                                                type="text" 
+                                                value={newComment} 
+                                                onChange={(e) => setNewComment(e.target.value)} 
+                                                placeholder="Viết bình luận..." 
+                                                style={{ flex: 1, padding: '10px', borderRadius: '20px', border: '1px solid var(--border-color)', background: 'var(--bg-main)', color: 'var(--text-primary)', outline: 'none' }}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handlePostComment(post.id); }}
+                                            />
+                                            <button onClick={() => handlePostComment(post.id)} style={{ padding: '0 15px', borderRadius: '20px', background: '#ea580c', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Gửi</button>
+                                        </div>
+                                        <div className="comments-list" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                            {(comments[post.id] || []).map(c => (
+                                                <div key={c.id} style={{ display: 'flex', gap: '10px' }}>
+                                                    <img src={c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.authorName)}&background=333&color=fff`} alt={c.authorName} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                                                    <div style={{ background: 'var(--bg-main)', padding: '10px', borderRadius: '12px', flex: 1 }}>
+                                                        <h4 style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)' }}>{c.authorName}</h4>
+                                                        <p style={{ margin: '5px 0 0', fontSize: '14px', color: 'var(--text-secondary)' }}>{c.content}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {(comments[post.id]?.length === 0) && <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center' }}>Chưa có bình luận nào. Hãy là người đầu tiên!</p>}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

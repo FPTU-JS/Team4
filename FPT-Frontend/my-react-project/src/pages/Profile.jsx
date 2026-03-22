@@ -27,6 +27,7 @@ const Profile = () => {
         const queryParams = new URLSearchParams(location.search);
         const tab = queryParams.get('tab');
         if (tab) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveMenu(tab);
         }
     }, [location.search]);

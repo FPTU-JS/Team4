@@ -31,7 +31,8 @@ export const AuthProvider = ({ children }) => {
                 username: decoded?.name || decoded?.sub || decoded?.username || 'Chef',
                 email: decoded?.email,
                 role: decoded?.role || decoded?.roles,
-                avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null
+                avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
+                id: decoded?.userId || decoded?.id
             });
         } else if (isLoggedIn === "true") {
             setUser({ authenticated: true, avatar: localStorage.getItem("userAvatar") });
@@ -49,7 +50,8 @@ export const AuthProvider = ({ children }) => {
                 username: decoded?.name || decoded?.sub || decoded?.username,
                 email: decoded?.email,
                 role: decoded?.role || decoded?.roles,
-                avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null
+                avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
+                id: decoded?.userId || decoded?.id
             });
         } else {
             setUser({ authenticated: true, avatar: localStorage.getItem("userAvatar") });
@@ -66,7 +68,8 @@ export const AuthProvider = ({ children }) => {
             username: decoded?.name || decoded?.sub || decoded?.username,
             email: decoded?.email,
             role: decoded?.role || decoded?.roles,
-            avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null
+            avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
+            id: decoded?.userId || decoded?.id
         });
     };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Bell, Settings, Target, ShoppingBag, Droplet, Wand2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../css/healthy-plan-dashboard.css';
