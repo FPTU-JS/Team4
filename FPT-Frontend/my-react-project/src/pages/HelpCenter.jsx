@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Search, Bell, HelpCircle, ChevronDown,
     MessageSquare, Mail, Clock, Shield,
@@ -44,9 +44,6 @@ const HelpCenter = () => {
         });
     };
 
-    const userName = user?.username || 'Chef';
-    const userRole = user?.role === 'ROLE_ADMIN' ? 'Admin' : 'Premium Member';
-    const avatarName = userName.replace(' ', '+');
 
     return (
         <>

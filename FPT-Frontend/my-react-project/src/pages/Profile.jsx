@@ -36,6 +36,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (user) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setEditFormData(prev => ({
                 ...prev,
                 username: user.username || 'Chef',
@@ -80,6 +81,7 @@ const Profile = () => {
     };
     useEffect(() => {
         const localData = localStorage.getItem('myFavoriteRecipes');
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSavedRecipes(localData ? JSON.parse(localData) : []);
     }, []);
     const myRecipes = [

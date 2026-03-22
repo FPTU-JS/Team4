@@ -18,7 +18,17 @@ public class JwtUtil {
     private static final long EXPIRATION_TIME = 86400000;
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        if (userDetails instanceof org.example.demospring.entity.User) {
+            org.example.demospring.entity.User user = (org.example.demospring.entity.User) userDetails;
+            extraClaims.put("name", user.getFullName());
+            extraClaims.put("email", user.getEmail());
+            extraClaims.put("role", user.getRole());
+            if (user.getAvatarUrl() != null) {
+                extraClaims.put("avatar", user.getAvatarUrl());
+            }
+        }
+        return generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

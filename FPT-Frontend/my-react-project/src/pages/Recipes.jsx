@@ -90,6 +90,7 @@ const Recipes = () => {
 
     useEffect(() => {
         fetchRecipesData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, searchTerm, activeCategory, JSON.stringify(filters)]);
 
     // Logic lọc Client-side cho Difficulty + Dietary Preferences

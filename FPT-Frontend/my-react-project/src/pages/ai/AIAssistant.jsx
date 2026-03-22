@@ -176,6 +176,7 @@ const AIAssistant = () => {
                 handleSend(null, promptContent, chatToUse);
             }, 300);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.state]);
 
     const handleKeyDown = (e) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/axiosConfig';
+import { useAuth } from './AuthContext';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import toast, { Toaster } from 'react-hot-toast';
@@ -13,6 +14,7 @@ import {
 
 const Community = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();
     const [newPost, setNewPost] = useState('');
     const [activeFilter, setActiveFilter] = useState('All Posts');
     const [posts, setPosts] = useState([]);
@@ -25,7 +27,17 @@ const Community = () => {
     const [imageBase64, setImageBase64] = useState('');
     const fileInputRef = React.useRef(null);
 
+    const fetchPosts = async () => {
+        try {
+            const response = await api.get('/api/community/posts');
+            setPosts(response.data);
+        } catch (error) {
+            console.error('Failed to fetch posts:', error);
+        }
+    };
+
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchPosts();
 
         const socket = new SockJS('http://localhost:8081/ws');
@@ -59,23 +71,23 @@ const Community = () => {
         };
     }, []);
 
-    const fetchPosts = async () => {
-        try {
-            const response = await api.get('/api/community/posts');
-            setPosts(response.data);
-        } catch (error) {
-            console.error('Failed to fetch posts:', error);
-        }
-    };
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
+
+    const handleOpenModal = () => {
+        if (!isAuthenticated) {
+            toast.error('Vui lòng đăng nhập để đăng bài!');
+            return;
+        }
+        setIsPostModalOpen(true);
+    };
 
     const handleAddPost = async () => {
         if (!newPost.trim() && !imageBase64 && !videoUrlInput) return;
         
         const postObj = {
-            authorName: "Chef Alex",
-            role: "EXPERT CHEF • JUST NOW",
-            avatarUrl: "https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff",
+            authorName: user?.username || "Guest",
+            role: user?.role === 'ROLE_ADMIN' ? "ADMIN" : "MEMBER",
+            avatarUrl: user?.avatar || `https://ui-avatars.com/api/?name=${user?.username || 'Guest'}&background=3b82f6&color=fff`,
             content: newPost,
             tags: tagInput.trim() ? tagInput : (activeFilter !== 'All Posts' ? activeFilter : "#NewRecipe"),
             imageUrl: imageBase64 || null,
@@ -174,17 +186,17 @@ const Community = () => {
                 {/* Main Feed */}
                 <main className="community-feed">
                     <div className="feed-card create-post">
-                        <div className="create-post-top" onClick={() => setIsPostModalOpen(true)}>
-                            <img src="https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff" alt="Me" className="avatar-img" />
+                        <div className="create-post-top" onClick={handleOpenModal}>
+                            <img src={isAuthenticated ? (user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}&background=3b82f6&color=fff`) : "https://ui-avatars.com/api/?name=Guest&background=9ca3af&color=fff"} alt="Me" className="avatar-img" />
                             <div className="fake-input-placeholder">
-                                Share your latest culinary masterpiece, Chef Alex?
+                                {isAuthenticated ? `Share your latest culinary masterpiece, ${user?.username}?` : "Đăng nhập để chia sẻ công thức của bạn!"}
                             </div>
                         </div>
                         <div className="create-post-bottom">
                             <div className="post-options">
-                                <button className="post-opt-btn btn-photo" onClick={() => setIsPostModalOpen(true)}><ImageIcon size={18} /> Photo</button>
-                                <button className="post-opt-btn btn-video" onClick={() => setIsPostModalOpen(true)}><Video size={18} /> Video</button>
-                                <button className="post-opt-btn btn-tag" onClick={() => setIsPostModalOpen(true)}><Tag size={18} /> Tag Ingredients</button>
+                                <button className="post-opt-btn btn-photo" onClick={handleOpenModal}><ImageIcon size={18} /> Photo</button>
+                                <button className="post-opt-btn btn-video" onClick={handleOpenModal}><Video size={18} /> Video</button>
+                                <button className="post-opt-btn btn-tag" onClick={handleOpenModal}><Tag size={18} /> Tag Ingredients</button>
                             </div>
                         </div>
                     </div>
@@ -198,15 +210,15 @@ const Community = () => {
                         </div>
                         <div className="post-modal-body">
                             <div className="modal-user-info">
-                                <img src="https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff" alt="User" className="avatar-img" />
+                                <img src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.username || 'User'}&background=3b82f6&color=fff`} alt="User" className="avatar-img" />
                                 <div>
-                                    <h4>Chef Alex</h4>
+                                    <h4>{user?.username || 'User'}</h4>
                                     <span className="privacy-badge">🌍 Công khai</span>
                                 </div>
                             </div>
                             <textarea 
                                 autoFocus
-                                placeholder="Chef Alex ơi, bạn đang nghĩ gì thế?"
+                                placeholder={`${user?.username || 'User'} ơi, bạn đang nghĩ gì thế?`}
                                 value={newPost}
                                 onChange={(e) => setNewPost(e.target.value)}
                             />

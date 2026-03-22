@@ -5,6 +5,7 @@ import { Camera, X, RefreshCcw, Check } from 'lucide-react';
 const CameraCapture = () => {
     const navigate = useNavigate();
     const [stream, setStream] = useState(null);
+    const streamRef = useRef(null);
     const [capturedImage, setCapturedImage] = useState(null);
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -15,6 +16,7 @@ const CameraCapture = () => {
             try {
                 const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 setStream(mediaStream);
+                streamRef.current = mediaStream;
                 if (videoRef.current) {
                     videoRef.current.srcObject = mediaStream;
                 }
@@ -28,8 +30,8 @@ const CameraCapture = () => {
 
         return () => {
             // Cleanup on unmount
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
     }, []);

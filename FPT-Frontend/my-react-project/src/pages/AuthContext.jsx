@@ -1,7 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useContext, useState, useEffect } from "react";
 import authService from "../services/authService";
 
@@ -15,7 +12,7 @@ const parseJwt = (token) => {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
         return JSON.parse(jsonPayload);
-    } catch(e) {
+    } catch {
         return null;
     }
 };
@@ -28,6 +25,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem("jwtToken");
         if (isLoggedIn === "true" && token) {
             const decoded = parseJwt(token);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setUser({ 
                 authenticated: true,
                 username: decoded?.name || decoded?.sub || decoded?.username || 'Chef',

@@ -30,7 +30,7 @@ const MapRecenter = ({ location }) => {
     return null;
 };
 
-const MapOverlayControls = ({ userLocation, onLocate }) => {
+const MapOverlayControls = ({ onLocate }) => {
     const map = useMap();
     return (
         <div className="map-controls">
@@ -186,7 +186,7 @@ const Map = () => {
                         </Marker>
                     ))}
 
-                    <MapOverlayControls userLocation={userLocation} onLocate={handleLocateUser} />
+                    <MapOverlayControls onLocate={handleLocateUser} />
                 </MapContainer>
             </div>
 
