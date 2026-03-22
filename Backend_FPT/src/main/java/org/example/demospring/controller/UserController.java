@@ -18,18 +18,14 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile")
-    public ResponseEntity<String> getUserProfile(Principal principal) {
-        String profileInfo = userService.getUserProfile(principal.getName());
-        return ResponseEntity.ok(profileInfo);
+    public ResponseEntity<UserProfileResponse> getUserProfile(Principal principal) {
+        User user = userService.getUserProfile(principal.getName());
+        return ResponseEntity.ok(UserProfileResponse.fromEntity(user));
     }
     
     @PutMapping("/profile")
-    public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileRequest request, Principal principal) {
-        try {
-            User updatedUser = userService.updateProfile(principal.getName(), request);
-            return ResponseEntity.ok(UserProfileResponse.fromEntity(updatedUser));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<UserProfileResponse> updateProfile(@RequestBody UpdateProfileRequest request, Principal principal) {
+        User updatedUser = userService.updateProfile(principal.getName(), request);
+        return ResponseEntity.ok(UserProfileResponse.fromEntity(updatedUser));
     }
 }

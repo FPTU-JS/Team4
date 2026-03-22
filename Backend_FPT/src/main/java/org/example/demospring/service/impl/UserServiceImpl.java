@@ -15,9 +15,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public String getUserProfile(String username) {
-        // Có thể tích hợp với các API bên thứ ba (như Gemini, Mapbox) sau này.
-        return "Thông tin cá nhân của người dùng: " + username;
+    public User getUserProfile(String username) {
+        return userRepository.findByEmail(username)
+                .orElseGet(() -> userRepository.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
     @Override
