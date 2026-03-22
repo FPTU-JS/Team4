@@ -33,12 +33,11 @@ export default function Notification() {
             try {
                 const res = await api.get(`/api/notifications?userId=${user.id}`);
                 const data = res.data;
-                // Nếu res.data là pageable object (data.content) thì lấy content, nếu không ép về mảng
                 const fetchedNotifs = Array.isArray(data) ? data : (data?.content || []);
                 setNotifications(fetchedNotifs);
             } catch (err) {
                 console.error("Failed to fetch notifications", err);
-                setNotifications([]); // Rơi về mảng rỗng nếu lỗi
+                setNotifications([]); 
             }
         };
         fetchNotifications();

@@ -360,7 +360,7 @@ const Profile = () => {
                                         </div>
                                     ))}
 
-                                    <div className="create-recipe-card">
+                                    <div className="create-recipe-card" onClick={() => toast.success('Giao diện Soạn thảo Công thức đang được phát triển!')} style={{ cursor: 'pointer' }}>
                                         <div className="create-icon-btn">
                                             <Plus size={24} />
                                         </div>
