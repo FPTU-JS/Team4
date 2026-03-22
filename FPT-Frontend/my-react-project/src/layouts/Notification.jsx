@@ -48,7 +48,8 @@ export default function Notification() {
     useEffect(() => {
         if (!isAuthenticated || !user?.id) return;
 
-        const socket = new SockJS('http://localhost:8081/ws');
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
+        const socket = new SockJS(`${baseUrl}/ws`);
         const stompClient = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
