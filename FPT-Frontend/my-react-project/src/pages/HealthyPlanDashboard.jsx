@@ -3,6 +3,7 @@ import { Search, Bell, Settings, Target, ShoppingBag, Droplet, Wand2 } from 'luc
 import { Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import api from '../utils/axiosConfig';
+import toast from 'react-hot-toast';
 import '../css/healthy-plan-dashboard.css';
 
 const HealthyPlanDashboard = () => {
@@ -173,7 +174,7 @@ const HealthyPlanDashboard = () => {
                                 <ShoppingBag size={20} color="#10b981" /> Smart Shopping
                             </h2>
                             <p className="sc-desc">Automatically generate a consolidated shopping list for the entire week based on your plan.</p>
-                            <button className="btn-generate">
+                            <button className="btn-generate" onClick={() => toast.success('Đã tạo danh sách đi chợ thành công! Danh sách sẽ hiển thị ở tính năng kế tiếp.')}>
                                 <Wand2 size={18} /> Generate List
                             </button>
                         </div>

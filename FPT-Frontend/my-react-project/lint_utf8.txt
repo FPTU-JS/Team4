@@ -1,0 +1,13 @@
+﻿
+> my-react-project@0.0.0 lint
+> eslint .
+
+
+E:\Project\demo-repository\FPT-Frontend\my-react-project\src\pages\Community.jsx
+   64:9   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  113:8   warning  React Hook useEffect has a missing dependency: 'fetchPosts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  205:22  error    'error' is defined but never used                                                                              no-unused-vars
+
+Γ£û 3 problems (1 error, 2 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
