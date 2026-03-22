@@ -7,17 +7,18 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import HelpCenter from './HelpCenter';
+import api from '../utils/axiosConfig';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
 
-    const {isAuthenticated ,user, updateUserAvatar, logout } = useAuth();
+    const {isAuthenticated ,user, updateUserProfile, logout } = useAuth();
     const [savedRecipes, setSavedRecipes] = useState([]);
     const [activeMenu, setActiveMenu] = useState('overview');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editFormData, setEditFormData] = useState({
         username: '',
-        bio: 'Enthusiastic chef ready to explore new flavors and share recipes.',
+        bio: '',
         avatar: ''
     });
     const navigate = useNavigate();
@@ -50,6 +51,7 @@ const Profile = () => {
             setEditFormData(prev => ({
                 ...prev,
                 username: user.username || 'Chef',
+                bio: user.bio || 'Enthusiastic chef ready to explore new flavors and share recipes.',
                 avatar: user.avatar || ''
             }));
         }
@@ -60,23 +62,33 @@ const Profile = () => {
         toast.success('Profile link copied to clipboard!');
     };
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const handleEditSubmit = (e) => {
+    const handleEditSubmit = async (e) => {
         e.preventDefault();
 
         if (isSubmitting) return;
         setIsSubmitting(true);
 
-        if (editFormData.avatar) {
-            updateUserAvatar(editFormData.avatar);
+        const loadingToast = toast.loading('Updating profile...');
+        try {
+            // Call API
+            const response = await api.put('/api/user/profile', {
+                fullName: editFormData.username, // Using username as full name locally
+                username: editFormData.username,
+                bio: editFormData.bio,
+                avatarUrl: editFormData.avatar
+            });
+
+            // Update global context
+            updateUserProfile(response.data);
+            
+            toast.success('Profile updated successfully!', { id: loadingToast });
+            setIsEditModalOpen(false);
+
+        } catch (error) {
+            toast.error(error.response?.data || 'Failed to update profile!', { id: loadingToast });
+        } finally {
+            setTimeout(() => setIsSubmitting(false), 500);
         }
-
-        toast.success('Profile updated successfully!', {
-            id: 'update-profile'
-        });
-
-        setIsEditModalOpen(false);
-
-        setTimeout(() => setIsSubmitting(false), 500);
     };
 
     const handleAvatarChange = (e) => {

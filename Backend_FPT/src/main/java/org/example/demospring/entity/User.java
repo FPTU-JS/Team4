@@ -42,15 +42,20 @@ public class User implements UserDetails {
     @Column(name = "avatar_url", columnDefinition = "TEXT")
     private String avatarUrl;
 
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+
     @Column(name = "dob")
     private LocalDate dob;
 
     @Column(name = "role", length = 20)
     private String role;
 
+    @Builder.Default
     @Column(name = "streak")
     private Integer streak = 0;
 
+    @Builder.Default
     @Column(name = "status", length = 20)
     private String status = "Active";
 
@@ -60,6 +65,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_provider")
     private AuthProvider provider = AuthProvider.local;

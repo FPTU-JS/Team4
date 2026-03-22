@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
                 email: decoded?.email,
                 role: decoded?.role || decoded?.roles,
                 avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
+                bio: localStorage.getItem("userBio") || 'Enthusiastic chef ready to explore new flavors and share recipes.',
                 id: decoded?.userId || decoded?.id
             });
         } else if (isLoggedIn === "true") {
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
                 email: decoded?.email,
                 role: decoded?.role || decoded?.roles,
                 avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
+                bio: localStorage.getItem("userBio") || 'Enthusiastic chef ready to explore new flavors and share recipes.',
                 id: decoded?.userId || decoded?.id
             });
         } else {
@@ -69,6 +71,7 @@ export const AuthProvider = ({ children }) => {
             email: decoded?.email,
             role: decoded?.role || decoded?.roles,
             avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
+            bio: localStorage.getItem("userBio") || 'Enthusiastic chef ready to explore new flavors and share recipes.',
             id: decoded?.userId || decoded?.id
         });
     };
@@ -80,9 +83,17 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
-    const updateUserAvatar = (newAvatar) => {
-        localStorage.setItem("userAvatar", newAvatar);
-        setUser(prev => ({ ...prev, avatar: newAvatar }));
+    const updateUserProfile = (newData) => {
+        if (newData.avatarUrl) localStorage.setItem("userAvatar", newData.avatarUrl);
+        if (newData.bio) localStorage.setItem("userBio", newData.bio);
+        if (newData.username) localStorage.setItem("userName", newData.username);
+        
+        setUser(prev => ({ 
+            ...prev, 
+            avatar: newData.avatarUrl || prev.avatar,
+            bio: newData.bio || prev.bio,
+            username: newData.username || prev.username 
+        }));
     };
 
     const value = {
@@ -91,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         login,
         oauthLogin,
         logout,
-        updateUserAvatar
+        updateUserProfile
     };
 
     return (
