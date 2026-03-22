@@ -6,14 +6,13 @@ import SockJS from 'sockjs-client';
 import { Bell } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
 import '../css/notification.css'; 
 
 export default function Notification() {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
     const { user, isAuthenticated } = useAuth();
-    const [notifications, setNotifications] = useState([]);
+    const [notifications, setNotifications] = useState([]); // Khởi tạo là mảng rỗng
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,9 +31,15 @@ export default function Notification() {
         const fetchNotifications = async () => {
             try {
                 const res = await api.get(`/api/notifications?userId=${user.id}`);
-                setNotifications(res.data);
+                // KIỂM TRA: Chỉ set nếu dữ liệu trả về là mảng
+                if (Array.isArray(res.data)) {
+                    setNotifications(res.data);
+                } else {
+                    setNotifications([]); 
+                }
             } catch (err) {
                 console.error("Failed to fetch notifications", err);
+                setNotifications([]); // Đảm bảo không bị null khi lỗi API
             }
         };
         fetchNotifications();
@@ -49,37 +54,46 @@ export default function Notification() {
             onConnect: () => {
                 stompClient.subscribe(`/topic/notifications/${user.id}`, (message) => {
                     if (message.body) {
-                        const notif = JSON.parse(message.body);
-                        setNotifications(prev => [notif, ...prev]);
-                        toast(notif.message, {
-                            icon: '🔔',
-                            id: `notif-${notif.id}`
-                        });
+                        try {
+                            const notif = JSON.parse(message.body);
+                            setNotifications(prev => [notif, ...(Array.isArray(prev) ? prev : [])]);
+                            toast(notif.message, { icon: '🔔', id: `notif-${notif.id}` });
+                        } catch (e) {
+                            console.error("Error parsing socket message", e);
+                        }
                     }
                 });
-            }
+            },
+            // Thêm các cấu hình để tránh lỗi kết nối chập chờn
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
         });
+
         stompClient.activate();
         return () => {
             if (stompClient.active) stompClient.deactivate();
         }
     }, [isAuthenticated, user]);
 
-    const unreadCount = notifications.filter(n => !n.read).length;
+    // FIX LỖI CHÍNH TẠI ĐÂY: Thêm kiểm tra Array.isArray
+    const unreadCount = Array.isArray(notifications) 
+        ? notifications.filter(n => n && !n.read).length 
+        : 0;
 
     const handleNotificationClick = async (notif) => {
         if (!notif.read) {
             try {
                 await api.put(`/api/notifications/${notif.id}/read`);
-                setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+                setNotifications(prev => 
+                    Array.isArray(prev) ? prev.map(n => n.id === notif.id ? { ...n, read: true } : n) : []
+                );
             } catch (err) {
                 console.error("Failed to mark read", err);
             }
         }
         setIsOpen(false);
-        if (notif.link) {
-            navigate(notif.link);
-        }
+        if (notif.link) navigate(notif.link);
     };
 
     const formatTime = (isoString) => {
@@ -105,7 +119,7 @@ export default function Notification() {
                         Thông báo
                     </div>
                     <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                        {notifications.length === 0 ? (
+                        {!Array.isArray(notifications) || notifications.length === 0 ? (
                             <div className="dropdown-empty" style={{ padding: '20px', textAlign: 'center', color: '#6b7280', fontSize: '14px' }}>
                                 Chưa có thông báo nào.
                             </div>
