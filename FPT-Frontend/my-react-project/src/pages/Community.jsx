@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/axiosConfig';
+import { useAuth } from './AuthContext';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import '../css/community.css';
@@ -10,11 +11,12 @@ import {
     Image as ImageIcon, Video, Tag, Send, MoreHorizontal,
     Heart, MessageCircle, Share2, Bookmark, Flame, Calendar
 } from 'lucide-react';
-import { useAuth } from './AuthContext';
 
 const Community = () => {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
+    const displayName = user?.fullName || user?.username || "Guest";
+    const displayAvatar = user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=3b82f6&color=fff`;
     const [newPost, setNewPost] = useState('');
     const [activeFilter, setActiveFilter] = useState('All Posts');
     const [posts, setPosts] = useState([]);
@@ -27,6 +29,9 @@ const Community = () => {
     const [imageBase64, setImageBase64] = useState('');
     const fileInputRef = React.useRef(null);
     const [loadingLikes, setLoadingLikes] = useState({});
+    const [activeCommentPostId, setActiveCommentPostId] = useState(null);
+    const [comments, setComments] = useState({});
+    const [newComment, setNewComment] = useState("");
     // // test 
     // const testUser = { username: "Guest_Tester", id: 999, role: "ROLE_ADMIN", avatar: "" };
     // const isTestAuthenticated = true;
@@ -61,7 +66,15 @@ const Community = () => {
     };
 
     useEffect(() => {
-        fetchPosts();
+        const loadInitialPosts = async () => {
+            try {
+                const response = await api.get('/api/community/posts');
+                setPosts(response.data);
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        };
+        loadInitialPosts();
 
         const socket = new SockJS('http://localhost:8081/ws');
         const stompClient = new Client({
@@ -109,10 +122,7 @@ const Community = () => {
                 stompClient.deactivate();
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
-
-
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
 
 
@@ -121,9 +131,9 @@ const Community = () => {
         if (!newPost.trim() && !imageBase64 && !videoUrlInput) return;
 
         const postObj = {
-            authorName: user?.username ? `Chef ${user.username}` : "Guest",
+            authorName: displayName,
             role: user?.role === 'ROLE_ADMIN' ? "ADMIN" : "MEMBER",
-            avatarUrl: user?.avatar || `https://ui-avatars.com/api/?name=${user?.username || 'Guest'}&background=3b82f6&color=fff`,
+            avatarUrl: displayAvatar,
             content: newPost,
             tags: tagInput.trim() ? tagInput : (activeFilter !== 'All Posts' ? activeFilter : "#NewRecipe"),
             imageUrl: imageBase64 || null,
@@ -213,6 +223,61 @@ const Community = () => {
             }
         });
     };
+
+    const handleToggleComments = async (postId) => {
+        if (activeCommentPostId === postId) {
+            setActiveCommentPostId(null);
+        } else {
+            setActiveCommentPostId(postId);
+            try {
+                const res = await api.get(`/api/community/posts/${postId}/comments`);
+                setComments(prev => ({ ...prev, [postId]: res.data }));
+            } catch (error) {
+                console.error('Failed to load comments', error);
+            }
+        }
+    };
+
+    const handlePostComment = async (postId) => {
+        if (!newComment.trim()) return;
+        try {
+            const commentObj = {
+                userId: user?.id || 0,
+                content: newComment,
+                authorName: displayName,
+                avatarUrl: displayAvatar
+            };
+            const res = await api.post(`/api/community/posts/${postId}/comments`, commentObj);
+            setComments(prev => ({
+                ...prev,
+                [postId]: [res.data, ...(prev[postId] || [])]
+            }));
+            setNewComment("");
+            toast.success("Đã gửi bình luận!");
+        } catch (error) {
+            console.error('Failed to post comment', error);
+            toast.error("Lỗi khi gửi bình luận");
+        }
+    };
+
+    const handleShare = async (postId) => {
+        try {
+            await api.put(`/api/community/posts/${postId}/share`);
+            const shareUrl = `${window.location.origin}/community?post=${postId}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Xem bài viết này trên CO-CHE',
+                    url: shareUrl
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                toast.success('Đã chép liên kết bài viết!');
+            }
+        } catch (error) {
+            console.error("Share error:", error);
+            toast.error("Failed to share post");
+        }
+    };
     return (
         <div className="community-container">
             {/* <Toaster position="top-right" /> */}
@@ -243,13 +308,13 @@ const Community = () => {
                         {/* Chặn mở Modal nếu chưa login */}
                         <div className="create-post-top" onClick={() => handleActionWithAuth(() => setIsPostModalOpen(true))}>
                             <img
-                                src={isAuthenticated ? (user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}`) : "https://www.gravatar.com/avatar/000?d=mp"}
+                                src={isAuthenticated ? displayAvatar : "https://www.gravatar.com/avatar/000?d=mp"}
                                 alt="Me"
                                 className="avatar-img"
                             />
                             <div className="fake-input-placeholder">
                                 {isAuthenticated
-                                    ? `Chia sẻ công thức mới của bạn chứ, ${user?.username}?`
+                                    ? `Chia sẻ công thức mới của bạn chứ, ${displayName}?`
                                     : "Đăng nhập để chia sẻ cảm hứng nấu ăn của bạn..."
                                 }
                             </div>
@@ -272,19 +337,19 @@ const Community = () => {
                                 </div>
                                 <div className="post-modal-body">
                                     <div className="modal-user-info">
-                                        <img src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}`} alt="User" className="avatar-img" />
+                                        <img src={displayAvatar} alt="User" className="avatar-img" />
                                         <div>
-                                            <h4>{user?.username}</h4>
+                                            <h4>{displayName}</h4>
                                             <span className="privacy-badge">🌍 Công khai</span>
                                         </div>
                                     </div>
-                                    <textarea
+                                    <textarea 
                                         autoFocus
-                                        placeholder={`${user?.username} ơi, bạn đang nghĩ gì thế?`}
+                                        placeholder={`Chia sẻ món ngon của bạn đi, ${displayName}?`}
                                         value={newPost}
                                         onChange={(e) => setNewPost(e.target.value)}
                                     />
-                                    {/* ... (phần upload image/video giữ nguyên) */}
+                                    
                                     {imageBase64 && (
                                         <div className="attachment-preview" style={{ marginTop: '10px' }}>
                                             <img src={imageBase64} alt="Preview" style={{ maxHeight: '150px', borderRadius: '8px' }} />
@@ -311,8 +376,9 @@ const Community = () => {
                                             style={{ width: '100%', padding: '10px', marginTop: '10px', borderRadius: '8px', border: '1px solid #333', background: '#222', color: 'white' }}
                                         />
                                     )}
+                                    
                                     <div className="add-to-post">
-                                        <span>Thêm vào bài viết</span>
+                                        <span>Thêm vào bài viết của bạn</span>
                                         <div className="add-to-actions">
                                             <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleImageUpload} />
                                             <button onClick={() => fileInputRef.current.click()}><ImageIcon color="#10b981" size={24} /></button>
@@ -320,7 +386,14 @@ const Community = () => {
                                             <button onClick={() => setShowTagInput(!showTagInput)}><Tag color="#f59e0b" size={24} /></button>
                                         </div>
                                     </div>
-                                    <button className="btn-post-submit-full" disabled={!newPost.trim() && !imageBase64 && !videoUrlInput} onClick={handleAddPost}>Đăng</button>
+
+                                    <button 
+                                        className="btn-post-submit-full" 
+                                        disabled={!newPost.trim() && !imageBase64 && !videoUrlInput}
+                                        onClick={handleAddPost}
+                                    >
+                                        Đăng
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -355,13 +428,40 @@ const Community = () => {
                                         <Heart size={18} fill={post.isLiked ? "#ea580c" : "none"} color={post.isLiked ? "#ea580c" : "currentColor"} />
                                         {post.likesCount}
                                     </button>
-                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => {/* Logic bình luận */ })}>
+                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => handleToggleComments(post.id))}>
                                         <MessageCircle size={18} /> {post.commentsCount}
                                     </button>
-                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => {/* Logic share */ })}>
+                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => handleShare(post.id))}>
                                         <Share2 size={18} /> {post.sharesCount}
                                     </button>
                                 </div>
+                                {activeCommentPostId === post.id && (
+                                    <div className="comments-section" style={{ borderTop: '1px solid var(--border-color)', padding: '15px' }}>
+                                        <div className="comment-input-row" style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                            <input 
+                                                type="text" 
+                                                value={newComment} 
+                                                onChange={(e) => setNewComment(e.target.value)} 
+                                                placeholder="Viết bình luận..." 
+                                                style={{ flex: 1, padding: '10px', borderRadius: '20px', border: '1px solid var(--border-color)', background: 'var(--bg-main)', color: 'var(--text-primary)', outline: 'none' }}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handlePostComment(post.id); }}
+                                            />
+                                            <button onClick={() => handlePostComment(post.id)} style={{ padding: '0 15px', borderRadius: '20px', background: '#ea580c', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Gửi</button>
+                                        </div>
+                                        <div className="comments-list" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                            {(comments[post.id] || []).map(c => (
+                                                <div key={c.id} style={{ display: 'flex', gap: '10px' }}>
+                                                    <img src={c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.authorName)}&background=333&color=fff`} alt={c.authorName} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                                                    <div style={{ background: 'var(--bg-main)', padding: '10px', borderRadius: '12px', flex: 1 }}>
+                                                        <h4 style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)' }}>{c.authorName}</h4>
+                                                        <p style={{ margin: '5px 0 0', fontSize: '14px', color: 'var(--text-secondary)' }}>{c.content}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {(comments[post.id]?.length === 0) && <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center' }}>Chưa có bình luận nào. Hãy là người đầu tiên!</p>}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.demospring.dto.PostEvent;
 import org.example.demospring.dto.response.PostResponse;
 import org.example.demospring.entity.CommunityPost;
+import org.example.demospring.entity.PostComment;
 import org.example.demospring.entity.PostLike;
 import org.example.demospring.repository.CommunityPostRepository;
+import org.example.demospring.repository.PostCommentRepository;
 import org.example.demospring.repository.PostLikeRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,6 +27,7 @@ public class CommunityController {
     private final CommunityPostRepository communityPostRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final PostLikeRepository postLikeRepository;
+    private final PostCommentRepository postCommentRepository;
 
     @GetMapping("/posts")
     public ResponseEntity<List<PostResponse>> getAllPosts(
@@ -81,6 +84,43 @@ public class CommunityController {
         CommunityPost savedPost = communityPostRepository.save(post);
 
         // Bắn tin nhắn qua WebSocket để mọi người cùng cập nhật số Like real-time
+        messagingTemplate.convertAndSend("/topic/posts", new PostEvent("UPDATED", savedPost));
+
+        return ResponseEntity.ok(savedPost);
+    }
+
+    @GetMapping("/posts/{id}/comments")
+    public ResponseEntity<List<PostComment>> getPostComments(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(postCommentRepository.findByPostIdOrderByCreatedAtDesc(id));
+    }
+
+    @PostMapping("/posts/{id}/comments")
+    public ResponseEntity<PostComment> addComment(
+            @PathVariable("id") Long id,
+            @RequestBody PostComment comment) {
+
+        CommunityPost post = communityPostRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        comment.setPostId(id);
+        PostComment savedComment = postCommentRepository.save(comment);
+
+        post.setCommentsCount((post.getCommentsCount() == null ? 0 : post.getCommentsCount()) + 1);
+        communityPostRepository.save(post);
+
+        messagingTemplate.convertAndSend("/topic/posts", new PostEvent("UPDATED", post));
+
+        return ResponseEntity.ok(savedComment);
+    }
+
+    @PutMapping("/posts/{id}/share")
+    public ResponseEntity<?> sharePost(@PathVariable("id") Long id) {
+        CommunityPost post = communityPostRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setSharesCount((post.getSharesCount() == null ? 0 : post.getSharesCount()) + 1);
+        CommunityPost savedPost = communityPostRepository.save(post);
+
         messagingTemplate.convertAndSend("/topic/posts", new PostEvent("UPDATED", savedPost));
 
         return ResponseEntity.ok(savedPost);

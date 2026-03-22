@@ -27,6 +27,7 @@ public class JwtUtil {
             if (user.getAvatarUrl() != null) {
                 extraClaims.put("avatar", user.getAvatarUrl());
             }
+            extraClaims.put("userId", user.getId());
         }
         return generateToken(extraClaims, userDetails);
     }

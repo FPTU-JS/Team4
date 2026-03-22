@@ -4,51 +4,6 @@ import { Clock, Activity, Users, Flame, ChefHat, Sparkles, ArrowLeft } from 'luc
 import productService from '../../services/productService';
 import '../../css/recipe-detail.css';
 
-// ... (Giữ nguyên MOCK_RECIPE tạm thời cho phần Steps hướng dẫn không có trong DB)
-const MOCK_RECIPE = {
-    rating: '4.9 (12.4k reviews)',
-    difficulty: 'Medium',
-    servings: 2,
-    steps: [
-        {
-            title: 'Prepare the Ingredients',
-            desc: 'Wash and prepare all the ingredients according to the recipe list. Ensure precise measurements for the best culinary experience.',
-            img: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80'
-        },
-        {
-            title: 'Cook with Passion',
-            desc: 'Follow traditional cooking methods to bring out the authentic flavors. Heat control is the key to mastering this dish.',
-            img: null
-        },
-        {
-            title: 'Plating and Serving',
-            desc: 'Serve immediately while hot. Garnish elegantly to elevate the dining experience.',
-            img: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&q=80'
-        }
-    ],
-    nutrition: {
-        protein: '12g',
-        carbs: '58g',
-        fats: '22g'
-    },
-    reviews: [
-        {
-            id: 1,
-            name: 'Sarah Jenkins',
-            avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
-            time: '2 days ago',
-            text: 'Absolutely divine! The flavors were perfectly balanced. Definitely making this again for my dinner party!'
-        },
-        {
-            id: 2,
-            name: 'Mark Thompson',
-            avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80',
-            time: '5 days ago',
-            text: 'Great base recipe. I added some personal twist to give it more texture. Great guided experience!'
-        }
-    ]
-};
-
 const RecipeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -213,7 +168,7 @@ const RecipeDetail = () => {
 
                     <h2 className="section-title">Preparation Steps</h2>
                     <div className="steps-list">
-                        {MOCK_RECIPE.steps.map((step, idx) => (
+                        {(recipe.steps && recipe.steps.length > 0) ? recipe.steps.map((step, idx) => (
                             <div key={idx} className="instruction-step">
                                 <div className={`step-number ${idx === 0 ? 'active' : ''}`}>
                                     {idx + 1}
@@ -226,7 +181,11 @@ const RecipeDetail = () => {
                                     )}
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="empty-steps-state" style={{ padding: '20px', background: 'var(--bg-main)', borderRadius: '12px' }}>
+                                <p>Preparation steps are not available in the database yet.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -241,19 +200,19 @@ const RecipeDetail = () => {
                         <div className="nutrient-bar"></div>
                     </div>
                     <div className="nutrient-box">
-                        <span className="nutrient-val">{MOCK_RECIPE.nutrition.protein}</span>
+                        <span className="nutrient-val">{recipe.protein || 'N/A'}</span>
                         <span className="nutrient-label">Protein</span>
-                        <div className="nutrient-bar"></div>
+                        <div className="nutrient-bar" style={{ width: '40%' }}></div>
                     </div>
                     <div className="nutrient-box">
-                        <span className="nutrient-val">{MOCK_RECIPE.nutrition.carbs}</span>
+                        <span className="nutrient-val">{recipe.carbs || 'N/A'}</span>
                         <span className="nutrient-label">Carbs</span>
-                        <div className="nutrient-bar"></div>
+                        <div className="nutrient-bar" style={{ width: '70%' }}></div>
                     </div>
                     <div className="nutrient-box">
-                        <span className="nutrient-val">{MOCK_RECIPE.nutrition.fats}</span>
+                        <span className="nutrient-val">{recipe.fats || 'N/A'}</span>
                         <span className="nutrient-label">Fats</span>
-                        <div className="nutrient-bar"></div>
+                        <div className="nutrient-bar" style={{ width: '30%' }}></div>
                     </div>
                 </div>
 
@@ -264,7 +223,7 @@ const RecipeDetail = () => {
                     </div>
 
                     <div className="reviews-list">
-                        {MOCK_RECIPE.reviews.map(review => (
+                        {(recipe.reviews && recipe.reviews.length > 0) ? recipe.reviews.map(review => (
                             <div key={review.id} className="review-card">
                                 <div className="review-header">
                                     <div className="reviewer-info">
@@ -278,7 +237,9 @@ const RecipeDetail = () => {
                                 </div>
                                 <p className="review-text">{review.text}</p>
                             </div>
-                        ))}
+                        )) : (
+                            <p style={{ color: 'var(--text-secondary)' }}>Buổi tiệc nấu nướng này chưa có nhận xét nào. Hãy là người đầu tiên!</p>
+                        )}
                     </div>
 
                     <button className="load-more-btn">Load More Reviews</button>

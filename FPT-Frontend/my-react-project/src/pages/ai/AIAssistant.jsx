@@ -2,10 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Settings, HelpCircle, Utensils, MessageSquare, Clock, Flame, Image as ImageIcon, Mic, Send, Plus } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../AuthContext';
 import '../../css/ai-assistant.css';
 
 const AIAssistant = () => {
     const location = useLocation();
+    const { user } = useAuth();
+    const displayName = user?.fullName || user?.username || "Guest";
+    const displayAvatar = user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=f97316&color=fff`;
+
     const defaultMessage = { 
         sender: 'bot', 
         text: "Hello! I'm your CO-CHE AI Assistant. How can I help you cook something delicious today? I have some great ideas for seasonal vegetables if you're interested!",
@@ -220,12 +225,12 @@ const AIAssistant = () => {
 
                 <div className="ai-user-profile">
                     <div className="ai-avatar-wrapper">
-                        <img src="https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff" alt="User" />
+                        <img src={displayAvatar} alt="User" />
                         <span className="ai-online-dot"></span>
                     </div>
                     <div className="ai-user-info">
-                        <h3>Chef Alex</h3>
-                        <p>Expert Level</p>
+                        <h3>{displayName}</h3>
+                        <p>App User</p>
                     </div>
                 </div>
 
@@ -296,7 +301,7 @@ const AIAssistant = () => {
                             
                             {msg.sender === 'user' && (
                                 <div className="ai-msg-avatar bg-orange">
-                                    <img src="https://ui-avatars.com/api/?name=User&background=f97316&color=fff" alt="User" />
+                                    <img src={displayAvatar} alt="User" />
                                 </div>
                             )}
                         </div>

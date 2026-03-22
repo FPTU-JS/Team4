@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, Settings, Leaf, Sun, Moon } from 'lucide-react';
+import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, Settings, Leaf, Sun, Moon, LogOut, HelpCircle } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
 import FloatingAIBubble from '../components/FloatingAIBubble';
@@ -14,7 +14,7 @@ const MainLayout = () => {
     const currentPath = location.pathname;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user, logout } = useAuth();
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
     useEffect(() => {
@@ -106,18 +106,39 @@ const MainLayout = () => {
 
                                 <button
                                     className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
-                                    onClick={() => navigate('/help-center')}
-                                    title="Account & Help Center"
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    title="User Menu"
                                     style={{ padding: 0, overflow: 'hidden', border: '2px solid #10b981' }}
                                 >
                                     <img 
-                                        src="https://ui-avatars.com/api/?name=Chef+Julian&background=fce7f3&color=db2777" 
+                                        src={user?.avatar || `https://ui-avatars.com/api/?name=${(user?.username || 'User').replace(' ', '+')}&background=10b981&color=fff`} 
                                         alt="Avatar" 
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                                     />
                                 </button>
 
-
+                                {isDropdownOpen && (
+                                    <div className="dropdown-menu">
+                                        <div className="dropdown-header" style={{ padding: '4px 12px 12px', borderBottom: '1px solid var(--border-color)', marginBottom: '4px' }}>
+                                            <div style={{ fontWeight: '600', fontSize: '15px', color: 'var(--text-primary)' }}>{user?.username || 'Chef'}</div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{user?.email || 'Welcome back!'}</div>
+                                        </div>
+                                        <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); navigate('/profile'); }}>
+                                            <User size={18} /> Profile
+                                        </button>
+                                        <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); navigate('/profile?tab=help'); }}>
+                                            <HelpCircle size={18} /> Help Center
+                                        </button>
+                                        <hr className="dropdown-divider" />
+                                        <button className="dropdown-item logout-btn" onClick={() => { 
+                                            setIsDropdownOpen(false); 
+                                            if (typeof logout === 'function') logout();
+                                            navigate('/');
+                                        }}>
+                                            <LogOut size={18} /> Logout
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </>
                     ) : (
