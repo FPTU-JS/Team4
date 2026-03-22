@@ -39,9 +39,12 @@ const HealthyPlanDashboard = () => {
             setLoading(true);
             try {
                 const res = await api.get(`/api/plan/meals?userId=${user.id}&dayOfWeek=${activeTab}`);
-                setMeals(res.data);
+                const data = res.data;
+                const fetchedMeals = Array.isArray(data) ? data : (data?.content || []);
+                setMeals(fetchedMeals);
             } catch (err) {
                 console.error("Failed to fetch meals", err);
+                setMeals([]); // Fallback to empty array on error
             } finally {
                 setLoading(false);
             }
@@ -55,8 +58,10 @@ const HealthyPlanDashboard = () => {
 
     const tabs = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+    const safeMeals = Array.isArray(meals) ? meals : [];
+
     const renderMealCard = (mealType, emoji) => {
-        const meal = meals.find(m => m.mealType === mealType);
+        const meal = safeMeals.find(m => m.mealType === mealType);
         if (!meal) {
             return (
                 <div className="hp-meal-col">
