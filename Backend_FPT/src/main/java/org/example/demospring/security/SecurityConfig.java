@@ -37,8 +37,7 @@ public class SecurityConfig {
                                 )
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/oauth2/**", "/api/products/**", "/api/restaurants/**", "/api/categories/**", "/api/ai/**", "/api/community/**", "/ws/**", "/error")
-                                                .permitAll()
+                                                .requestMatchers("/api/auth/**", "/oauth2/**", "/api/products/**", "/api/restaurants/**", "/api/categories/**", "/api/ai/**", "/api/community/**", "/ws/**", "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
                                                 .userInfoEndpoint(userInfo -> userInfo
