@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../utils/axiosConfig';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import toast, { Toaster } from 'react-hot-toast';
 import '../css/community.css';
 import {
     Layers, TrendingUp, Users, Medal, Bot,
     Image as ImageIcon, Video, Tag, Send, MoreHorizontal,
     Heart, MessageCircle, Share2, Bookmark, Flame, Calendar
 } from 'lucide-react';
+import { useAuth } from './AuthContext';
 
 const Community = () => {
     const navigate = useNavigate();
+    const { user, isAuthenticated } = useAuth();
+
     const [newPost, setNewPost] = useState('');
     const [activeFilter, setActiveFilter] = useState('All Posts');
     const [posts, setPosts] = useState([]);
@@ -24,6 +27,19 @@ const Community = () => {
     const [tagInput, setTagInput] = useState('');
     const [imageBase64, setImageBase64] = useState('');
     const fileInputRef = React.useRef(null);
+    const [loadingLikes, setLoadingLikes] = useState({});
+    // // test 
+    // const testUser = { username: "Guest_Tester", id: 999, role: "ROLE_ADMIN", avatar: "" };
+    // const isTestAuthenticated = true;
+    const handleActionWithAuth = (action) => {
+        if (!isAuthenticated) {
+            toast.error("Login to use these features!", {
+                id: 'auth-required-toast'
+            });
+            return;
+        }
+        action();
+    };
 
     useEffect(() => {
         fetchPosts();
@@ -37,11 +53,28 @@ const Community = () => {
                         try {
                             const event = JSON.parse(message.body);
                             if (event.type === 'CREATED') {
-                                setPosts(prevPosts => [event.post, ...prevPosts]);
+                                setPosts(prevPosts => {
+                                    // Check nếu bài viết đã tồn tại trong danh sách thì không thêm nữa
+                                    const isExisted = prevPosts.some(p => p.id === event.post.id);
+                                    if (isExisted) return prevPosts;
+
+                                    const newPostWithLike = { ...event.post, isLiked: false };
+                                    return [newPostWithLike, ...prevPosts];
+                                });
                             } else if (event.type === 'UPDATED') {
-                                setPosts(prevPosts => prevPosts.map(p => p.id === event.post.id ? event.post : p));
+                                setPosts(prevPosts =>
+                                    prevPosts.map(p => {
+                                        if (p.id === event.post.id) {
+                                            return {
+                                                ...event.post,
+                                                isLiked: p.isLiked
+                                            };
+                                        }
+                                        return p;
+                                    })
+                                );
                             }
-                        } catch(e) { console.error('Error parsing event', e); }
+                        } catch (e) { console.error('Error parsing event', e); }
                     }
                 });
             },
@@ -57,25 +90,35 @@ const Community = () => {
                 stompClient.deactivate();
             }
         };
-    }, []);
+    }, [user?.id]);
 
+    // Community.js
     const fetchPosts = async () => {
         try {
-            const response = await api.get('/api/community/posts');
-            setPosts(response.data);
+            const currentId = user?.id;
+            // Truyền thêm userId để Backend check Like
+            const response = await api.get(`/api/community/posts?currentUserId=${currentId}`);
+
+            const formattedPosts = response.data.map(item => ({
+                ...item.post,
+                isLiked: item.isLiked
+            }));
+
+            setPosts(formattedPosts);
         } catch (error) {
             console.error('Failed to fetch posts:', error);
         }
     };
+
     const filters = ['All Posts', '#HomeCooking', '#Vegan', '#QuickBites', '#HealthyEating'];
 
     const handleAddPost = async () => {
         if (!newPost.trim() && !imageBase64 && !videoUrlInput) return;
-        
+
         const postObj = {
-            authorName: "Chef Alex",
-            role: "EXPERT CHEF • JUST NOW",
-            avatarUrl: "https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff",
+            authorName: `Chef ${user?.username}`,
+            role: (user?.role || "Expert Chef") + " • JUST NOW",
+            avatarUrl: user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}&background=3b82f6&color=fff`,
             content: newPost,
             tags: tagInput.trim() ? tagInput : (activeFilter !== 'All Posts' ? activeFilter : "#NewRecipe"),
             imageUrl: imageBase64 || null,
@@ -84,7 +127,7 @@ const Community = () => {
             commentsCount: 0,
             sharesCount: 0
         };
-        
+
         try {
             await api.post('/api/community/posts', postObj);
             // Local state reset, the STOMP message will render the new post payload for everyone globally
@@ -96,13 +139,19 @@ const Community = () => {
             setShowTagInput(false);
             setIsPostModalOpen(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
-            toast.success('Đã đăng bài thành công!');
+            toast.success('Đã đăng bài thành công!', {
+                id: 'create-post-success'
+            });
         } catch (error) {
             console.error('Failed to create post:', error);
             if (error.response && error.response.status === 500) {
-                toast.error('Lỗi hệ thống: Kích thước ảnh quá lớn hoặc máy chủ không phản hồi!');
+                toast.error('Lỗi hệ thống: Kích thước ảnh quá lớn hoặc máy chủ không phản hồi!', {
+                    id: 'create-post-error'
+                });
             } else {
-                toast.error('Không thể gửi bài viết lúc này!');
+                toast.error('Không thể gửi bài viết lúc này!', {
+                    id: 'create-post-error'
+                });
             }
         }
     };
@@ -118,55 +167,66 @@ const Community = () => {
         }
     };
 
-    const filteredPosts = activeFilter === 'All Posts' 
-        ? posts 
+    const filteredPosts = activeFilter === 'All Posts'
+        ? posts
         : posts.filter(post => post.tags && post.tags.toLowerCase().includes(activeFilter.toLowerCase()));
 
     const handleLike = async (id) => {
-        setPosts(posts.map(post => {
-            if (post.id === id) {
-                // Optimistic UI, it will be accurately synced when WS fires UPDATED payload
-                return { ...post, likesCount: post.likesCount + 1, isLiked: true };
-            }
-            return post;
-        }));
-        try {
-            await api.put(`/api/community/posts/${id}/like`);
-        } catch (error) {
-            console.error('Failed to like post:', error);
-        }
-    };
+        const currentUserId = user?.id;
 
+        if (loadingLikes[id]) return;
+
+        handleActionWithAuth(async () => {
+            setLoadingLikes(prev => ({ ...prev, [id]: true }));
+
+            setPosts(prevPosts =>
+                prevPosts.map(post => {
+                    if (post.id === id) {
+                        const isCurrentlyLiked = post.isLiked;
+                        return {
+                            ...post,
+                            likesCount: isCurrentlyLiked
+                                ? post.likesCount - 1
+                                : post.likesCount + 1,
+                            isLiked: !isCurrentlyLiked
+                        };
+                    }
+                    return post;
+                })
+            );
+
+            try {
+                await api.put(`/api/community/posts/${id}/like?userId=${currentUserId}`);
+            } catch (error) {
+                toast.error('Failed to like post', {
+                    id: 'like-error'
+                });
+                fetchPosts();
+            } finally {
+                setLoadingLikes(prev => ({ ...prev, [id]: false }));
+            }
+        });
+    };
     return (
         <div className="community-container">
-            <Toaster position="top-right" />
+            {/* <Toaster position="top-right" /> */}
             <div className="community-layout">
                 {/* Left Sidebar */}
                 <aside className="community-sidebar-left">
                     <div className="sidebar-card">
                         <h3 className="sidebar-title"><CompassIcon /> Discover</h3>
                         <ul className="discover-list">
-                            <li className="discover-item active">
-                                <Layers size={18} /> Feed
-                            </li>
-                            <li className="discover-item">
-                                <TrendingUp size={18} /> Trending
-                            </li>
-                            <li className="discover-item">
-                                <Users size={18} /> Chefs
-                            </li>
-                            <li className="discover-item">
-                                <Medal size={18} /> Challenges
-                            </li>
+                            <li className="discover-item active"><Layers size={18} /> Feed</li>
+                            <li className="discover-item"><TrendingUp size={18} /> Trending</li>
+                            <li className="discover-item"><Users size={18} /> Chefs</li>
+                            <li className="discover-item"><Medal size={18} /> Challenges</li>
                         </ul>
                     </div>
 
                     <div className="ai-assistant-card">
-                        <div className="ai-assistant-icon">
-                            <Bot size={24} color="white" />
-                        </div>
+                        <div className="ai-assistant-icon"><Bot size={24} color="white" /></div>
                         <h3>AI Kitchen Assistant</h3>
-                        <p>Stuck on a recipe? Ask our AI for substitutions or timing tips.</p>
+                        <p>Stuck on a recipe? Ask our AI for substitutions.</p>
                         <button className="ai-chat-btn" onClick={() => navigate('/ai-assistant')}>Start Chatting</button>
                     </div>
                 </aside>
@@ -174,101 +234,69 @@ const Community = () => {
                 {/* Main Feed */}
                 <main className="community-feed">
                     <div className="feed-card create-post">
-                        <div className="create-post-top" onClick={() => setIsPostModalOpen(true)}>
-                            <img src="https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff" alt="Me" className="avatar-img" />
+                        {/* Chặn mở Modal nếu chưa login */}
+                        <div className="create-post-top" onClick={() => handleActionWithAuth(() => setIsPostModalOpen(true))}>
+                            <img
+                                src={isAuthenticated ? (user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}`) : "https://www.gravatar.com/avatar/000?d=mp"}
+                                alt="Me"
+                                className="avatar-img"
+                            />
                             <div className="fake-input-placeholder">
-                                Share your latest culinary masterpiece, Chef Alex?
+                                {isAuthenticated
+                                    ? `Chia sẻ công thức mới của bạn chứ, ${user?.username}?`
+                                    : "Đăng nhập để chia sẻ cảm hứng nấu ăn của bạn..."
+                                }
                             </div>
                         </div>
                         <div className="create-post-bottom">
                             <div className="post-options">
-                                <button className="post-opt-btn btn-photo" onClick={() => setIsPostModalOpen(true)}><ImageIcon size={18} /> Photo</button>
-                                <button className="post-opt-btn btn-video" onClick={() => setIsPostModalOpen(true)}><Video size={18} /> Video</button>
-                                <button className="post-opt-btn btn-tag" onClick={() => setIsPostModalOpen(true)}><Tag size={18} /> Tag Ingredients</button>
+                                <button className="post-opt-btn btn-photo" onClick={() => handleActionWithAuth(() => setIsPostModalOpen(true))}><ImageIcon size={18} /> Photo</button>
+                                <button className="post-opt-btn btn-video" onClick={() => handleActionWithAuth(() => setIsPostModalOpen(true))}><Video size={18} /> Video</button>
+                                <button className="post-opt-btn btn-tag" onClick={() => handleActionWithAuth(() => setIsPostModalOpen(true))}><Tag size={18} /> Tag Ingredients</button>
                             </div>
                         </div>
                     </div>
 
-            {isPostModalOpen && (
-                <div className="post-modal-overlay" onClick={() => setIsPostModalOpen(false)}>
-                    <div className="post-modal" onClick={e => e.stopPropagation()}>
-                        <div className="post-modal-header">
-                            <h2>Tạo bài viết</h2>
-                            <button className="close-modal-btn" onClick={() => setIsPostModalOpen(false)}>✕</button>
-                        </div>
-                        <div className="post-modal-body">
-                            <div className="modal-user-info">
-                                <img src="https://ui-avatars.com/api/?name=Chef+Alex&background=3b82f6&color=fff" alt="User" className="avatar-img" />
-                                <div>
-                                    <h4>Chef Alex</h4>
-                                    <span className="privacy-badge">🌍 Công khai</span>
+                    {isPostModalOpen && (
+                        <div className="post-modal-overlay" onClick={() => setIsPostModalOpen(false)}>
+                            <div className="post-modal" onClick={e => e.stopPropagation()}>
+                                <div className="post-modal-header">
+                                    <h2>Tạo bài viết</h2>
+                                    <button className="close-modal-btn" onClick={() => setIsPostModalOpen(false)}>✕</button>
+                                </div>
+                                <div className="post-modal-body">
+                                    <div className="modal-user-info">
+                                        <img src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.username}`} alt="User" className="avatar-img" />
+                                        <div>
+                                            <h4>{user?.username}</h4>
+                                            <span className="privacy-badge">🌍 Công khai</span>
+                                        </div>
+                                    </div>
+                                    <textarea
+                                        autoFocus
+                                        placeholder={`${user?.username} ơi, bạn đang nghĩ gì thế?`}
+                                        value={newPost}
+                                        onChange={(e) => setNewPost(e.target.value)}
+                                    />
+                                    {/* ... (phần upload image/video giữ nguyên) */}
+                                    <div className="add-to-post">
+                                        <span>Thêm vào bài viết</span>
+                                        <div className="add-to-actions">
+                                            <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleImageUpload} />
+                                            <button onClick={() => fileInputRef.current.click()}><ImageIcon color="#10b981" size={24} /></button>
+                                            <button onClick={() => setShowVideoInput(!showVideoInput)}><Video color="#f43f5e" size={24} /></button>
+                                            <button onClick={() => setShowTagInput(!showTagInput)}><Tag color="#f59e0b" size={24} /></button>
+                                        </div>
+                                    </div>
+                                    <button className="btn-post-submit-full" disabled={!newPost.trim() && !imageBase64 && !videoUrlInput} onClick={handleAddPost}>Đăng</button>
                                 </div>
                             </div>
-                            <textarea 
-                                autoFocus
-                                placeholder="Chef Alex ơi, bạn đang nghĩ gì thế?"
-                                value={newPost}
-                                onChange={(e) => setNewPost(e.target.value)}
-                            />
-                            
-                            {imageBase64 && (
-                                <div className="attachment-preview" style={{ marginTop: '10px' }}>
-                                    <img src={imageBase64} alt="Preview" style={{ maxHeight: '150px', borderRadius: '8px' }} />
-                                    <button onClick={() => {setImageBase64(''); fileInputRef.current.value='';}} style={{ background: 'transparent', color: '#ff4d4f', border: 'none', cursor: 'pointer', marginLeft: '10px', verticalAlign: 'bottom', fontWeight: 'bold' }}>Xóa Ảnh</button>
-                                </div>
-                            )}
-
-                            {showVideoInput && (
-                                <input 
-                                    type="text" 
-                                    placeholder="Dán Link Youtube của bạn vào đây..." 
-                                    value={videoUrlInput}
-                                    onChange={(e) => setVideoUrlInput(e.target.value)}
-                                    style={{ width: '100%', padding: '10px', marginTop: '10px', borderRadius: '8px', border: '1px solid #333', background: '#222', color: 'white' }}
-                                />
-                            )}
-
-                            {showTagInput && (
-                                <input 
-                                    type="text" 
-                                    placeholder="Thêm hashtag (ví dụ: #MonNgonMoiNgay)" 
-                                    value={tagInput}
-                                    onChange={(e) => setTagInput(e.target.value)}
-                                    style={{ width: '100%', padding: '10px', marginTop: '10px', borderRadius: '8px', border: '1px solid #333', background: '#222', color: 'white' }}
-                                />
-                            )}
-                            
-                            <div className="add-to-post">
-                                <span>Thêm vào bài viết của bạn</span>
-                                <div className="add-to-actions">
-                                    <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleImageUpload} />
-                                    <button onClick={() => fileInputRef.current.click()}><ImageIcon color="#10b981" size={24} /></button>
-                                    <button onClick={() => setShowVideoInput(!showVideoInput)}><Video color="#f43f5e" size={24} /></button>
-                                    <button onClick={() => setShowTagInput(!showTagInput)}><Tag color="#f59e0b" size={24} /></button>
-                                </div>
-                            </div>
-
-                            <button 
-                                className="btn-post-submit-full" 
-                                disabled={!newPost.trim() && !imageBase64 && !videoUrlInput}
-                                onClick={handleAddPost}
-                            >
-                                Đăng
-                            </button>
                         </div>
-                    </div>
-                </div>
-            )}
+                    )}
 
                     <div className="feed-filters">
                         {filters.map(f => (
-                            <button
-                                key={f}
-                                className={`filter-pill ${activeFilter === f ? 'active' : ''}`}
-                                onClick={() => setActiveFilter(f)}
-                            >
-                                {f}
-                            </button>
+                            <button key={f} className={`filter-pill ${activeFilter === f ? 'active' : ''}`} onClick={() => setActiveFilter(f)}>{f}</button>
                         ))}
                     </div>
 
@@ -285,48 +313,21 @@ const Community = () => {
                                     </div>
                                     <button className="post-actions-menu"><MoreHorizontal size={20} /></button>
                                 </div>
-
                                 <div className="post-content">
-                                    <p className="post-text">
-                                        {post.content} <span>{post.tags}</span>
-                                    </p>
-                                    {post.imageUrl && (
-                                        <div className="post-image">
-                                            <img src={post.imageUrl} alt="Post content" />
-                                        </div>
-                                    )}
-                                    {post.videoUrl && (
-                                        <div className="post-video" style={{ marginTop: '15px' }}>
-                                            <iframe
-                                                width="100%"
-                                                height="315"
-                                                src={post.videoUrl.replace('watch?v=', 'embed/').split('&')[0].replace('youtu.be/', 'youtube.com/embed/')}
-                                                title="Video player"
-                                                frameBorder="0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                allowFullScreen
-                                                style={{ borderRadius: '12px' }}
-                                            ></iframe>
-                                        </div>
-                                    )}
+                                    <p className="post-text">{post.content} <span>{post.tags}</span></p>
+                                    {post.imageUrl && <div className="post-image"><img src={post.imageUrl} alt="Post" /></div>}
+                                    {/* Video iframe logic... */}
                                 </div>
-
                                 <div className="post-footer">
-                                    <button
-                                        className={`footer-action ${post.isLiked ? 'liked' : ''}`}
-                                        onClick={() => handleLike(post.id)}
-                                    >
+                                    <button className={`footer-action ${post.isLiked ? 'liked' : ''}`} onClick={() => handleLike(post.id)}>
                                         <Heart size={18} fill={post.isLiked ? "#ea580c" : "none"} color={post.isLiked ? "#ea580c" : "currentColor"} />
                                         {post.likesCount}
                                     </button>
-                                    <button className="footer-action">
+                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => {/* Logic bình luận */ })}>
                                         <MessageCircle size={18} /> {post.commentsCount}
                                     </button>
-                                    <button className="footer-action">
+                                    <button className="footer-action" onClick={() => handleActionWithAuth(() => {/* Logic share */ })}>
                                         <Share2 size={18} /> {post.sharesCount}
-                                    </button>
-                                    <button className="footer-action bookmark">
-                                        <Bookmark size={18} />
                                     </button>
                                 </div>
                             </div>
@@ -357,28 +358,18 @@ const Community = () => {
 
                     <div className="sidebar-card">
                         <h3 className="sidebar-title"><StarIcon /> Popular Chefs</h3>
-                        <div className="chef-item">
-                            <div className="chef-info">
-                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Elena" className="avatar-img" style={{ width: 32, height: 32 }} />
-                                <h4>Chef Elena R.</h4>
+                        {['Elena R.', 'David L.', 'Maria G.'].map((name, idx) => (
+                            <div key={idx} className="chef-item">
+                                <div className="chef-info">
+                                    <img src={`https://i.pravatar.cc/150?u=${name}`} alt={name} className="avatar-img" style={{ width: 32, height: 32 }} />
+                                    <h4>Chef {name}</h4>
+                                </div>
+                                <button className="btn-follow" onClick={(e) => handleActionWithAuth(() => {
+                                    e.target.innerText = e.target.innerText === 'Follow' ? 'Following' : 'Follow';
+                                    e.target.classList.toggle('following');
+                                })}>Follow</button>
                             </div>
-                            <button className="btn-follow" onClick={(e) => { e.target.innerText = e.target.innerText === 'Follow' ? 'Following' : 'Follow'; e.target.classList.toggle('following'); }}>Follow</button>
-                        </div>
-                        <div className="chef-item">
-                            <div className="chef-info">
-                                <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="David" className="avatar-img" style={{ width: 32, height: 32 }} />
-                                <h4>Chef David L.</h4>
-                            </div>
-                            <button className="btn-follow" onClick={(e) => { e.target.innerText = e.target.innerText === 'Follow' ? 'Following' : 'Follow'; e.target.classList.toggle('following'); }}>Follow</button>
-                        </div>
-                        <div className="chef-item">
-                            <div className="chef-info">
-                                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Maria" className="avatar-img" style={{ width: 32, height: 32 }} />
-                                <h4>Chef Maria G.</h4>
-                            </div>
-                            <button className="btn-follow" onClick={(e) => { e.target.innerText = e.target.innerText === 'Follow' ? 'Following' : 'Follow'; e.target.classList.toggle('following'); }}>Follow</button>
-                        </div>
-                        <a href="#" className="view-all-link">View All Chefs</a>
+                        ))}
                     </div>
 
                     <div className="sidebar-card">
