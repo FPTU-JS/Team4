@@ -1,0 +1,26 @@
+# ==========================================
+# BACKEND LOCAL CREDENTIALS TEMPLATE
+# ==========================================
+# Copy this file to `application-local.properties` and fill in your actual API keys.
+# The `application-local.properties` is ignored by Git to prevent API Key leaks.
+
+# JWT (Must be at least 256-bit / 32-byte Hex Key for HS256)
+jwt.secret=your_super_secret_256_bit_jwt_key_here
+
+# GMAIL SMTP
+email.address=your_email@gmail.com
+email.password=your_app_password
+
+# GOOGLE OAUTH
+google.client.id=your_google_client_id.apps.googleusercontent.com
+google.client.secret=your_google_client_secret
+
+# FACEBOOK OAUTH
+facebook.client.id=your_facebook_client_id
+facebook.client.secret=your_facebook_client_secret
+
+# FIREBASE AUTHENTICATION
+firebase.api_key=your_firebase_api_key
+
+# GOOGLE GEMINI API
+gemini.api_key=your_gemini_api_key
