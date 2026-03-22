@@ -15,14 +15,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+        response.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
         Map<String, String> response = new HashMap<>();
-        response.put("error", "Email/Username hoặc Mật khẩu không chính xác.");
+        response.put("message", "Email/Username hoặc Mật khẩu không chính xác.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

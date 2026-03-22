@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -122,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
         // Attempt to find user by email or username
         User user = userRepository.findByEmail(request.getEmailOrUsername())
                 .orElseGet(() -> userRepository.findByUsername(request.getEmailOrUsername())
-                        .orElseThrow(() -> new RuntimeException("User not found")));
+                        .orElseThrow(() -> new BadCredentialsException("Invalid username or password")));
 
         // Ensure user is active
         if (!"Active".equalsIgnoreCase(user.getStatus())) {
