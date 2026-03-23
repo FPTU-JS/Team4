@@ -30,7 +30,7 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/onboarding', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 

@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Flame, User, Menu, Home, BookOpen, Store, Bot, Settings, Leaf, Sun, Moon, LogOut, HelpCircle } from 'lucide-react';
+import {
+    Bell, Flame, User, Menu, Home, BookOpen, Store,
+    Bot, Settings, Leaf, Sun, Moon, LogOut, HelpCircle, X, ChevronRight
+} from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
-import FloatingAIBubble from '../components/FloatingAIBubble';
-import FloatingSupportBubble from '../components/FloatingSupportBubble';
-import { Toaster } from 'react-hot-toast';
+
 import { useAuth } from '../pages/AuthContext';
 
 const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
-    const { isAuthenticated, user, logout } = useAuth();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State cho Sidebar
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
+    const dropdownRef = useRef(null);
+    const { isAuthenticated, user, logout } = useAuth();
+
+    // Xử lý Theme
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
@@ -26,7 +31,16 @@ const MainLayout = () => {
         setTheme(prev => prev === 'light' ? 'dark' : 'light');
     };
 
-    //Close Dropdown when clicking outside
+    // Khóa cuộn trang khi mở Mobile Menu
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+    }, [isMobileMenuOpen]);
+
+    // Đóng menu khi click ra ngoài hoặc chuyển trang
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -34,34 +48,61 @@ const MainLayout = () => {
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    // Close Dropdown when navigating
-    useEffect(() => {
-        // eslint-disable-next-line
+        setIsMobileMenuOpen(false); // Tự động đóng sidebar khi chuyển link
         setIsDropdownOpen(false);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [location]);
+
+    const navLinks = [
+        { path: '/', label: 'Home', icon: <Home size={20} /> },
+        { path: '/recipes', label: 'Recipes', icon: <BookOpen size={20} /> },
+        { path: '/map', label: 'Map', icon: <Store size={20} /> },
+        { path: '/healthy-plan', label: 'Healthy Plan', icon: <Leaf size={20} /> },
+        { path: '/ai-assistant', label: 'AI Assistant', icon: <Bot size={20} /> },
+        { path: '/community', label: 'Community', icon: <User size={20} /> },
+    ];
 
     return (
         <div className="layout-container">
-            <Toaster 
-                position="bottom-right"
-                toastOptions={{
-                    style: {
-                        background: 'var(--bg-surface)',
-                        color: 'var(--text-primary)',
-                        border: '1px solid var(--border-color)',
-                    },
-                    success: {
-                        iconTheme: { primary: '#10b981', secondary: '#fff' }
-                    }
-                }}
+
+            {/* --- MOBILE SIDEBAR --- */}
+            <div
+                className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'show' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
             />
+
+            <aside className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+                {/* Header */}
+                <div className="mobile-sidebar-header">
+                    <Link to="/" className="brand-logo">
+                        <span className="brand-icon">✻</span>
+                        <span className="brand-text">CO-CHE</span>
+                    </Link>
+                    <button className="close-menu-btn" onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
+                </div>
+
+                {!isAuthenticated && (
+                    <div className="mobile-sidebar-auth">
+                        <Link to="/login" className="mobile-auth-btn mobile-login-btn">Login</Link>
+                        <Link to="/register" className="mobile-auth-btn mobile-signup-btn">Sign Up</Link>
+                    </div>
+                )}
+
+                {/* Điều hướng */}
+                <nav className="mobile-sidebar-links">
+                    {navLinks.map((link) => (
+                        <Link key={link.path} to={link.path} className={currentPath === link.path ? 'active' : ''}>
+                            {link.icon} {link.label}
+                        </Link>
+                    ))}
+                </nav>
+            </aside>
+
+            {/* --- TOP NAVBAR --- */}
             <nav className="top-navbar">
                 <div className="nav-brand">
-                    <button className="mobile-menu-btn">
-                        <Menu size={24} color="#111827" />
+                    <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
+                        <Menu size={24} />
                     </button>
                     <Link to="/" className="brand-logo">
                         <span className="brand-icon">✻</span>
@@ -69,121 +110,51 @@ const MainLayout = () => {
                     </Link>
                 </div>
 
-                <div className="nav-links">
-                    <Link to="/" className={currentPath === '/' ? 'active' : ''}>Home</Link>
-                    <Link to="/recipes" className={currentPath === '/recipes' ? 'active' : ''}>Recipes</Link>
-                    <Link to="/map" className={currentPath === '/map' ? 'active' : ''}>Map</Link>
-                    <Link to="/healthy-plan" className={currentPath === '/healthy-plan' ? 'active' : ''}>Healthy Plan</Link>
-                    <Link to="/ai-assistant" className={currentPath === '/ai-assistant' ? 'active' : ''}>AI Assistant</Link>
-                    <Link to="/community" className={currentPath === '/community' ? 'active' : ''}>Community</Link>
+                <div className="nav-links desktop-only">
+                    {navLinks.map(link => (
+                        <Link key={link.path} to={link.path} className={currentPath === link.path ? 'active' : ''}>
+                            {link.label}
+                        </Link>
+                    ))}
                 </div>
 
                 <div className="nav-actions">
-
-                    {isAuthenticated && (
-                        <>
-                            <div className="streak-badge mobile-hide">
-                                Daily Streak: 12
-                                <Flame size={16} className="fire-icon" color="#f59e0b" fill="#f59e0b" />
-                            </div>
-
-                            <Notification />
-                        </>
-                    )}
+                    <button className="icon-btn theme-toggle-btn" onClick={toggleTheme}>
+                        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                    </button>
 
                     {isAuthenticated ? (
                         <>
-                            <button
-                                className="icon-btn theme-toggle-btn"
-                                onClick={toggleTheme}
-                                title="Toggle Theme"
-                                style={{ marginRight: '10px' }}
-                            >
-                                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                            </button>
-
+                            <div className="streak-badge mobile-hide">
+                                12 <Flame size={16} fill="#f59e0b" color="#f59e0b" />
+                            </div>
+                            <Notification />
                             <div className="user-dropdown-container" ref={dropdownRef}>
-
-                                <button
-                                    className={`icon-btn profile-btn ${isDropdownOpen ? 'active' : ''}`}
-                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    title="User Menu"
-                                    style={{ padding: 0, overflow: 'hidden', border: '2px solid #10b981' }}
-                                >
-                                    <img 
-                                        src={user?.avatar || `https://ui-avatars.com/api/?name=${(user?.username || 'User').replace(' ', '+')}&background=10b981&color=fff`} 
-                                        alt="Avatar" 
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                                    />
+                                <button className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                                    <img src={user?.avatar || `https://ui-avatars.com/api/?name=User&background=10b981&color=fff`} alt="avatar" />
                                 </button>
-
                                 {isDropdownOpen && (
                                     <div className="dropdown-menu">
-                                        <div className="dropdown-header" style={{ padding: '4px 12px 12px', borderBottom: '1px solid var(--border-color)', marginBottom: '4px' }}>
-                                            <div style={{ fontWeight: '600', fontSize: '15px', color: 'var(--text-primary)' }}>{user?.username || 'Chef'}</div>
-                                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{user?.email || 'Welcome back!'}</div>
-                                        </div>
-                                        <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); navigate('/profile'); }}>
-                                            <User size={18} /> Profile
-                                        </button>
-                                        <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); navigate('/profile?tab=help'); }}>
-                                            <HelpCircle size={18} /> Help Center
-                                        </button>
-                                        <hr className="dropdown-divider" />
-                                        <button className="dropdown-item logout-btn" onClick={() => { 
-                                            setIsDropdownOpen(false); 
-                                            if (typeof logout === 'function') logout();
-                                            navigate('/');
-                                        }}>
-                                            <LogOut size={18} /> Logout
-                                        </button>
+                                        <button onClick={() => navigate('/profile')}><User size={18} /> Profile</button>
+                                        <button onClick={() => navigate('/profile?tab=help')}><HelpCircle size={18} /> Help</button>
+                                        <hr />
+                                        <button className="logout-btn" onClick={logout}><LogOut size={18} /> Logout</button>
                                     </div>
                                 )}
                             </div>
                         </>
                     ) : (
-
-                            <>
-                                <button
-                                    className="icon-btn theme-toggle-btn"
-                                    onClick={toggleTheme}
-                                    title="Toggle Theme"
-                                    style={{ marginRight: '15px' }}
-                                >
-                                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                                </button>
-                                <div className="auth-buttons">
-                                    <Link to="/login" className="login-nav-link">Login</Link>
-                                    <Link to="/register" className="register-nav-btn">Sign Up</Link>
-                                </div>
-                            </>
-
-                        )}
-
+                        <div className="auth-buttons desktop-only">
+                            <Link to="/login" className="login-nav-link">Login</Link>
+                            <Link to="/register" className="register-nav-btn">Sign Up</Link>
+                        </div>
+                    )}
                 </div>
             </nav>
 
             <main className="main-content">
                 <Outlet />
             </main>
-
-            {/* Mobile Bottom Navigation */}
-            <div className="mobile-bottom-nav">
-                <Link to="/" className={`bottom-nav-item ${currentPath === '/' ? 'active' : ''}`}>
-                    <Home size={24} />
-                    <span>Home</span>
-                </Link>
-                <Link to="/recipes" className={`bottom-nav-item ${currentPath === '/recipes' ? 'active' : ''}`}>
-                    <BookOpen size={24} />
-                    <span>Recipes</span>
-                </Link>
-                <Link to="/map" className={`bottom-nav-item ${currentPath === '/map' ? 'active' : ''}`}>
-                    <Store size={24} />
-                    <span>Markets</span>
-                </Link>
-            </div>
-
-
         </div>
     );
 };

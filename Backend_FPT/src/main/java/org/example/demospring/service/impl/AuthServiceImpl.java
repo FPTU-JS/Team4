@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already in use.");
         }
         if (request.getUsername() != null && userRepository.existsByUsername(request.getUsername())) {
@@ -57,37 +57,37 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .role("CUSTOMER")
-                .status("Pending") // Pending verification
+                .status("Active") // Pending verification
                 .build();
         userRepository.save(user);
 
         // Generate OTP
-        String tokenStr = String.format("%06d", new Random().nextInt(999999));
-        VerificationToken token = VerificationToken.builder()
-                .user(user)
-                .tokenString(tokenStr)
-                .type("OTP")
-                .expiresAt(LocalDateTime.now().plusMinutes(15))
-                .build();
-        tokenRepository.save(token);
-
-        // Gửi thư điện tử thật sự
-        try {
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(request.getEmail());
-            mailMessage.setSubject("Your Verification Code - CO-CHE");
-            mailMessage.setText("Chào " + (request.getFullName() != null ? request.getFullName() : request.getUsername()) + ",\n\n" +
-                                "Mã OTP xác thực tài khoản của bạn là: " + tokenStr + "\n" +
-                                "Mã này sẽ hết hạn trong vòng 15 phút.\n\n" +
-                                "Trân trọng,\nĐội ngũ CO-CHE");
-            javaMailSender.send(mailMessage);
-            System.out.println("OTP sent to " + request.getEmail() + " successfully.");
-        } catch (Exception e) {
-            System.err.println("Failed to send OTP email to " + request.getEmail() + ": " + e.getMessage());
-        }
+//        String tokenStr = String.format("%06d", new Random().nextInt(999999));
+//        VerificationToken token = VerificationToken.builder()
+//                .user(user)
+//                .tokenString(tokenStr)
+//                .type("OTP")
+//                .expiresAt(LocalDateTime.now().plusMinutes(15))
+//                .build();
+//        tokenRepository.save(token);
+//
+//        // Gửi thư điện tử thật sự
+//        try {
+//            SimpleMailMessage mailMessage = new SimpleMailMessage();
+//            mailMessage.setTo(request.getEmail());
+//            mailMessage.setSubject("Your Verification Code - CO-CHE");
+//            mailMessage.setText("Chào " + (request.getFullName() != null ? request.getFullName() : request.getUsername()) + ",\n\n" +
+//                                "Mã OTP xác thực tài khoản của bạn là: " + tokenStr + "\n" +
+//                                "Mã này sẽ hết hạn trong vòng 15 phút.\n\n" +
+//                                "Trân trọng,\nĐội ngũ CO-CHE");
+//            javaMailSender.send(mailMessage);
+//            System.out.println("OTP sent to " + request.getEmail() + " successfully.");
+//        } catch (Exception e) {
+//            System.err.println("Failed to send OTP email to " + request.getEmail() + ": " + e.getMessage());
+//        }
 
         return AuthResponse.builder()
-                .message("Registration successful. OTP has been sent to your email.")
+                .message("Registration successful. Please login with your credentials.")
                 .build();
     }
 

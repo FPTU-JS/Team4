@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
-
+import { Toaster } from 'react-hot-toast'
 // Layouts & Main Handlers
 import MainLayout from './layouts/MainLayout.jsx'
 import OAuth2RedirectHandler from './pages/OAuth2RedirectHandler.jsx'
@@ -65,6 +65,19 @@ const AnimatedRoutes = () => {
 function App() {
   return (
     <BrowserRouter>
+      <Toaster 
+          position="bottom-right"
+          toastOptions={{
+              style: {
+                  background: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)',
+              },
+              success: {
+                  iconTheme: { primary: '#10b981', secondary: '#fff' }
+              }
+          }}
+      />
       <Suspense fallback={<FallbackLoader />}>
         <AnimatedRoutes />
       </Suspense>

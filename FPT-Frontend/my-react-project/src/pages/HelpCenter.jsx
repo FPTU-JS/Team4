@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../pages/AuthContext';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import '../css/help-center.css';
 
 const HelpCenter = () => {
@@ -47,7 +47,6 @@ const HelpCenter = () => {
 
     return (
         <>
-            <Toaster position="top-right" />
             <main className="hc-content">
 
                     <section className="hc-hero">
