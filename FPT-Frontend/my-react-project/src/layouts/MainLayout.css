@@ -266,6 +266,151 @@
     color: white;
 }
 
+.streak-badge {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Container cho ảnh đại diện */
+.user-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-trigger {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #10b981;
+    /* Viền xanh đặc trưng */
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    transition: transform 0.2s;
+}
+
+.profile-trigger:hover {
+    transform: scale(1.05);
+}
+
+.profile-trigger img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ==========================================
+   DROPDOWN MENU STYLES (TRẢ LẠI NGUYÊN BẢN)
+   ========================================== */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 200px;
+    background-color: var(--bg-surface);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Các item trong menu (Profile, Help) */
+.dropdown-menu button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dropdown-menu button:hover {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+}
+
+/* Đường kẻ gạch ngang */
+.dropdown-menu hr {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 8px 0;
+    border: none;
+}
+
+/* Nút Logout màu đỏ */
+.logout-btn {
+    color: #ef4444 !important;
+    /* Đỏ rực */
+}
+
+.logout-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+}
+
+/* ==========================================
+   UNAUTHENTICATED (LOGIN/SIGNUP) - PC
+   ========================================== */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.login-nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.login-nav-link:hover {
+    background-color: var(--bg-main);
+}
+
+.register-nav-btn {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    background-color: #000;
+    /* Nền đen */
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.register-nav-btn:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
 
 @media (max-width: 1024px) {
 
