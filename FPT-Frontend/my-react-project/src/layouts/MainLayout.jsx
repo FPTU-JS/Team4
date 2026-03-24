@@ -19,7 +19,7 @@ const MainLayout = () => {
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
     const dropdownRef = useRef(null);
-    const { isAuthenticated, user, logout } = useAuth();
+    const { isAuthenticated, isLoading, user, logout } = useAuth();
 
     // Xử lý Theme
     useEffect(() => {
@@ -81,7 +81,7 @@ const MainLayout = () => {
                     <button className="close-menu-btn" onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
                 </div>
 
-                {!isAuthenticated && (
+                {!isLoading && !isAuthenticated && (
                     <div className="mobile-sidebar-auth">
                         <Link to="/login" className="mobile-auth-btn mobile-login-btn">Login</Link>
                         <Link to="/register" className="mobile-auth-btn mobile-signup-btn">Sign Up</Link>
@@ -123,7 +123,9 @@ const MainLayout = () => {
                         {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
                     </button>
 
-                    {isAuthenticated ? (
+                    {isLoading ? (
+                        <div className="auth-buttons desktop-only">...</div>
+                    ) : isAuthenticated ? (
                         <>
                             <div className="streak-badge mobile-hide">
                                 12 <Flame size={16} fill="#f59e0b" color="#f59e0b" />
@@ -131,7 +133,7 @@ const MainLayout = () => {
                             <Notification />
                             <div className="user-dropdown-container" ref={dropdownRef}>
                                 <button className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                                    <img src={user?.avatar || `https://ui-avatars.com/api/?name=User&background=10b981&color=fff`} alt="avatar" />
+                                    <img src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username)}&background=10b981&color=fff`} alt="avatar" />
                                 </button>
                                 {isDropdownOpen && (
                                     <div className="dropdown-menu">

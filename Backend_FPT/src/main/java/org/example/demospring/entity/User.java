@@ -39,7 +39,7 @@ public class User implements UserDetails {
     @Column(name = "phone", length = 15)
     private String phone;
 
-    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    @Column(name = "avatar_url", columnDefinition = "LONGTEXT")
     private String avatarUrl;
 
     @Column(name = "bio", columnDefinition = "TEXT")
