@@ -9,7 +9,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': 'http://localhost:8081',
-      '/oauth2': 'http://localhost:8081',
+      '/oauth2/authorization': 'http://localhost:8081',
       '/login': 'http://localhost:8081',
       '/ws': {
         target: 'http://localhost:8081',

@@ -35,7 +35,12 @@ public class UserServiceImpl implements UserService {
             user.setUsername(request.getUsername());
         }
 
-        if (request.getFullName() != null) user.setFullName(request.getFullName());
+        if (request.getFullName() != null && !request.getFullName().equals(user.getFullName())) {
+            if (user.getProvider() == org.example.demospring.entity.AuthProvider.local) {
+                throw new RuntimeException("Chỉ người dùng đăng nhập bằng Google hoặc Facebook mới được phép đổi tên.");
+            }
+            user.setFullName(request.getFullName());
+        }
         if (request.getBio() != null) user.setBio(request.getBio());
         if (request.getAvatarUrl() != null) user.setAvatarUrl(request.getAvatarUrl());
 
