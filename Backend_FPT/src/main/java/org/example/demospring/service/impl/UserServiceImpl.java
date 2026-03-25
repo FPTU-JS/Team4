@@ -29,16 +29,16 @@ public class UserServiceImpl implements UserService {
 
         // Check if new username is different and already exists
         if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
+            if (!request.getUsername().matches("^[a-zA-Z0-9_]+$")) {
+                throw new RuntimeException("Tên đăng nhập không được chứa khoảng trắng hoặc kí tự đặc biệt.");
+            }
             if (userRepository.existsByUsername(request.getUsername())) {
-                throw new RuntimeException("Username is already taken");
+                throw new RuntimeException("Tên đăng nhập đã tồn tại.");
             }
             user.setUsername(request.getUsername());
         }
 
         if (request.getFullName() != null && !request.getFullName().equals(user.getFullName())) {
-            if (user.getProvider() == org.example.demospring.entity.AuthProvider.local) {
-                throw new RuntimeException("Chỉ người dùng đăng nhập bằng Google hoặc Facebook mới được phép đổi tên.");
-            }
             user.setFullName(request.getFullName());
         }
         if (request.getBio() != null) user.setBio(request.getBio());

@@ -46,8 +46,13 @@ public class AuthServiceImpl implements AuthService {
         if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already in use.");
         }
-        if (request.getUsername() != null && userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username is already in use.");
+        if (request.getUsername() != null) {
+            if (!request.getUsername().matches("^[a-zA-Z0-9_]+$")) {
+                throw new RuntimeException("Username must not contain spaces or special characters.");
+            }
+            if (userRepository.existsByUsername(request.getUsername())) {
+                throw new RuntimeException("Username is already in use..");
+            }
         }
 
         User user = User.builder()
@@ -133,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
         // 1. Check if user is currently locked out
         if (lockoutTime.containsKey(key)) {
             if (LocalDateTime.now().isBefore(lockoutTime.get(key))) {
-                throw new LockedException("Tài khoản đã bị khóa tạm thời do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.");
+                throw new LockedException("Your account has been temporarily locked due to too many incorrect entries. Please try again in 15 minutes.");
             } else {
                 // Lockout period has expired, reset counters
                 lockoutTime.remove(key);
@@ -148,7 +153,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 3. Ensure user is active
         if (!"Active".equalsIgnoreCase(user.getStatus())) {
-            throw new RuntimeException("Tài khoản chưa được kích hoạt hoặc đã bị Ban.");
+            throw new RuntimeException("The account has not been activated or has been banned.");
         }
 
         // 4. Authenticate credentials
@@ -165,9 +170,9 @@ public class AuthServiceImpl implements AuthService {
             
             if (attempts >= MAX_ATTEMPTS) {
                 lockoutTime.put(key, LocalDateTime.now().plusMinutes(LOCKOUT_MINUTES));
-                throw new LockedException("Tài khoản đã bị khóa tạm thời do nhập sai 5 lần liên tiếp. Vui lòng thử lại sau 15 phút.");
+                throw new LockedException("Your account has been temporarily locked due to 5 consecutive incorrect login attempts. Please try again in 15 minutes.");
             }
-            throw new BadCredentialsException("Sai mật khẩu. Bạn còn " + (MAX_ATTEMPTS - attempts) + " lần thử.");
+            throw new BadCredentialsException("Wrong password. You have " + (MAX_ATTEMPTS - attempts) + " more attempts.");
         }
 
         String jwtToken = jwtUtil.generateToken(user);

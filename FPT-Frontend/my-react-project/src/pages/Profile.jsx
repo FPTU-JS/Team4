@@ -17,7 +17,7 @@ const Profile = () => {
     const [activeMenu, setActiveMenu] = useState('overview');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editFormData, setEditFormData] = useState({
-        username: '',
+        fullName: '',
         bio: '',
         avatar: ''
     });
@@ -39,23 +39,29 @@ const Profile = () => {
         }
     }, [isAuthenticated, isLoading, navigate]);
 
-    const userName = user?.username || 'Chef';
+    const displayFullName = editFormData.fullName || user?.fullName || 'Chef';
     const userRole = user?.role === 'ROLE_ADMIN' ? 'Master Chef' : 'Premium Chef';
-    const avatarName = userName.replace(' ', '+');
+    const avatarName = displayFullName.replace(/\s+/g, '+');
     const userEmail = user?.email || 'No email provided';
-    const displayAvatar = user?.avatar || `https://ui-avatars.com/api/?name=${avatarName}&background=10b981&color=fff&size=128`;
+    const displayAvatar = editFormData.avatar || user?.avatar || `https://ui-avatars.com/api/?name=${avatarName}&background=10b981&color=fff&size=128`;
 
     useEffect(() => {
-        if (user) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setEditFormData(prev => ({
-                ...prev,
-                username: user.username || 'Chef',
-                bio: user.bio || 'Enthusiastic chef ready to explore new flavors and share recipes.',
-                avatar: user.avatar || ''
-            }));
-        }
-    }, [user]);
+        const fetchProfile = async () => {
+            try {
+                const response = await api.get('/api/user/profile');
+                if (response.data) {
+                    setEditFormData({
+                        fullName: response.data.fullName || response.data.full_name || '',
+                        bio: response.data.bio || 'Enthusiastic chef ready to explore new flavors and share recipes.',
+                        avatar: response.data.avatarUrl || response.data.avatar || ''
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching full profile:", error);
+            }
+        };
+        fetchProfile();
+    }, []);
 
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href);
@@ -66,14 +72,14 @@ const Profile = () => {
         e.preventDefault();
 
         if (isSubmitting) return;
+
         setIsSubmitting(true);
 
         const loadingToast = toast.loading('Updating profile...');
         try {
             // Call API
             const response = await api.put('/api/user/profile', {
-                fullName: editFormData.username, // Using username as full name locally
-                username: editFormData.username,
+                fullName: editFormData.fullName,
                 bio: editFormData.bio,
                 avatarUrl: editFormData.avatar
             });
@@ -85,7 +91,15 @@ const Profile = () => {
             setIsEditModalOpen(false);
 
         } catch (error) {
-            toast.error(error.response?.data || 'Failed to update profile!', { id: loadingToast });
+            let errorMsg = 'Failed to update profile!';
+            if (error.response?.data) {
+                if (typeof error.response.data === 'string') {
+                    errorMsg = error.response.data;
+                } else if (error.response.data.message) {
+                    errorMsg = error.response.data.message;
+                }
+            }
+            toast.error(errorMsg, { id: loadingToast });
         } finally {
             setTimeout(() => setIsSubmitting(false), 500);
         }
@@ -247,7 +261,7 @@ const Profile = () => {
                                 <div className="profile-avatar-container">
                                     <img
                                         src={displayAvatar}
-                                        alt={userName}
+                                        alt={displayFullName}
                                         className="profile-avatar-img"
                                     />
                                 </div>
@@ -259,7 +273,7 @@ const Profile = () => {
 
                                 <div className="banner-info">
                                     <div className="profile-name-row">
-                                        <h1>{editFormData.username}</h1>
+                                        <h1>{displayFullName}</h1>
                                         <span className="badge-gold">
                                             <Award size={14} fill="currentColor" /> {userRole.toUpperCase()}
                                         </span>
@@ -472,11 +486,11 @@ const Profile = () => {
                                 </div>
                             </div>
                             <div className="profile-form-group">
-                                <label>Display Name</label>
+                                <label>Full Name (Tên hiển thị)</label>
                                 <input
                                     type="text"
-                                    value={editFormData.username}
-                                    onChange={e => setEditFormData({ ...editFormData, username: e.target.value })}
+                                    value={editFormData.fullName}
+                                    onChange={e => setEditFormData({ ...editFormData, fullName: e.target.value })}
                                     required
                                 />
                             </div>

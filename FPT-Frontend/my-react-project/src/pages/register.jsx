@@ -12,7 +12,10 @@ import authService from '../services/authService';
 // Create Yup Validation Schema for Registration
 const schema = yup.object({
     fullName: yup.string().required('Full Name is required'),
-    username: yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
+    username: yup.string()
+        .required('Username is required')
+        .min(3, 'Username must be at least 3 characters')
+        .matches(/^[a-zA-Z0-9_]+$/, 'Username không được chứa khoảng trắng hoặc kí tự đặc biệt'),
     email: yup.string().email('Must be a valid email').required('Email is required'),
     phone: yup.string().matches(/^[0-9]+$/, "Must be only digits").min(9, 'Must be at least 9 digits').notRequired(),
     password: yup.string().required('Password is required').min(8, 'Password must be at least 8 characters long'),
@@ -41,7 +44,7 @@ const Register = () => {
     });
 
     const handleSocialLogin = (provider) => {
-        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
         window.location.href = `${baseUrl}/oauth2/authorization/${provider}`;
     };
 
