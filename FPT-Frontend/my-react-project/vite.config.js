@@ -6,6 +6,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '127.0.0.1',
-    allowedHosts: true
+    allowedHosts: true,
+    proxy: {
+      '/api': 'http://localhost:8081',
+      '/oauth2': 'http://localhost:8081',
+      '/login': 'http://localhost:8081',
+      '/ws': {
+        target: 'http://localhost:8081',
+        ws: true,
+      }
+    }
   }
 })

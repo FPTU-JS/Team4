@@ -87,7 +87,8 @@ const Community = () => {
         };
         loadTrending();
 
-        const socket = new SockJS('http://localhost:8081/ws');
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const socket = new SockJS(`${baseUrl}/ws`);
         const stompClient = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
