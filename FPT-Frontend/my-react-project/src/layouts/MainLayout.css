@@ -22,7 +22,7 @@
     background-color: var(--bg-surface);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1050;
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }

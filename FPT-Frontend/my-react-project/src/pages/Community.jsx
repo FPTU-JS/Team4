@@ -57,7 +57,8 @@ const Community = () => {
 
             const formattedPosts = response.data.map(item => {
                 if (item.post) {
-                    return { ...item.post, isLiked: item.isLiked };
+                    // Xử lý JSON serialize của Jackson với boolean (isLiked -> liked)
+                    return { ...item.post, isLiked: item.isLiked ?? item.liked };
                 }
                 return { ...item, isLiked: false };
             });
