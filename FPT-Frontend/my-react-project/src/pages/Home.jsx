@@ -93,7 +93,7 @@ const Home = () => {
             <div className="hero-section">
                 <div className="hero-overlay"></div>
                 <div className="hero-content">
-                    <div className="ai-badge">
+                    <div className="hero-ai-badge">
                         <Sparkles size={14} className="badge-icon" /> AI-POWERED CHEF
                     </div>
                     <h1 className="hero-titlee">
