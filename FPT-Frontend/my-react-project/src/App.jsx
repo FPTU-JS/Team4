@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import MainLayout from './layouts/MainLayout.jsx'
 import OAuth2RedirectHandler from './pages/OAuth2RedirectHandler.jsx'
 import AnimatedPage from './components/AnimatedPage.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 // Lazy-loaded Pages
 const Login = lazy(() => import('./pages/login.jsx'))
@@ -42,19 +43,19 @@ const AnimatedRoutes = () => {
         <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
         <Route path="/forgot-password" element={<AnimatedPage><ForgotPassword /></AnimatedPage>} />
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-        <Route path="/camera" element={<AnimatedPage><CameraCapture /></AnimatedPage>} />
+        <Route path="/camera" element={<ProtectedRoute><AnimatedPage><CameraCapture /></AnimatedPage></ProtectedRoute>} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<AnimatedPage><Home /></AnimatedPage>} />
-          <Route path="onboarding" element={<AnimatedPage><Preferences /></AnimatedPage>} />
+          <Route path="onboarding" element={<ProtectedRoute><AnimatedPage><Preferences /></AnimatedPage></ProtectedRoute>} />
 
           <Route path="recipes" element={<AnimatedPage><Recipes /></AnimatedPage>} />
           <Route path="recipe/:id" element={<AnimatedPage><RecipeDetail /></AnimatedPage>} />
           <Route path="map" element={<AnimatedPage><Map /></AnimatedPage>} />
-          <Route path="community" element={<AnimatedPage><Community /></AnimatedPage>} />
-          <Route path="profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
-          <Route path="plan-setup" element={<AnimatedPage><HealthyPlanSetup /></AnimatedPage>} />
-          <Route path="healthy-plan" element={<AnimatedPage><HealthyPlanDashboard /></AnimatedPage>} />
-          <Route path="ai-assistant" element={<AnimatedPage><AIAssistant /></AnimatedPage>} />
+          <Route path="community" element={<ProtectedRoute><AnimatedPage><Community /></AnimatedPage></ProtectedRoute>} />
+          <Route path="profile" element={<ProtectedRoute><AnimatedPage><Profile /></AnimatedPage></ProtectedRoute>} />
+          <Route path="plan-setup" element={<ProtectedRoute><AnimatedPage><HealthyPlanSetup /></AnimatedPage></ProtectedRoute>} />
+          <Route path="healthy-plan" element={<ProtectedRoute><AnimatedPage><HealthyPlanDashboard /></AnimatedPage></ProtectedRoute>} />
+          <Route path="ai-assistant" element={<ProtectedRoute><AnimatedPage><AIAssistant /></AnimatedPage></ProtectedRoute>} />
           <Route path="help-center" element={<Navigate to="/profile?tab=help" replace />} />
         </Route>
       </Routes>
