@@ -19,6 +19,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "Username không được để trống")
     @Size(min = 3, max = 50, message = "Username phải từ 3 đến 50 ký tự")
+    @Pattern(regexp = "^[^@\\s]+$", message = "Username không được chứa ký tự @ hoặc dấu cách")
     private String username;
 
     @NotBlank(message = "Email không được để trống")
