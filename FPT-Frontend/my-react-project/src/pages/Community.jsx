@@ -57,7 +57,7 @@ const Community = () => {
 
             const formattedPosts = response.data.map(item => ({
                 ...item.post,
-                isLiked: item.isLiked
+                isLiked: item.isLiked !== undefined ? item.isLiked : item.liked
             }));
 
             setPosts(formattedPosts);
@@ -67,15 +67,7 @@ const Community = () => {
     };
 
     useEffect(() => {
-        const loadInitialPosts = async () => {
-            try {
-                const response = await api.get('/api/community/posts');
-                setPosts(response.data);
-            } catch (error) {
-                console.error('Failed to fetch posts:', error);
-            }
-        };
-        loadInitialPosts();
+        fetchPosts();
 
         const loadTrending = async () => {
             try {
@@ -174,6 +166,10 @@ const Community = () => {
             console.error('Failed to create post:', error);
             if (error.response && error.response.status === 500) {
                 toast.error('Lỗi hệ thống: Kích thước ảnh quá lớn hoặc máy chủ không phản hồi!', {
+                    id: 'create-post-error'
+                });
+            } else if (error.response && error.response.status === 429) {
+                toast.error(error.response.data || 'Bạn đang đăng bài quá nhanh, hãy chờ 1 phút!', {
                     id: 'create-post-error'
                 });
             } else {

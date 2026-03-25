@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/community")
@@ -36,6 +38,10 @@ public class CommunityController {
     private final PostCommentRepository postCommentRepository;
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+
+    // Rate limiting map: AuthorId -> Last Post Time
+    private final Map<Long, LocalDateTime> userLastPostTime = new ConcurrentHashMap<>();
+    private static final int POST_COOLDOWN_SECONDS = 60;
 
     @GetMapping("/posts")
     public ResponseEntity<List<PostResponse>> getAllPosts(
@@ -57,7 +63,14 @@ public class CommunityController {
     }
 
     @PostMapping("/posts")
-    public ResponseEntity<CommunityPost> createPost(@RequestBody CommunityPost post) {
+    public ResponseEntity<?> createPost(@RequestBody CommunityPost post) {
+        if (post.getAuthorId() != null) {
+            LocalDateTime lastPost = userLastPostTime.get(post.getAuthorId());
+            if (lastPost != null && LocalDateTime.now().isBefore(lastPost.plusSeconds(POST_COOLDOWN_SECONDS))) {
+                return ResponseEntity.status(429).body("Bạn đang thao tác quá nhanh! Vui lòng chờ 1 phút trước khi đăng bài tiếp theo.");
+            }
+        }
+
         // Tối ưu: Dùng Optional hoặc check null gọn hơn
         post.setLikesCount(post.getLikesCount() == null ? 0 : post.getLikesCount());
         post.setCommentsCount(post.getCommentsCount() == null ? 0 : post.getCommentsCount());
@@ -65,6 +78,11 @@ public class CommunityController {
 
         CommunityPost savedPost = communityPostRepository.save(post);
         messagingTemplate.convertAndSend("/topic/posts", new PostEvent("CREATED", savedPost));
+        
+        if (post.getAuthorId() != null) {
+            userLastPostTime.put(post.getAuthorId(), LocalDateTime.now());
+        }
+        
         return ResponseEntity.ok(savedPost);
     }
 
