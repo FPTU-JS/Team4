@@ -260,9 +260,13 @@ const Home = () => {
                             </div>
                             <div>
                                 <h4 className="plan-title">
-                                    {isAuthenticated ? `Based on ${user?.username || 'your'} preferences` : 'Based on popular trends'}
+                                    {isAuthenticated ? `Based on ${user?.username || 'your'}'s preferences` : 'Based on popular trends'}
                                 </h4>
-                                <p className="plan-desc">We found 2 new recipes matching your taste</p>
+                                <p className="plan-desc">
+                                    {personalizedRecipes.length > 0 
+                                        ? `We found ${personalizedRecipes.length} new recipe${personalizedRecipes.length === 1 ? '' : 's'} matching your taste`
+                                        : 'Discover recipes tailored to your taste'}
+                                </p>
                             </div>
                         </div>
 
