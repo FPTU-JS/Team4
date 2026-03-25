@@ -193,6 +193,13 @@
     background: var(--border-color);
 }
 
+.diff-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
 /* Main Content Area */
 .hub-main {
     flex: 1;

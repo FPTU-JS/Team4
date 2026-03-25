@@ -17,9 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.security.authentication.LockedException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +35,15 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JavaMailSender javaMailSender;
 
+    // In-memory Brute Force Protection Cache
+    private final ConcurrentHashMap<String, Integer> failedAttempts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, LocalDateTime> lockoutTime = new ConcurrentHashMap<>();
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int LOCKOUT_MINUTES = 15;
+
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already in use.");
         }
         if (request.getUsername() != null && userRepository.existsByUsername(request.getUsername())) {
@@ -48,37 +57,37 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .role("CUSTOMER")
-                .status("Pending") // Pending verification
+                .status("Active") // Pending verification
                 .build();
         userRepository.save(user);
 
         // Generate OTP
-        String tokenStr = String.format("%06d", new Random().nextInt(999999));
-        VerificationToken token = VerificationToken.builder()
-                .user(user)
-                .tokenString(tokenStr)
-                .type("OTP")
-                .expiresAt(LocalDateTime.now().plusMinutes(15))
-                .build();
-        tokenRepository.save(token);
-
-        // Gửi thư điện tử thật sự
-        try {
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(request.getEmail());
-            mailMessage.setSubject("Your Verification Code - CO-CHE");
-            mailMessage.setText("Chào " + (request.getFullName() != null ? request.getFullName() : request.getUsername()) + ",\n\n" +
-                                "Mã OTP xác thực tài khoản của bạn là: " + tokenStr + "\n" +
-                                "Mã này sẽ hết hạn trong vòng 15 phút.\n\n" +
-                                "Trân trọng,\nĐội ngũ CO-CHE");
-            javaMailSender.send(mailMessage);
-            System.out.println("OTP sent to " + request.getEmail() + " successfully.");
-        } catch (Exception e) {
-            System.err.println("Failed to send OTP email to " + request.getEmail() + ": " + e.getMessage());
-        }
+//        String tokenStr = String.format("%06d", new Random().nextInt(999999));
+//        VerificationToken token = VerificationToken.builder()
+//                .user(user)
+//                .tokenString(tokenStr)
+//                .type("OTP")
+//                .expiresAt(LocalDateTime.now().plusMinutes(15))
+//                .build();
+//        tokenRepository.save(token);
+//
+//        // Gửi thư điện tử thật sự
+//        try {
+//            SimpleMailMessage mailMessage = new SimpleMailMessage();
+//            mailMessage.setTo(request.getEmail());
+//            mailMessage.setSubject("Your Verification Code - CO-CHE");
+//            mailMessage.setText("Chào " + (request.getFullName() != null ? request.getFullName() : request.getUsername()) + ",\n\n" +
+//                                "Mã OTP xác thực tài khoản của bạn là: " + tokenStr + "\n" +
+//                                "Mã này sẽ hết hạn trong vòng 15 phút.\n\n" +
+//                                "Trân trọng,\nĐội ngũ CO-CHE");
+//            javaMailSender.send(mailMessage);
+//            System.out.println("OTP sent to " + request.getEmail() + " successfully.");
+//        } catch (Exception e) {
+//            System.err.println("Failed to send OTP email to " + request.getEmail() + ": " + e.getMessage());
+//        }
 
         return AuthResponse.builder()
-                .message("Registration successful. OTP has been sent to your email.")
+                .message("Registration successful. Please login with your credentials.")
                 .build();
     }
 
@@ -119,22 +128,47 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse authenticate(AuthRequest request) {
-        // Attempt to find user by email or username
-        User user = userRepository.findByEmail(request.getEmailOrUsername())
-                .orElseGet(() -> userRepository.findByUsername(request.getEmailOrUsername())
-                        .orElseThrow(() -> new RuntimeException("User not found")));
+        String key = request.getEmailOrUsername();
 
-        // Ensure user is active
-        if (!"Active".equalsIgnoreCase(user.getStatus())) {
-            throw new RuntimeException("User is not active. Current status: " + user.getStatus());
+        // 1. Check if user is currently locked out
+        if (lockoutTime.containsKey(key)) {
+            if (LocalDateTime.now().isBefore(lockoutTime.get(key))) {
+                throw new LockedException("Tài khoản đã bị khóa tạm thời do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.");
+            } else {
+                // Lockout period has expired, reset counters
+                lockoutTime.remove(key);
+                failedAttempts.remove(key);
+            }
         }
 
-        // We use UsernamePasswordAuthenticationToken. We will pass either email or
-        // username,
-        // whatever Spring Security uses as principle context.
-        // It relies on UserDetailsService in config.
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
+        // 2. Attempt to find user
+        User user = userRepository.findByEmail(key)
+                .orElseGet(() -> userRepository.findByUsername(key)
+                        .orElseThrow(() -> new BadCredentialsException("Invalid username or password.")));
+
+        // 3. Ensure user is active
+        if (!"Active".equalsIgnoreCase(user.getStatus())) {
+            throw new RuntimeException("Tài khoản chưa được kích hoạt hoặc đã bị Ban.");
+        }
+
+        // 4. Authenticate credentials
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
+            
+            // Login successful: reset attempts
+            failedAttempts.remove(key);
+        } catch (BadCredentialsException ex) {
+            // Login failed: increment attempts
+            int attempts = failedAttempts.getOrDefault(key, 0) + 1;
+            failedAttempts.put(key, attempts);
+            
+            if (attempts >= MAX_ATTEMPTS) {
+                lockoutTime.put(key, LocalDateTime.now().plusMinutes(LOCKOUT_MINUTES));
+                throw new LockedException("Tài khoản đã bị khóa tạm thời do nhập sai 5 lần liên tiếp. Vui lòng thử lại sau 15 phút.");
+            }
+            throw new BadCredentialsException("Sai mật khẩu. Bạn còn " + (MAX_ATTEMPTS - attempts) + " lần thử.");
+        }
 
         String jwtToken = jwtUtil.generateToken(user);
         return AuthResponse.builder()

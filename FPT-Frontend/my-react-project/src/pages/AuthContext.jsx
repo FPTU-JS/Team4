@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import authService from "../services/authService";
+import api from "../utils/axiosConfig";
 
 const AuthContext = createContext();
 
@@ -19,23 +20,51 @@ const parseJwt = (token) => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const loadUserProfile = async (token) => {
+        try {
+            const response = await api.get('/api/user/profile');
+            const data = response.data;
+            setUser({ 
+                authenticated: true,
+                id: data.id,
+                username: data.username || data.fullName || 'Chef',
+                email: data.email,
+                role: data.role,
+                avatar: data.avatarUrl || null,
+                bio: data.bio || 'Enthusiastic chef ready to explore new flavors and share recipes.'
+            });
+        } catch (error) {
+            console.error("Failed to fetch user profile", error);
+            // Fallback to JWT data if API fails but token might be valid
+            const decoded = parseJwt(token);
+            if (decoded) {
+                 setUser({ 
+                    authenticated: true,
+                    username: decoded.name || decoded.sub || decoded.username || 'Chef',
+                    email: decoded.email,
+                    role: decoded.role || decoded.roles,
+                    avatar: null,
+                    bio: 'Enthusiastic chef ready to explore new flavors and share recipes.',
+                    id: decoded.userId || decoded.id
+                });
+            } else {
+                 logout();
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem("isAuthenticated");
         const token = localStorage.getItem("jwtToken");
+        
         if (isLoggedIn === "true" && token) {
-            const decoded = parseJwt(token);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setUser({ 
-                authenticated: true,
-                username: decoded?.name || decoded?.sub || decoded?.username || 'Chef',
-                email: decoded?.email,
-                role: decoded?.role || decoded?.roles,
-                avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
-                id: decoded?.userId || decoded?.id
-            });
-        } else if (isLoggedIn === "true") {
-            setUser({ authenticated: true, avatar: localStorage.getItem("userAvatar") });
+            loadUserProfile(token);
+        } else {
+            setIsLoading(false);
         }
     }, []);
 
@@ -44,33 +73,17 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("isAuthenticated", "true");
         if (data.token) {
             localStorage.setItem("jwtToken", data.token);
-            const decoded = parseJwt(data.token);
-            setUser({ 
-                authenticated: true,
-                username: decoded?.name || decoded?.sub || decoded?.username,
-                email: decoded?.email,
-                role: decoded?.role || decoded?.roles,
-                avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
-                id: decoded?.userId || decoded?.id
-            });
+            await loadUserProfile(data.token);
         } else {
-            setUser({ authenticated: true, avatar: localStorage.getItem("userAvatar") });
+             setUser({ authenticated: true });
         }
         return data;
     };
 
-    const oauthLogin = (token) => {
+    const oauthLogin = async (token) => {
         localStorage.setItem("jwtToken", token);
         localStorage.setItem("isAuthenticated", "true");
-        const decoded = parseJwt(token);
-        setUser({ 
-            authenticated: true,
-            username: decoded?.name || decoded?.sub || decoded?.username,
-            email: decoded?.email,
-            role: decoded?.role || decoded?.roles,
-            avatar: localStorage.getItem("userAvatar") || decoded?.picture || decoded?.avatar || null,
-            id: decoded?.userId || decoded?.id
-        });
+        await loadUserProfile(token);
     };
 
     const logout = () => {
@@ -80,18 +93,24 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
-    const updateUserAvatar = (newAvatar) => {
-        localStorage.setItem("userAvatar", newAvatar);
-        setUser(prev => ({ ...prev, avatar: newAvatar }));
+    const updateUserProfile = (newData) => {
+        setUser(prev => ({ 
+            ...prev, 
+            avatar: newData.avatarUrl !== undefined ? newData.avatarUrl : prev?.avatar,
+            bio: newData.bio !== undefined ? newData.bio : prev?.bio,
+            username: newData.username !== undefined ? newData.username : prev?.username,
+            fullName: newData.fullName !== undefined ? newData.fullName : prev?.fullName
+        }));
     };
 
     const value = {
         user,
         isAuthenticated: !!user,
+        isLoading,
         login,
         oauthLogin,
         logout,
-        updateUserAvatar
+        updateUserProfile
     };
 
     return (

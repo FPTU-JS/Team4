@@ -10,6 +10,7 @@ import org.example.demospring.entity.Recipe;
 import org.example.demospring.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -22,16 +23,19 @@ public class ProductController {
     private final ProductService productService;
 
     // --- Admin Endpoints (for adding data) ---
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/restaurant/{restaurantId}/add")
     public ResponseEntity<Product> addProduct(@PathVariable Long restaurantId, @RequestBody Product product) {
         return ResponseEntity.ok(productService.addProduct(restaurantId, product));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/ingredient")
     public ResponseEntity<Ingredient> addIngredient(@RequestBody Ingredient ingredient) {
         return ResponseEntity.ok(productService.addIngredient(ingredient));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/recipe/{productId}/{ingredientId}")
     public ResponseEntity<Recipe> addRecipe(
             @PathVariable Long productId,

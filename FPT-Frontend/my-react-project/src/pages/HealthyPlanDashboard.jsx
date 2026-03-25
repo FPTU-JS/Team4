@@ -3,6 +3,7 @@ import { Search, Bell, Settings, Target, ShoppingBag, Droplet, Wand2 } from 'luc
 import { Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import api from '../utils/axiosConfig';
+import toast from 'react-hot-toast';
 import '../css/healthy-plan-dashboard.css';
 
 const HealthyPlanDashboard = () => {
@@ -38,9 +39,12 @@ const HealthyPlanDashboard = () => {
             setLoading(true);
             try {
                 const res = await api.get(`/api/plan/meals?userId=${user.id}&dayOfWeek=${activeTab}`);
-                setMeals(res.data);
+                const data = res.data;
+                const fetchedMeals = Array.isArray(data) ? data : (data?.content || []);
+                setMeals(fetchedMeals);
             } catch (err) {
                 console.error("Failed to fetch meals", err);
+                setMeals([]); // Fallback to empty array on error
             } finally {
                 setLoading(false);
             }
@@ -54,8 +58,10 @@ const HealthyPlanDashboard = () => {
 
     const tabs = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+    const safeMeals = Array.isArray(meals) ? meals : [];
+
     const renderMealCard = (mealType, emoji) => {
-        const meal = meals.find(m => m.mealType === mealType);
+        const meal = safeMeals.find(m => m.mealType === mealType);
         if (!meal) {
             return (
                 <div className="hp-meal-col">
@@ -140,30 +146,30 @@ const HealthyPlanDashboard = () => {
                             
                             <div className="custom-nutrition-circle" style={{ background: `conic-gradient(#10b981 ${calPercent}%, #e5e7eb 0)` }}>
                                 <div className="cnc-inner">
-                                    <div className="cnc-val">{nutrition.leftCals.toLocaleString()}</div>
-                                    <div className="cnc-lbl">LEFT OF {nutrition.targetCals.toLocaleString()}</div>
+                                    <div className="cnc-val">{(nutrition?.leftCals ?? 0).toLocaleString()}</div>
+                                    <div className="cnc-lbl">LEFT OF {targetCals.toLocaleString()}</div>
                                 </div>
                             </div>
 
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Protein</span><span>{nutrition.currentProtein}/{nutrition.targetProtein}g</span>
+                                    <span>Protein</span><span>{nutrition?.currentProtein ?? 0}/{nutrition?.targetProtein ?? 180}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-p" style={{ width: `${Math.min(100, (nutrition.currentProtein/nutrition.targetProtein)*100)}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-p" style={{ width: `${Math.min(100, ((nutrition?.currentProtein ?? 0)/(nutrition?.targetProtein ?? 180))*100)}%` }}></div></div>
                             </div>
                             
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Carbs</span><span>{nutrition.currentCarbs}/{nutrition.targetCarbs}g</span>
+                                    <span>Carbs</span><span>{nutrition?.currentCarbs ?? 0}/{nutrition?.targetCarbs ?? 250}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-c" style={{ width: `${Math.min(100, (nutrition.currentCarbs/nutrition.targetCarbs)*100)}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-c" style={{ width: `${Math.min(100, ((nutrition?.currentCarbs ?? 0)/(nutrition?.targetCarbs ?? 250))*100)}%` }}></div></div>
                             </div>
 
                             <div className="macro-prog-row">
                                 <div className="mpr-labels">
-                                    <span>Fats</span><span>{nutrition.currentFats}/{nutrition.targetFats}g</span>
+                                    <span>Fats</span><span>{nutrition?.currentFats ?? 0}/{nutrition?.targetFats ?? 80}g</span>
                                 </div>
-                                <div className="mpr-bg"><div className="mpr-fill fill-f" style={{ width: `${Math.min(100, (nutrition.currentFats/nutrition.targetFats)*100)}%` }}></div></div>
+                                <div className="mpr-bg"><div className="mpr-fill fill-f" style={{ width: `${Math.min(100, ((nutrition?.currentFats ?? 0)/(nutrition?.targetFats ?? 80))*100)}%` }}></div></div>
                             </div>
                         </div>
 
@@ -173,7 +179,7 @@ const HealthyPlanDashboard = () => {
                                 <ShoppingBag size={20} color="#10b981" /> Smart Shopping
                             </h2>
                             <p className="sc-desc">Automatically generate a consolidated shopping list for the entire week based on your plan.</p>
-                            <button className="btn-generate">
+                            <button className="btn-generate" onClick={() => toast.success('Đã tạo danh sách đi chợ thành công! Danh sách sẽ hiển thị ở tính năng kế tiếp.')}>
                                 <Wand2 size={18} /> Generate List
                             </button>
                         </div>

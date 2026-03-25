@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.0
+    container_name: coche_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: coche_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - coche_network
+
+  backend:
+    build:
+      context: ./Backend_FPT
+    container_name: coche_backend
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/coche_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      # To dynamically set your secrets during deployment, you would pass them here!
+    depends_on:
+      - database
+    networks:
+      - coche_network
+
+  frontend:
+    build:
+      context: ./FPT-Frontend/my-react-project
+    container_name: coche_frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8081
+    depends_on:
+      - backend
+    networks:
+      - coche_network
+
+volumes:
+  db_data:
+
+networks:
+  coche_network:
+    driver: bridge

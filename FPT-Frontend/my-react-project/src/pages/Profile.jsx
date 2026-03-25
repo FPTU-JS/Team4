@@ -7,17 +7,18 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import HelpCenter from './HelpCenter';
-import toast, { Toaster } from 'react-hot-toast';
+import api from '../utils/axiosConfig';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
 
-    const {isAuthenticated ,user, updateUserAvatar, logout } = useAuth();
+    const {isAuthenticated, isLoading, user, updateUserProfile, logout } = useAuth();
     const [savedRecipes, setSavedRecipes] = useState([]);
     const [activeMenu, setActiveMenu] = useState('overview');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editFormData, setEditFormData] = useState({
         username: '',
-        bio: 'Enthusiastic chef ready to explore new flavors and share recipes.',
+        bio: '',
         avatar: ''
     });
     const navigate = useNavigate();
@@ -33,10 +34,10 @@ const Profile = () => {
     }, [location.search]);
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!isLoading && !isAuthenticated) {
             navigate('/login', { replace: true });
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, isLoading, navigate]);
 
     const userName = user?.username || 'Chef';
     const userRole = user?.role === 'ROLE_ADMIN' ? 'Master Chef' : 'Premium Chef';
@@ -50,6 +51,7 @@ const Profile = () => {
             setEditFormData(prev => ({
                 ...prev,
                 username: user.username || 'Chef',
+                bio: user.bio || 'Enthusiastic chef ready to explore new flavors and share recipes.',
                 avatar: user.avatar || ''
             }));
         }
@@ -60,31 +62,70 @@ const Profile = () => {
         toast.success('Profile link copied to clipboard!');
     };
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const handleEditSubmit = (e) => {
+    const handleEditSubmit = async (e) => {
         e.preventDefault();
 
         if (isSubmitting) return;
         setIsSubmitting(true);
 
-        if (editFormData.avatar) {
-            updateUserAvatar(editFormData.avatar);
+        const loadingToast = toast.loading('Updating profile...');
+        try {
+            // Call API
+            const response = await api.put('/api/user/profile', {
+                fullName: editFormData.username, // Using username as full name locally
+                username: editFormData.username,
+                bio: editFormData.bio,
+                avatarUrl: editFormData.avatar
+            });
+
+            // Update global context
+            updateUserProfile(response.data);
+            
+            toast.success('Profile updated successfully!', { id: loadingToast });
+            setIsEditModalOpen(false);
+
+        } catch (error) {
+            toast.error(error.response?.data || 'Failed to update profile!', { id: loadingToast });
+        } finally {
+            setTimeout(() => setIsSubmitting(false), 500);
         }
-
-        toast.success('Profile updated successfully!', {
-            id: 'update-profile'
-        });
-
-        setIsEditModalOpen(false);
-
-        setTimeout(() => setIsSubmitting(false), 500);
     };
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setEditFormData({ ...editFormData, avatar: reader.result });
+            reader.onloadend = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 300;
+                    const MAX_HEIGHT = 300;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert back to base64, compressed
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    setEditFormData(prev => ({ ...prev, avatar: dataUrl }));
+                };
+                img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -114,10 +155,10 @@ const Profile = () => {
             image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400'
         },
     ];
+    if (isLoading) return <div className="profile-page-wrapper"><div style={{padding: '3rem', textAlign: 'center'}}>Loading profile...</div></div>;
     if (!isAuthenticated) return null;
     return (
         <div className="profile-page-wrapper">
-            <Toaster position="top-right" />
             <div className="profile-page-container">
 
                 {/* --- Left Sidebar --- */}
@@ -360,7 +401,7 @@ const Profile = () => {
                                         </div>
                                     ))}
 
-                                    <div className="create-recipe-card">
+                                    <div className="create-recipe-card" onClick={() => toast.success('Giao diện Soạn thảo Công thức đang được phát triển!')} style={{ cursor: 'pointer' }}>
                                         <div className="create-icon-btn">
                                             <Plus size={24} />
                                         </div>

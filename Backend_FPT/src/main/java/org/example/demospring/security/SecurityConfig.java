@@ -31,10 +31,14 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(AbstractHttpConfigurer::disable)
+                                .headers(headers -> headers
+                                        .frameOptions(frameOptions -> frameOptions.deny())
+                                        .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self' 'unsafe-inline' https://apis.google.com https://accounts.google.com; script-src 'self' 'unsafe-inline' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:8081; frame-src 'self' https://accounts.google.com;"))
+                                )
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/oauth2/**", "/api/products/**", "/api/restaurants/**", "/api/ai/**", "/api/community/**", "/ws/**", "/error")
-                                                .permitAll()
+                                                .requestMatchers("/api/auth/**", "/oauth2/**", "/api/products/**", "/api/restaurants/**", "/api/categories/**", "/api/ai/**", "/api/community/**", "/ws/**", "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
                                                 .userInfoEndpoint(userInfo -> userInfo

@@ -30,7 +30,7 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/onboarding', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -47,7 +47,6 @@ function Login() {
     try {
       await login(data.emailOrUsername, data.password);
       toast.success('Successfully logged in!', { id: loadingToast });
-      navigate('/', { replace: true })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed. Please try again.', { id: loadingToast });
       console.error(err);
