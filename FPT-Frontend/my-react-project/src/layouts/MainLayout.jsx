@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
-import FloatingAIBubble from '../components/FloatingAIBubble';
 import FloatingSupportBubble from '../components/FloatingSupportBubble';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from '../pages/AuthContext';
@@ -202,7 +201,6 @@ const MainLayout = () => {
                 <Outlet />
             </main>
 
-            <FloatingAIBubble />
             <FloatingSupportBubble />
         </div>
     );
