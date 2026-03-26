@@ -6,6 +6,9 @@ import {
 } from 'lucide-react';
 import './MainLayout.css';
 import Notification from './Notification';
+import FloatingAIBubble from '../components/FloatingAIBubble';
+import FloatingSupportBubble from '../components/FloatingSupportBubble';
+import { Toaster } from 'react-hot-toast';
 import { useAuth } from '../pages/AuthContext';
 
 const MainLayout = () => {
@@ -21,12 +24,13 @@ const MainLayout = () => {
     const dropdownRef = useRef(null);
     const { isAuthenticated, isLoading, user, logout } = useAuth();
 
-    // Xử lý Theme
+    // Theme effect
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    // Scroll effect
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
@@ -39,7 +43,7 @@ const MainLayout = () => {
         setTheme(prev => prev === 'light' ? 'dark' : 'light');
     };
 
-    // Khóa cuộn trang khi mở Mobile Menu
+    // Mobile menu overflow control
     useEffect(() => {
         if (isMobileMenuOpen) {
             document.body.style.overflow = 'hidden';
@@ -48,7 +52,7 @@ const MainLayout = () => {
         }
     }, [isMobileMenuOpen]);
 
-    // Đóng menu khi click ra ngoài hoặc chuyển trang
+    // Interaction handlers
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -56,7 +60,7 @@ const MainLayout = () => {
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
-        setIsMobileMenuOpen(false); // Tự động đóng sidebar khi chuyển link
+        setIsMobileMenuOpen(false); 
         setIsDropdownOpen(false);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [location]);
@@ -65,28 +69,44 @@ const MainLayout = () => {
         { path: '/', label: 'Home', icon: <Home size={20} /> },
         { path: '/recipes', label: 'Recipes', icon: <BookOpen size={20} /> },
         { path: '/map', label: 'Map', icon: <Store size={20} /> },
-        { path: '/plan-setup', label: 'Healthy Plan', icon: <Leaf size={20} /> },
+        { path: '/healthy-plan', label: 'Healthy Plan', icon: <Leaf size={20} /> },
         { path: '/ai-assistant', label: 'AI Assistant', icon: <Bot size={20} /> },
         { path: '/community', label: 'Community', icon: <User size={20} /> },
     ];
 
     return (
         <div className="layout-container">
-
-            {/* --- MOBILE SIDEBAR --- */}
-            <div
-                className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'show' : ''}`}
-                onClick={() => setIsMobileMenuOpen(false)}
+            <Toaster 
+                position="bottom-right"
+                toastOptions={{
+                    style: {
+                        background: 'var(--bg-surface)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--border-color)',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        borderRadius: '16px',
+                        padding: '16px 24px',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                    }
+                }}
             />
 
+            {/* --- MOBILE SIDEBAR --- */}
+            {isMobileMenuOpen && (
+                <div className="mobile-sidebar-overlay show" onClick={() => setIsMobileMenuOpen(false)} />
+            )}
+
             <aside className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-                {/* Header */}
                 <div className="mobile-sidebar-header">
                     <Link to="/" className="brand-logo">
                         <span className="brand-icon">✻</span>
                         <span className="brand-text">CO-CHE</span>
                     </Link>
-                    <button className="close-menu-btn" onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
+                    <button className="close-menu-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                        <X size={24} />
+                    </button>
                 </div>
 
                 {!isLoading && !isAuthenticated && (
@@ -96,7 +116,6 @@ const MainLayout = () => {
                     </div>
                 )}
 
-                {/* Điều hướng */}
                 <nav className="mobile-sidebar-links">
                     {navLinks.map((link) => (
                         <Link key={link.path} to={link.path} className={currentPath === link.path ? 'active' : ''}>
@@ -127,12 +146,12 @@ const MainLayout = () => {
                 </div>
 
                 <div className="nav-actions">
-                    <button className="icon-btn theme-toggle-btn" onClick={toggleTheme}>
+                    <button className="icon-btn theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
                         {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
                     </button>
 
                     {isLoading ? (
-                        <div className="auth-buttons desktop-only">...</div>
+                        <div className="loading-dots">...</div>
                     ) : isAuthenticated ? (
                         <>
                             <div className="streak-badge mobile-hide">
@@ -140,20 +159,32 @@ const MainLayout = () => {
                             </div>
                             <Notification />
                             <div className="user-dropdown-container" ref={dropdownRef}>
-                                <button className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                                    <img src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username)}&background=10b981&color=fff`} alt="avatar" />
+                                <button
+                                    className={`profile-trigger ${isDropdownOpen ? 'active' : ''}`}
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                >
+                                    <img 
+                                        src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || 'User')}&background=10b981&color=fff`} 
+                                        alt="avatar" 
+                                    />
                                 </button>
                                 {isDropdownOpen && (
-                                    <div className="dropdown-menu animate-fade-in">
+                                    <div className="dropdown-menu animate-fade-in text-bubble-variant">
                                         <div className="dropdown-header">
                                             <div className="user-name">{user?.username}</div>
                                             <div className="user-email">{user?.email}</div>
                                         </div>
-                                        <hr />
-                                        <button onClick={() => navigate('/profile')}><User size={18} /> Profile</button>
-                                        <button onClick={() => navigate('/profile?tab=help')}><HelpCircle size={18} /> Help Center</button>
-                                        <hr />
-                                        <button className="logout-btn" onClick={logout}><LogOut size={18} /> Logout</button>
+                                        <hr className="dropdown-divider" />
+                                        <button className="dropdown-item" onClick={() => navigate('/profile')}>
+                                            <User size={18} /> Profile
+                                        </button>
+                                        <button className="dropdown-item" onClick={() => navigate('/profile?tab=help')}>
+                                            <HelpCircle size={18} /> Help Center
+                                        </button>
+                                        <hr className="dropdown-divider" />
+                                        <button className="dropdown-item logout-btn" onClick={() => { logout(); navigate('/'); }}>
+                                            <LogOut size={18} /> Logout
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -170,9 +201,13 @@ const MainLayout = () => {
             <main className="main-content">
                 <Outlet />
             </main>
+
+            <FloatingAIBubble />
+            <FloatingSupportBubble />
         </div>
     );
 };
 
 export default MainLayout;
+
 

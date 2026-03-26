@@ -5,8 +5,6 @@
     background-color: var(--bg-main);
 }
 
-<<<<<<< Updated upstream
-=======
 .main-content {
     flex: 1;
     width: 100%;
@@ -15,20 +13,10 @@
     padding: 100px 20px 20px;
 }
 
-
->>>>>>> Stashed changes
 .top-navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-<<<<<<< Updated upstream
-    padding: 1rem 1.5rem;
-    background-color: var(--bg-surface);
-    position: sticky;
-    margin-top: 10px;
-    z-index: 1000;
-
-=======
     padding: 1.25rem 2rem;
     background-color: transparent;
     position: fixed;
@@ -44,7 +32,6 @@
     background-color: var(--glass-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
->>>>>>> Stashed changes
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
