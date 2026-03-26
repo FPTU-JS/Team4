@@ -13,14 +13,33 @@ const MainLayout = () => {
     const location = useLocation();
     const currentPath = location.pathname;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+<<<<<<< Updated upstream
     const dropdownRef = useRef(null);
     const { isAuthenticated, user, logout } = useAuth();
+=======
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+>>>>>>> Stashed changes
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+    const [isScrolled, setIsScrolled] = useState(false);
 
+<<<<<<< Updated upstream
+=======
+    const dropdownRef = useRef(null);
+    const { isAuthenticated, isLoading, user, logout } = useAuth();
+
+>>>>>>> Stashed changes
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const toggleTheme = () => {
         setTheme(prev => prev === 'light' ? 'dark' : 'light');
@@ -69,7 +88,40 @@ const MainLayout = () => {
                     }
                 }}
             />
+<<<<<<< Updated upstream
             <nav className="top-navbar">
+=======
+
+            <aside className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+                {/* Header */}
+                <div className="mobile-sidebar-header">
+                    <Link to="/" className="brand-logo">
+                        <span className="brand-icon">✻</span>
+                        <span className="brand-text">CO-CHE</span>
+                    </Link>
+                    <button className="close-menu-btn" onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
+                </div>
+
+                {!isLoading && !isAuthenticated && (
+                    <div className="mobile-sidebar-auth">
+                        <Link to="/login" className="mobile-auth-btn mobile-login-btn">Login</Link>
+                        <Link to="/register" className="mobile-auth-btn mobile-signup-btn">Sign Up</Link>
+                    </div>
+                )}
+
+                {/* Điều hướng */}
+                <nav className="mobile-sidebar-links">
+                    {navLinks.map((link) => (
+                        <Link key={link.path} to={link.path} className={currentPath === link.path ? 'active' : ''}>
+                            {link.icon} {link.label}
+                        </Link>
+                    ))}
+                </nav>
+            </aside>
+
+            {/* --- TOP NAVBAR --- */}
+            <nav className={`top-navbar ${isScrolled ? 'scrolled' : ''}`}>
+>>>>>>> Stashed changes
                 <div className="nav-brand">
                     <button className="mobile-menu-btn">
                         <Menu size={24} color="#111827" />

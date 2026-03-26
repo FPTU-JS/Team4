@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Search, Camera, ArrowRight, TrendingUp, Heart, MapPin, Bookmark, Clock, Flame, Star, Upload } from 'lucide-react';
 import productService from '../services/productService';
 import { useAuth } from './AuthContext';
+import Skeleton from '../components/Skeleton';
 import '../css/home.css';
 
 const Home = () => {
@@ -221,18 +222,26 @@ const Home = () => {
 
                     <div className="trending-grid">
                         {isLoading ? (
-                            <div>Loading trending recipes...</div>
+                            [...Array(4)].map((_, i) => (
+                                <div key={`skeleton-trend-${i}`} className="recipe-card skeleton-shimmer">
+                                    <Skeleton height="200px" variant="rectangular" />
+                                    <div className="recipe-info">
+                                        <Skeleton width="80%" height="1.2rem" className="mb-2" />
+                                        <Skeleton width="40%" height="0.8rem" />
+                                    </div>
+                                </div>
+                            ))
                         ) : trendingRecipes.length === 0 ? (
-                            <div>No recipes available yet.</div>
+                            <div className="empty-state">No recipes available yet.</div>
                         ) : (
                             trendingRecipes.map(recipe => (
-                                <div key={`trend-${recipe.productId || recipe.id || Math.random()}`} className="recipe-card" onClick={() => navigate(`/recipe/${recipe.productId || recipe.id}`)}>
+                                <div key={`trend-${recipe.productId || recipe.id || Math.random()}`} className="recipe-card hover-lift" onClick={() => navigate(`/recipe/${recipe.productId || recipe.id}`)}>
                                     <div className="recipe-image-container">
                                         <img src={recipe.imageUrl || 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&q=80'} alt={recipe.name} className="recipe-image" />
                                         <div className="recipe-rating">
                                             <Star size={12} className="star-icon" fill="currentColor" /> {recipe.rating || '4.9'}
                                         </div>
-                                        <div className="recipe-meta">
+                                        <div className="recipe-meta glass-panel">
                                             <span><Clock size={12} /> {recipe.cookingTime ? `${recipe.cookingTime} min` : '20 min'}</span>
                                             <span><Flame size={12} /> {recipe.calories ? `${recipe.calories} kcal` : '450 kcal'}</span>
                                         </div>
@@ -267,12 +276,21 @@ const Home = () => {
                         </div>
 
                         {isLoading ? (
-                            <div>Loading personalized recipes...</div>
+                            [...Array(2)].map((_, i) => (
+                                <div key={`skeleton-pers-${i}`} className="list-recipe-item">
+                                    <Skeleton width="80px" height="80px" variant="rectangular" className="list-recipe-image" />
+                                    <div className="list-recipe-details">
+                                        <Skeleton width="60%" height="1rem" className="mb-2" />
+                                        <Skeleton width="90%" height="0.8rem" className="mb-1" />
+                                        <Skeleton width="40%" height="0.7rem" />
+                                    </div>
+                                </div>
+                            ))
                         ) : personalizedRecipes.length === 0 ? (
-                            <div>No personalized recommendations yet.</div>
+                            <div className="empty-state">No personalized recommendations yet.</div>
                         ) : (
                             personalizedRecipes.map(recipe => (
-                                <div key={`pers-${recipe.productId}`} className="list-recipe-item">
+                                <div key={`pers-${recipe.productId}`} className="list-recipe-item hover-lift">
                                     <img src={recipe.imageUrl || 'https://via.placeholder.com/200?text=No+Image'} alt={recipe.name} className="list-recipe-image" />
                                     <div className="list-recipe-details">
                                         <h4 className="list-recipe-title">{recipe.name}</h4>
@@ -312,9 +330,15 @@ const Home = () => {
                             <h3 className="sidebar-title">Today's Nutrition</h3>
 
                         <div className="nutrition-summary">
-                            <div className="circle-chart">
-                                <span className="kcal-val">1,250</span>
-                                <span className="kcal-label">KCAL LEFT</span>
+                            <div className="circle-chart-container">
+                                <div className="circle-chart">
+                                    <span className="kcal-val">1,250</span>
+                                    <span className="kcal-label">KCAL LEFT</span>
+                                </div>
+                                <svg className="abs-svg">
+                                    <circle cx="45" cy="45" r="40" className="circle-bg" />
+                                    <circle cx="45" cy="45" r="40" className="circle-progress" style={{ strokeDasharray: '251', strokeDashoffset: '100' }} />
+                                </svg>
                             </div>
                             <div className="macros">
                                 <div className="macro-item">
