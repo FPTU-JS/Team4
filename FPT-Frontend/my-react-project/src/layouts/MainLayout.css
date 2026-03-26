@@ -10,7 +10,7 @@
     width: 100%;
     background-color: var(--bg-main);
     min-height: 100vh;
-    padding: 100px 20px 20px;
+    padding: 100px 2rem 2rem;
 }
 
 .top-navbar {
@@ -145,13 +145,6 @@
     text-decoration: none;
 }
 
-.main-content {
-    flex: 1;
-    width: 100%;
-    background-color: var(--bg-main);
-    min-height: calc(100vh - 70px);
-    padding: 20px;
-}
 
 .mobile-bottom-nav {
     display: none;
@@ -314,6 +307,10 @@
 
     .main-content {
         padding-top: 85px;
+    }
+
+    .main-content {
+        padding-top: 90px;
     }
 
     .mobile-bottom-nav {
