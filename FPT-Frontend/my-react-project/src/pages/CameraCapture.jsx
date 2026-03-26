@@ -61,13 +61,11 @@ const CameraCapture = () => {
     };
 
     const handleConfirm = () => {
-        // Here you would typically upload the image or pass it to state.
-        console.log("Image confirmed!");
         // Stop stream before navigating away
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
         }
-        navigate(-1); // Go back or to AI analysis result page
+        navigate('/ai-assistant', { state: { capturedImage: capturedImage } });
     };
 
     const handleClose = () => {
