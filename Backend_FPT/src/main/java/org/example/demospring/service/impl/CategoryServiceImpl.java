@@ -7,7 +7,10 @@ import org.example.demospring.repository.CategoryRepository;
 import org.example.demospring.service.CategoryService;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
+// Thêm 2 thư viện này để quản lý sự kiện
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +21,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    @PostConstruct
+    // Kích hoạt hàm này khi ứng dụng đã khởi động thành công và sẵn sàng
+    @EventListener(ApplicationReadyEvent.class)
     public void initCategories() {
         if (categoryRepository.count() == 0) {
             List<Category> initCats = Arrays.asList(
