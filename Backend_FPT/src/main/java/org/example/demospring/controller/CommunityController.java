@@ -64,13 +64,27 @@ public class CommunityController {
 
     @PostMapping("/posts")
     public ResponseEntity<?> createPost(@RequestBody CommunityPost post) {
+        org.example.demospring.entity.User currentUser = org.example.demospring.security.SecurityUtils.getCurrentUser();
+        if (currentUser == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+
+        post.setAuthorId(currentUser.getId());
+        post.setAuthorName(currentUser.getFullName());
+        post.setAvatarUrl(currentUser.getAvatarUrl());
+
         if (post.getAuthorId() != null) {
             LocalDateTime lastPost = userLastPostTime.get(post.getAuthorId());
             if (lastPost != null && LocalDateTime.now().isBefore(lastPost.plusSeconds(POST_COOLDOWN_SECONDS))) {
-                return ResponseEntity.status(429).body("Bạn đang thao tác quá nhanh! Vui lòng chờ 1 phút trước khi đăng bài tiếp theo.");
+                return ResponseEntity.status(429).body(java.util.Map.of("message", "Bạn đang thao tác quá nhanh! Vui lòng chờ 1 phút trước khi đăng bài tiếp theo."));
+            }
+
+            java.time.LocalDateTime startOfDay = java.time.LocalDate.now().atStartOfDay();
+            java.time.LocalDateTime endOfDay = startOfDay.plusDays(1);
+            long count = communityPostRepository.countByAuthorIdAndCreatedAtBetween(post.getAuthorId(), startOfDay, endOfDay);
+            if (count >= 5) {
+                return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                        .body(java.util.Map.of("message", "Bạn đã đạt giới hạn tạo 5 bài viết mỗi ngày. Vui lòng quay lại vào ngày mai!"));
             }
         }
-
         // Tối ưu: Dùng Optional hoặc check null gọn hơn
         post.setLikesCount(post.getLikesCount() == null ? 0 : post.getLikesCount());
         post.setCommentsCount(post.getCommentsCount() == null ? 0 : post.getCommentsCount());
@@ -88,11 +102,10 @@ public class CommunityController {
 
     @PutMapping("/posts/{id}/like")
     @Transactional
-    public ResponseEntity<?> likePost(
-            // CHỖ NÀY: Thêm ("id")
-            @PathVariable("id") Long id,
-            // CHỖ NÀY: Thêm ("userId")
-            @RequestParam("userId") Long userId) {
+    public ResponseEntity<?> likePost(@PathVariable("id") Long id) {
+
+        Long userId = org.example.demospring.security.SecurityUtils.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
 
         CommunityPost post = communityPostRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -136,13 +149,19 @@ public class CommunityController {
     }
 
     @PostMapping("/posts/{id}/comments")
-    public ResponseEntity<PostComment> addComment(
+    public ResponseEntity<?> addComment(
             @PathVariable("id") Long id,
             @RequestBody PostComment comment) {
+
+        org.example.demospring.entity.User currentUser = org.example.demospring.security.SecurityUtils.getCurrentUser();
+        if (currentUser == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
 
         CommunityPost post = communityPostRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
+        comment.setUserId(currentUser.getId());
+        comment.setAuthorName(currentUser.getFullName());
+        comment.setAvatarUrl(currentUser.getAvatarUrl());
         comment.setPostId(id);
         PostComment savedComment = postCommentRepository.save(comment);
 

@@ -220,7 +220,7 @@ const Community = () => {
             );
 
             try {
-                await api.put(`/api/community/posts/${id}/like?userId=${currentUserId}`);
+                await api.put(`/api/community/posts/${id}/like`);
             } catch (error) {
                 console.error("Like error:", error);
                 toast.error('Failed to like post', {

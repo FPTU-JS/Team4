@@ -19,13 +19,19 @@ public class ProductSpecification {
                         "%" + keyword.toLowerCase() + "%"));
             }
             if (maxCookingTime != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("cookingTime"), maxCookingTime));
+                Predicate timeLess = criteriaBuilder.lessThanOrEqualTo(root.get("cookingTime"), maxCookingTime);
+                Predicate timeNull = criteriaBuilder.isNull(root.get("cookingTime"));
+                predicates.add(criteriaBuilder.or(timeLess, timeNull));
             }
             if (minCalories != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("calories"), minCalories));
+                Predicate calGreater = criteriaBuilder.greaterThanOrEqualTo(root.get("calories"), minCalories);
+                Predicate calNull = criteriaBuilder.isNull(root.get("calories"));
+                predicates.add(criteriaBuilder.or(calGreater, calNull));
             }
             if (maxCalories != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("calories"), maxCalories));
+                Predicate calLess = criteriaBuilder.lessThanOrEqualTo(root.get("calories"), maxCalories);
+                Predicate calNull = criteriaBuilder.isNull(root.get("calories"));
+                predicates.add(criteriaBuilder.or(calLess, calNull));
             }
             if (tags != null && !tags.isEmpty()) {
                 for (String tag : tags) {

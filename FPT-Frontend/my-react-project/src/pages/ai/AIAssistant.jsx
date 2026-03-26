@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Settings, HelpCircle, Utensils, MessageSquare, Clock, Flame, Image as ImageIcon, Mic, Send, Plus } from 'lucide-react';
+import { Settings, HelpCircle, Utensils, MessageSquare, Clock, Flame, Image as ImageIcon, Mic, Send, Plus, X } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import '../../css/ai-assistant.css';
@@ -29,6 +29,12 @@ const AIAssistant = () => {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+
+    // Mở rộng Input
+    const fileInputRef = useRef(null);
+    const [attachedImage, setAttachedImage] = useState(null);
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef(null);
 
     const activeChatIdRef = useRef(activeChatId);
     useEffect(() => {
@@ -75,16 +81,105 @@ const AIAssistant = () => {
         }));
     };
 
-    const handleSend = async (e, overrideText = null, overrideChat = null) => {
+    const handleFileAttach = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAttachedImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeAttachedImage = () => {
+        setAttachedImage(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.lang = 'vi-VN';
+            
+            recognitionRef.current.onresult = (event) => {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                setInput(prev => prev + (prev ? ' ' : '') + transcript);
+            };
+
+            recognitionRef.current.onend = () => {
+                setIsListening(false);
+            };
+            
+            recognitionRef.current.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                setIsListening(false);
+            };
+        }
+    }, []);
+
+    const toggleMic = () => {
+        if (!recognitionRef.current) {
+            alert('Trình duyệt của bạn không hỗ trợ tính năng nhận diện giọng nói (Web Speech API).');
+            return;
+        }
+
+        if (isListening) {
+            recognitionRef.current.stop();
+        } else {
+            recognitionRef.current.start();
+            setIsListening(true);
+        }
+    };
+
+    const compressImage = (dataUrl, maxWidth, maxHeight, quality) => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = dataUrl;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert to light JPEG
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => resolve(dataUrl);
+        });
+    };
+
+    const handleSend = async (e, overrideText = null, overrideChat = null, overrideImage = null) => {
         e?.preventDefault();
         
         const messageText = overrideText || input;
+        const imageToSend = overrideImage || attachedImage;
         
-        if (!messageText.trim()) return;
+        if (!messageText.trim() && !imageToSend) return;
 
         const userMsg = {
             sender: 'user',
             text: messageText,
+            image: imageToSend,
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         };
 
@@ -95,10 +190,13 @@ const AIAssistant = () => {
         let newTitle = null;
         if (currentActiveChat.messages.length === 1 && (currentActiveChat.title === 'New Chat' || currentActiveChat.title === 'Current Chat')) {
             newTitle = messageText.length > 25 ? messageText.substring(0, 25) + '...' : messageText;
+            if (!newTitle && imageToSend) newTitle = "Image Analysis";
         }
 
         updateActiveChatMessages(prev => [...prev, userMsg], newTitle, currentActiveChatId);
         setInput('');
+        setAttachedImage(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
         setIsLoading(true);
 
         try {
@@ -107,12 +205,30 @@ const AIAssistant = () => {
                 throw new Error("Missing API Key");
             }
 
-            const prompt = "You are an expert chef AI assistant named 'CO-CHE AI Chef Assistant' for a cooking website. You provide helpful, concise, and accurate culinary advice, recipes, and cooking tips. User's query: " + userMsg.text;
+            const prompt = "Bạn là chuyên gia bếp trưởng AI 'CO-CHE AI Chef Assistant' cho trang web ẩm thực. Cung cấp lời khuyên ngắn gọn, tư vấn nấu ăn, dịch và hướng dẫn chi tiết. Câu hỏi hoặc Hình ảnh của người dùng: " + userMsg.text;
+
+            let parts = [{ text: prompt }];
+
+            if (imageToSend) {
+                // Compress image to save massive bandwidth and eliminate hanging/timeout
+                const compressedDataUrl = await compressImage(imageToSend, 1024, 1024, 0.7);
+                const base64Index = compressedDataUrl.indexOf('base64,');
+                if (base64Index !== -1) {
+                    const mimeType = compressedDataUrl.substring(5, base64Index - 1);
+                    const data = compressedDataUrl.substring(base64Index + 7);
+                    parts.push({
+                        inlineData: {
+                            mimeType: mimeType,
+                            data: data
+                        }
+                    });
+                }
+            }
 
             const response = await axios.post(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
                 {
-                    contents: [{ parts: [{ text: prompt }] }]
+                    contents: [{ parts: parts }]
                 },
                 {
                     headers: { 'Content-Type': 'application/json' }
@@ -159,8 +275,13 @@ const AIAssistant = () => {
     // Auto-send initial prompt if passed from another page (like Home)
     useEffect(() => {
         if (location.state?.initialPrompt || location.state?.capturedImage) {
-            const promptContent = location.state?.initialPrompt || "Please analyze the uploaded image of ingredients and give me a recipe idea.";
+            let promptContent = location.state?.initialPrompt || "Please analyze the uploaded image of ingredients and give me a recipe idea.";
+            const imageData = location.state?.capturedImage || null;
             
+            if (imageData && !location.state?.initialPrompt) {
+                promptContent = "Dưới đây là hình ảnh tôi vừa tải lên. Nếu đây là các nguyên liệu, hãy phân tích và gợi ý cho tôi món ăn có thể nấu. Nếu đây là một món ăn hoàn chỉnh, hãy phân tích xem nó gồm những nguyên liệu gì và cách làm sơ bộ.";
+            }
+
             // Consume the state so it doesn't trigger again on refresh
             window.history.replaceState({}, document.title);
             
@@ -169,7 +290,7 @@ const AIAssistant = () => {
             if (activeChat.messages.length > 1) {
                 chatToUse = {
                     id: Date.now(),
-                    title: 'New Chat',
+                    title: 'Image Analysis',
                     messages: [defaultMessage]
                 };
                 setChats(prev => [chatToUse, ...prev]);
@@ -178,7 +299,7 @@ const AIAssistant = () => {
             
             // Delay slightly to ensure UI is ready, then send
             setTimeout(() => {
-                handleSend(null, promptContent, chatToUse);
+                handleSend(null, promptContent, chatToUse, imageData);
             }, 300);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -294,6 +415,11 @@ const AIAssistant = () => {
                             <div className={`ai-msg-body ${msg.sender === 'user' ? 'align-right' : ''}`}>
                                 <div className="ai-msg-sender">{msg.sender === 'user' ? 'You' : 'CO-CHE Chef Bot'}</div>
                                 <div className={`ai-msg-bubble ${msg.sender === 'user' ? 'bubble-dark-blue' : 'bubble-light-green'}`}>
+                                    {msg.image && (
+                                        <div style={{ marginBottom: '8px' }}>
+                                            <img src={msg.image} alt="Uploaded" style={{ maxWidth: '100%', borderRadius: '8px', maxHeight: '300px', objectFit: 'cover' }} />
+                                        </div>
+                                    )}
                                     {formatTextBody(msg.text)}
                                 </div>
                                 <div className={`ai-msg-time ${msg.sender === 'user' ? 'text-right' : ''}`}>{msg.time}</div>
@@ -324,12 +450,30 @@ const AIAssistant = () => {
                 </div>
 
                 <footer className="ai-chat-input-area">
-                    <div className="ai-input-wrapper">
-                        <button className="ai-input-icon"><ImageIcon size={20} /></button>
-                        <button className="ai-input-icon"><Mic size={20} /></button>
+                    {attachedImage && (
+                        <div className="ai-attached-image-preview" style={{ position: 'absolute', bottom: '100%', left: '26px', padding: '10px', background: 'var(--bg-card)', borderTopLeftRadius: '12px', borderTopRightRadius: '12px', border: '1px solid var(--border-color)', borderBottom: 'none' }}>
+                            <div style={{ position: 'relative', display: 'inline-block' }}>
+                                <img src={attachedImage} alt="Attached" style={{ height: '60px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                                <button 
+                                    onClick={removeAttachedImage}
+                                    style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--red)', color: 'white', borderRadius: '50%', padding: '2px', border: 'none', cursor: 'pointer' }}
+                                >
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    <div className="ai-input-wrapper" style={{ position: 'relative' }}>
+                        <input type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileAttach} />
+                        <button className="ai-input-icon" onClick={() => fileInputRef.current?.click()}>
+                            <ImageIcon size={20} />
+                        </button>
+                        <button className="ai-input-icon" onClick={toggleMic} style={{ color: isListening ? '#ef4444' : 'inherit' }}>
+                            <Mic size={20} className={isListening ? 'badge-pulse' : ''} />
+                        </button>
                         <input 
                             type="text" 
-                            placeholder="Message CO-CHE Chef Assistant..." 
+                            placeholder={isListening ? "Đang lắng nghe..." : "Message CO-CHE Chef Assistant..."} 
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
