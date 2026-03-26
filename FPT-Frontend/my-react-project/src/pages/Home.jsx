@@ -12,6 +12,7 @@ const Home = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [showCameraMenu, setShowCameraMenu] = useState(false);
     const [searchText, setSearchText] = useState('');
+    const [savedIds, setSavedIds] = useState([]); // ✅ Thêm state bookmark
 
     const cameraInputRef = useRef(null);
     const uploadInputRef = useRef(null);
@@ -20,6 +21,16 @@ const Home = () => {
 
     const trendingRecipes = recipes ? recipes.slice(0, 4) : [];
     const personalizedRecipes = recipes ? recipes.slice(0, 2) : [];
+
+    // ✅ Hàm toggle bookmark
+    const handleBookmark = (e, productId) => {
+        e.stopPropagation();
+        setSavedIds(prev =>
+            prev.includes(productId)
+                ? prev.filter(id => id !== productId)
+                : [...prev, productId]
+        );
+    };
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -279,7 +290,15 @@ const Home = () => {
                                         <p className="list-recipe-desc">{recipe.description}</p>
                                         <div className="list-recipe-stats">{recipe.calories ? `${recipe.calories} kcal` : '??'} • {(recipe.tags || [])[0]}</div>
                                     </div>
-                                    <Bookmark className="bookmark-icon" size={20} />
+                                    {/* ✅ Bookmark với toggle màu vàng */}
+                                    <Bookmark
+                                        className="bookmark-icon"
+                                        size={20}
+                                        onClick={(e) => handleBookmark(e, recipe.productId)}
+                                        fill={savedIds.includes(recipe.productId) ? "#f59e0b" : "none"}
+                                        stroke={savedIds.includes(recipe.productId) ? "#f59e0b" : "currentColor"}
+                                        style={{ cursor: 'pointer' }}
+                                    />
                                 </div>
                             ))
                         )}
