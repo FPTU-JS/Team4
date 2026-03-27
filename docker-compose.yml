@@ -21,10 +21,12 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/coche_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=rootpassword
-      # To dynamically set your secrets during deployment, you would pass them here!
+      - SPRING_DATASOURCE_URL=${DB_URL:-jdbc:mysql://database:3306/coche_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-root}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-rootpassword}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost:8081}
+      - JWT_SECRET=${JWT_SECRET:-default_insecure_key_for_dev_only}
     depends_on:
       - database
     networks:
@@ -37,7 +39,7 @@ services:
     ports:
       - "5173:80"
     environment:
-      - VITE_API_BASE_URL=http://localhost:8081
+      - VITE_API_BASE_URL=${BACKEND_URL:-http://localhost:8081}
     depends_on:
       - backend
     networks:
