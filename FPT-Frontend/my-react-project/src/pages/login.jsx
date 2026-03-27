@@ -36,7 +36,7 @@ function Login() {
 
   const handleSocialLogin = (provider) => {
     // Chuyển hướng người dùng đến URL oauth2 của Backend
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://team4-backend-uanw.onrender.com';
     window.location.href = `${baseUrl}/oauth2/authorization/${provider}`;
   };
 
