@@ -26,7 +26,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String token = jwtUtil.generateToken(oAuth2User.getUser());
 
         // URL của Frontend React nhận token và tự động login
-        String targetUrl = "http://localhost:5173/oauth2/redirect?token=" + token;
+        String targetUrl = "https://team4-fontend.onrender.com/oauth2/redirect?token=" + token;
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
