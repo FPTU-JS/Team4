@@ -11,20 +11,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.nio.charset.StandardCharsets;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class JwtUtil {
     
     @Value("${jwt.secret}")
-    private String secretString;
+    private String secretKeyString;
 
-    private static final long EXPIRATION_TIME = 3600000; // 1 giờ
+    private Key key;
+    private static final long EXPIRATION_TIME = 3600000; // 1 giờ (1000 * 60 * 60)
 
-    private Key getSigningKey() {
-        byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+    @PostConstruct
+    public void init() {
+        if (secretKeyString == null || secretKeyString.length() < 32) {
+             throw new IllegalArgumentException("JWT Secret key must be set and at least 32 characters long in application.properties");
+        }
+        this.key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
     }
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -47,7 +51,7 @@ public class JwtUtil {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey())
+                .signWith(key)
                 .compact();
     }
 
@@ -66,7 +70,7 @@ public class JwtUtil {
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

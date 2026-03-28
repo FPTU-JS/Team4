@@ -59,9 +59,10 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem("isAuthenticated");
+        const token = localStorage.getItem("jwtToken");
         
-        if (isLoggedIn === "true") {
-            loadUserProfile(null);
+        if (isLoggedIn === "true" && token) {
+            loadUserProfile(token);
         } else {
             setIsLoading(false);
         }
@@ -70,18 +71,25 @@ export const AuthProvider = ({ children }) => {
     const login = async (emailOrUsername, password) => {
         const data = await authService.login(emailOrUsername, password);
         localStorage.setItem("isAuthenticated", "true");
-        await loadUserProfile(null);
+        if (data.token) {
+            localStorage.setItem("jwtToken", data.token);
+            await loadUserProfile(data.token);
+        } else {
+             setUser({ authenticated: true });
+        }
         return data;
     };
 
-    const oauthLogin = async () => {
+    const oauthLogin = async (token) => {
+        localStorage.setItem("jwtToken", token);
         localStorage.setItem("isAuthenticated", "true");
-        await loadUserProfile(null);
+        await loadUserProfile(token);
     };
 
     const logout = () => {
         authService.logout();
         localStorage.removeItem("isAuthenticated");
+        localStorage.removeItem("jwtToken");
         setUser(null);
     };
 
