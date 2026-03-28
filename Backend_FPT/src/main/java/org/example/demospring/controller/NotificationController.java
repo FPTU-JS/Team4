@@ -16,7 +16,9 @@ public class NotificationController {
     private final NotificationRepository notificationRepository;
 
     @GetMapping
-    public ResponseEntity<List<AppNotification>> getUserNotifications(@RequestParam("userId") Long userId) {
+    public ResponseEntity<List<AppNotification>> getUserNotifications() {
+        Long userId = org.example.demospring.security.SecurityUtils.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
         return ResponseEntity.ok(notificationRepository.findByUserIdOrderByCreatedAtDesc(userId));
     }
 

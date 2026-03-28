@@ -67,6 +67,7 @@ public class CommunityController {
         org.example.demospring.entity.User currentUser = org.example.demospring.security.SecurityUtils.getCurrentUser();
         if (currentUser == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
 
+        post.setId(null); // Fix IDOR
         post.setAuthorId(currentUser.getId());
         post.setAuthorName(currentUser.getFullName());
         post.setAvatarUrl(currentUser.getAvatarUrl());

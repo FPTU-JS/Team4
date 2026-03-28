@@ -2,7 +2,6 @@ package org.example.demospring.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -12,11 +11,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+
 @Component
 public class JwtUtil {
-    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    
+    @Value("${jwt.secret}")
+    private String secretKeyString;
+
+    private Key key;
     private static final long EXPIRATION_TIME = 3600000; // 1 giờ (1000 * 60 * 60)
 
+    @PostConstruct
+    public void init() {
+        if (secretKeyString == null || secretKeyString.length() < 32) {
+             throw new IllegalArgumentException("JWT Secret key must be set and at least 32 characters long in application.properties");
+        }
+        this.key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
+    }
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         if (userDetails instanceof org.example.demospring.entity.User) {

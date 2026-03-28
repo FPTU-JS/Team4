@@ -20,7 +20,10 @@ public class HealthyPlanController {
     private final DailyMealRepository dailyMealRepository;
 
     @GetMapping("/macros")
-    public ResponseEntity<MacroGoal> getMacros(@RequestParam("userId") Long userId) {
+    public ResponseEntity<MacroGoal> getMacros() {
+        Long userId = org.example.demospring.security.SecurityUtils.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+
         Optional<MacroGoal> goal = macroGoalRepository.findByUserId(userId);
         if (goal.isPresent()) {
             return ResponseEntity.ok(goal.get());
@@ -40,9 +43,11 @@ public class HealthyPlanController {
 
     @GetMapping("/meals")
     public ResponseEntity<List<DailyMeal>> getMeals(
-            @RequestParam("userId") Long userId,
             @RequestParam("dayOfWeek") String dayOfWeek) {
         
+        Long userId = org.example.demospring.security.SecurityUtils.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+
         List<DailyMeal> meals = dailyMealRepository.findByUserIdAndDayOfWeek(userId, dayOfWeek);
         if (meals.isEmpty()) {
             // Seed a default mock meal for this day to show some data
