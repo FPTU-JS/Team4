@@ -12,10 +12,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('jwtToken');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
         return config;
     },
     (error) => Promise.reject(error)
@@ -27,7 +23,6 @@ api.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             const currentPath = window.location.pathname;
             if (currentPath !== '/login' && currentPath !== '/register') {
-                localStorage.removeItem('jwtToken');
                 localStorage.removeItem('isAuthenticated');
                 window.location.href = '/login';
             }
